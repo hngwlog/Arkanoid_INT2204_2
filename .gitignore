@@ -5,6 +5,7 @@
 # Compiled class file
 *.class
 out/
+target/
 
 # Log file
 *.log
