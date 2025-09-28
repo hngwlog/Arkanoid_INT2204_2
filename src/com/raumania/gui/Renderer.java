@@ -7,7 +7,7 @@ import java.awt.Image;
 /**
  * Rendering abstraction for the game.
  *
- * <p>This interface decouples the game logic (eg., Ball, Paddle, Brick) from the
+ * <p>This interface decouples the game logic (e.g., Ball, Paddle, Brick) from the
  * actual rendering technology (Java Swing). Concrete implementations
  * will decide how to draw shapes and images on screen.</p>
  */
@@ -61,7 +61,7 @@ public interface Renderer {
      * @param font font to use
      * @param color text color
      */
-    void drawText(String text, double x, double y, Font font, Color color);
+    void drawText(String text, int x, int y, Font font, Color color);
 
     /**
      * Finalizes and presents the frame to the display.
