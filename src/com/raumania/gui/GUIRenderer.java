@@ -1,67 +1,28 @@
 package com.raumania.gui;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class GUIRenderer implements Renderer {
 
-    private JFrame frame;
+    private static final String ESC = "\u001B[";
+    private final StringBuilder frame = new StringBuilder();
+    private final int height;
 
-    public GUIRenderer() {
-        this.frame = new JFrame();
-        this.frame.setLayout(null);
-        this.frame.setTitle("Arkanoid");
-    }
-
-    public GUIRenderer(JFrame _frame) {
-        this.frame = _frame;
+    public GUIRenderer(int height) {
+        this.height = height;
     }
 
     /**
-     * Frame getter.
-     * @return this.frame
+     * height getter.
+     * @return this.height
      */
-    public JFrame getFrame() {
-        return this.frame;
-    }
-
-    /**
-     * Set frame background color.
-     */
-    public void colorSet(Color color) {
-        frame.getContentPane().setBackground(color);
-    }
-
-    /**
-     * set window size.
-     * @param width window width
-     * @param height window height
-     */
-    public void setSize(int width, int height) {
-        this.frame.setSize(width, height);
-    }
-
-    /**
-     * set window title.
-     * @param title window title
-     */
-    public void setTitle(String title) {
-        this.frame.setTitle(title);
-    }
-
-    /**
-     * click 'X' to exit.
-     */
-    public void setExit() {
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    public void addButton(JButton button) {
-        this.frame.add(button);
+    public int getHeight() {
+        return this.height;
     }
 
     public void clear(Color color) {
-
+        frame.setLength(0);
+        frame.append(ESC).append("2J").append(ESC).append("1H");
     }
 
     /**
@@ -112,21 +73,28 @@ public class GUIRenderer implements Renderer {
      * @param color text color
      */
     public void drawText(String text, int x, int y, Font font, Color color) {
-        JLabel txt = new JLabel();
-        txt.setText(text);
-        txt.setFont(font);
-        txt.setForeground(color);
-        FontMetrics metrics = txt.getFontMetrics(font);
-        txt.setBounds(x ,y, metrics.stringWidth(text), metrics.getHeight());
-        System.out.println(metrics.stringWidth(text)+ " "+ metrics.getHeight());
-        frame.add(txt);
+        frame.append(ESC).append(x + 1).append(";").append(y).append("H").append(text);
     }
 
     /**
      * Finalizes and presents the frame to the display.
      */
     public void present() {
-        frame.setVisible(true);
+        System.out.println(frame);
+        System.out.flush();
+    }
+
+    /**
+     * center making String
+     * @param s String
+     * @param width screen width
+     * @return center-ed String
+     */
+    public static String center(String s, int width) {
+        if (s.length() >= width) return s;
+        int pad = (width - s.length()) / 2;
+        String spaces = " ".repeat(Math.max(0, pad));
+        return spaces + s + spaces;
     }
 
 }
