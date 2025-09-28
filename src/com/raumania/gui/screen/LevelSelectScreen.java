@@ -1,7 +1,10 @@
 package com.raumania.gui.screen;
 
-public class LevelSelectScreen {
-    public LevelSelectScreen() {
-        System.out.println("Welcome to the level select screen");
+import com.raumania.gui.manager.SceneManager;
+
+public class LevelSelectScreen extends Screen {
+    public LevelSelectScreen(SceneManager sceneManager) {
+        super(sceneManager);
+        // put components here
     }
 }

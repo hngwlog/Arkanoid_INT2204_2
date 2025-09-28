@@ -1,6 +1,6 @@
 package com.raumania.gameplay.objects;
 
-import com.raumania.gui.Renderer;
+import com.raumania.renderer.Renderer;
 
 /**
  * Base class for all in-game objects (e.g., bricks, ball, paddle).
