@@ -1,7 +1,7 @@
 package com.raumania.gameplay.manager;
 
 import com.raumania.gameplay.objects.*;
-import com.raumania.gui.Renderer;
+import javafx.scene.layout.Pane;
 
 import java.util.List;
 
@@ -10,18 +10,18 @@ import java.util.List;
  * Handles initialization, updates, and rendering of all game objects.
  */
 public class GameManager {
+    private Pane root;
     private Paddle paddle;
     private List<Ball> balls;
     private List<Brick> bricks;
-    private Renderer renderer;
 
     /**
      * Creates a new GameManager with a given renderer.
      *
-     * @param renderer the renderer responsible for drawing
+     * @param root The root pane for rendering game objects.
      */
-    public GameManager(Renderer renderer) {
-        this.renderer = renderer;
+    public GameManager(Pane root) {
+        this.root = root;
         initGame();
     }
 

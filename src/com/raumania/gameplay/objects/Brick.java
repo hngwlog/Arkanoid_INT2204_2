@@ -1,6 +1,6 @@
 package com.raumania.gameplay.objects;
 
-import com.raumania.gui.Renderer;
+import com.raumania.renderer.Renderer;
 
 /**
  * Represents a single brick in the game.
