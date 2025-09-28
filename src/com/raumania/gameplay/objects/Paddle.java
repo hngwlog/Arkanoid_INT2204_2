@@ -1,7 +1,5 @@
 package com.raumania.gameplay.objects;
 
-import com.raumania.renderer.Renderer;
-
 /**
  * Represents the paddle controlled by the player.
  * The paddle can move horizontally and interacts with the ball.
@@ -30,13 +28,4 @@ public class Paddle extends MovableObject {
         applyMovement(dt);
     }
 
-    /**
-     * Renders the paddle on the screen. (Not yet implemented)
-     *
-     * @param renderer the renderer responsible for drawing
-     */
-    @Override
-    public void render(Renderer renderer) {
-        // TODO: cieldontcry
-    }
 }

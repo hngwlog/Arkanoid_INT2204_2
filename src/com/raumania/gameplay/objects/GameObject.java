@@ -1,7 +1,5 @@
 package com.raumania.gameplay.objects;
 
-import com.raumania.renderer.Renderer;
-
 /**
  * Base class for all in-game objects (e.g., bricks, ball, paddle).
  */
@@ -33,9 +31,6 @@ public abstract class GameObject {
      * @param dt delta time in seconds
      */
     public abstract void update(double dt);
-
-    /** Renders the object using the provided renderer abstraction. */
-    public abstract void render(Renderer renderer);
 
     /** Moves the object to an absolute position (top-left). */
     public void setPosition(double x, double y) {
