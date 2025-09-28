@@ -1,7 +1,5 @@
 package com.raumania.gameplay.objects;
 
-import com.raumania.renderer.Renderer;
-
 /**
  * Represents a single brick in the game.
  * A brick has hit points and can be destroyed after repeated hits.
@@ -46,15 +44,5 @@ public class Brick extends GameObject {
     @Override
     public void update(double dt) {
         // TODO: @tuld1806
-    }
-
-    /**
-     * Renders the brick on the screen. (Not yet implemented)
-     *
-     * @param renderer the renderer responsible for drawing
-     */
-    @Override
-    public void render(Renderer renderer) {
-        // TODO: @cieldontcry
     }
 }

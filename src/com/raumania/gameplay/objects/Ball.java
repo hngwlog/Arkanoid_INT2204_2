@@ -1,7 +1,5 @@
 package com.raumania.gameplay.objects;
 
-import com.raumania.renderer.Renderer;
-
 /**
  * Represents the ball in the game.
  * The ball moves freely and interacts with paddle and bricks.
@@ -44,15 +42,5 @@ public class Ball extends MovableObject {
     public void update(double dt) {
         // TODO: @gawgua
         applyMovement(dt);
-    }
-
-    /**
-     * Renders the ball on the screen. (Not yet implemented)
-     *
-     * @param renderer the renderer responsible for drawing
-     */
-    @Override
-    public void render (Renderer renderer) {
-        // TODO: @cieldontcry
     }
 }
