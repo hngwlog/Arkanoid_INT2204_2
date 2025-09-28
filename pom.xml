@@ -96,5 +96,10 @@
             <artifactId>javafx-graphics</artifactId>
             <version>24.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>24.0.2</version>
+        </dependency>
     </dependencies>
 </project>
