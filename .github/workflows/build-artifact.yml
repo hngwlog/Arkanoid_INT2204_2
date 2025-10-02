@@ -25,7 +25,7 @@ jobs:
         run: mvn -B clean package -DskipTests --file pom.xml
 
       - name: Create run scripts
-        run: echo "java --module-path lib --add-modules javafx.controls,javafx.graphics -cp \"arkanoid-1.0.jar;lib/*\" -jar arkanoid-1.0.jar" > target/run-windows.bat
+        run: echo 'java --module-path lib --add-modules javafx.controls,javafx.graphics,javafx.media -cp "arkanoid-1.0.jar;lib/*" -jar arkanoid-1.0.jar' > target/run-windows.bat
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
