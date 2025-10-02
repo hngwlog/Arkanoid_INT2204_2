@@ -5,7 +5,9 @@ import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 
-import static com.raumania.utils.UIUtils.*;
+import static com.raumania.utils.UIUtils.centerButton;
+import static com.raumania.utils.UIUtils.newButton;
+
 
 public class LevelSelectScreen extends Screen {
 

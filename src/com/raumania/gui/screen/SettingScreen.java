@@ -5,7 +5,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.text.Text;
 
-import static com.raumania.utils.UIUtils.*;
+import static com.raumania.utils.UIUtils.centerButton;
+import static com.raumania.utils.UIUtils.newText;
+import static com.raumania.utils.UIUtils.newSlider;
+
 
 public class SettingScreen extends Screen {
     public SettingScreen(SceneManager sceneManager) {
@@ -37,4 +40,5 @@ public class SettingScreen extends Screen {
         root.getChildren().add(back);
 
     }
+
 }

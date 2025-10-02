@@ -4,8 +4,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.text.Text;
 
-import static com.raumania.utils.Constants.WINDOW_WIDTH;
-
 public class UIUtils {
 
     /**
@@ -20,7 +18,7 @@ public class UIUtils {
         Button button =  newButton(title, 1, y, xScale, yScale);
         button.layoutBoundsProperty().addListener((
                 obs, oldVal, newVal) -> {
-            button.setLayoutX((WINDOW_WIDTH - newVal.getWidth())/2);});
+            button.setLayoutX((Constants.WINDOW_WIDTH - newVal.getWidth())/2);});
         return button;
     }
 
@@ -70,7 +68,7 @@ public class UIUtils {
      */
     public static Text centerText(String title, double y,  double xScale, double yScale) {
         Text text = newText(title, 1, y, xScale, yScale);
-        double textX = (WINDOW_WIDTH - text.getLayoutBounds().getWidth())/2;
+        double textX = (Constants.WINDOW_WIDTH - text.getLayoutBounds().getWidth())/2;
         text.setX(textX);
         return text;
     }

@@ -6,8 +6,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.control.Button;
 
-import static com.raumania.utils.Constants.*;
-import static com.raumania.utils.UIUtils.*;
+import static com.raumania.utils.UIUtils.centerButton;
+import static com.raumania.utils.UIUtils.centerText;
 
 public class HomeScreen extends Screen {
     public HomeScreen(SceneManager sceneManager) {
