@@ -52,8 +52,8 @@ public class HomeScreen extends Screen {
 
     @Override
     public void onStart() {
-        if (!AudioManager.getInstance().isPlaying(AudioManager.HOME_MUSIC)) {
-            AudioManager.getInstance().playBGMusic(AudioManager.HOME_MUSIC);
-        }
+//        if (!AudioManager.getInstance().isPlaying(AudioManager.HOME_MUSIC)) {
+//            AudioManager.getInstance().playBGMusic(AudioManager.HOME_MUSIC);
+//        }
     }
 }
