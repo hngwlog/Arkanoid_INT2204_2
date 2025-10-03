@@ -1,12 +1,19 @@
 package com.raumania.utils;
 
 import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+
+import java.net.URL;
 
 public class ResourcesLoader {
     private static String load(String path) {
-        return ResourcesLoader.class.getResource(path).toExternalForm();
+        URL url =  ResourcesLoader.class.getResource(path);
+        if (url == null) {
+            throw new RuntimeException("Resource not found: " + path);
+        } else {
+            return url.toExternalForm();
+        }
     }
 
     /**
@@ -23,8 +30,11 @@ public class ResourcesLoader {
      * @param filename Only music file name (e.g. "background.mp3")
      * @return MediaPlayer object
      */
-    public static MediaPlayer loadMusic(String filename) {
-        Media media = new Media(load("/resources/music/" + filename));
-        return new MediaPlayer(media);
+    public static Media loadMusic(String filename) {
+        return new Media(load("/resources/music/" + filename));
+    }
+
+    public static AudioClip loadSFX(String filename) {
+        return new AudioClip(load("/resources/sfx/" + filename));
     }
 }

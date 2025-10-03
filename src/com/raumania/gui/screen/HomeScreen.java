@@ -1,5 +1,6 @@
 package com.raumania.gui.screen;
 
+import com.raumania.core.AudioManager;
 import com.raumania.gui.manager.SceneManager;
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
@@ -47,8 +48,12 @@ public class HomeScreen extends Screen {
             Platform.exit();
         });
         root.getChildren().add(quit);
-
     }
 
-
+    @Override
+    public void onStart() {
+//        if (!AudioManager.getInstance().isPlaying(AudioManager.HOME_MUSIC)) {
+//            AudioManager.getInstance().playBGMusic(AudioManager.HOME_MUSIC);
+//        }
+    }
 }
