@@ -14,33 +14,38 @@ public class GameOverScreen extends Screen {
 
     public GameOverScreen(SceneManager sceneManager) {
         super(sceneManager);
-        currentTexts = new ArrayList<>();
+
+        // initialize text placeholders
+        currentTexts = new ArrayList<>(HighScore.MAX_ENTRIES);
+        for (int i = 0; i < HighScore.MAX_ENTRIES; i++) {
+            Text text = UIUtils.centerText("", 200 + i * 30, 2.0, 2.0);
+            text.setVisible(false);
+            currentTexts.add(text);
+            root.getChildren().add(text);
+        }
 
         // put components here
+        Text title = UIUtils.centerText("HighScore", 100, 3.0, 3.0);
+        root.getChildren().add(title);
+
         Button backToMenu = UIUtils.centerButton("Back to Home", 500, 2.0, 2.0);
         backToMenu.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.HOME);
         });
         root.getChildren().add(backToMenu);
-
-        Text title = UIUtils.centerText("HighScore", 100, 3.0, 3.0);
-        root.getChildren().add(title);
     }
 
     @Override
     public void onStart() {
-        // this is dynamic so put it in Constructor wont update the list
-        // clear previous texts
-        for (Text text : currentTexts) {
-            root.getChildren().remove(text);
-        }
-        currentTexts.clear();
-
-        ArrayList<HighScoreEntry> entries = HighScore.getInstance().getEntries();
-        for (HighScoreEntry entry : entries) {
-            Text entryText = UIUtils.centerText((entries.indexOf(entry) + 1) + ". " + entry.getName() + ": " + entry.getScore(), 150 + entries.indexOf(entry) * 30, 2.0, 2.0);
-            root.getChildren().add(entryText);
-            currentTexts.add(entryText);
+        ArrayList<HighScoreEntry> highScores = HighScore.getInstance().getEntries();
+        for (int i = 0; i < HighScore.MAX_ENTRIES; i++) {
+            if (i < highScores.size()) {
+                HighScoreEntry e = highScores.get(i);
+                currentTexts.get(i).setText((i + 1) + ". " + e.getName() + " - " + e.getScore());
+                currentTexts.get(i).setVisible(true);
+            } else {
+                currentTexts.get(i).setVisible(false);
+            }
         }
     }
 }

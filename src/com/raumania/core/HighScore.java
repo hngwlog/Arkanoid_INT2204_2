@@ -37,7 +37,7 @@ public class HighScore {
         }
     }
     private final String HIGHSCORE_FILE = "./highscores.json";
-    private final int MAX_ENTRIES = 10;
+    public static final int MAX_ENTRIES = 10;
     private static final HighScore hiScore = new HighScore();
     private ArrayList<HighScoreEntry> entries;
 
@@ -50,6 +50,7 @@ public class HighScore {
     }
 
     public ArrayList<HighScoreEntry> getEntries() {
+        loadHighScores();
         return entries;
     }
 
