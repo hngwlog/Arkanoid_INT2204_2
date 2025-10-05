@@ -70,6 +70,11 @@ public class UIUtils {
         Text text = newText(title, 1, y, xScale, yScale);
         double textX = (Constants.WINDOW_WIDTH - text.getLayoutBounds().getWidth())/2;
         text.setX(textX);
+
+        text.textProperty().addListener((obs, oldVal, newVal) -> {
+            text.setX((Constants.WINDOW_WIDTH - text.getLayoutBounds().getWidth())/2);
+        });
+
         return text;
     }
 
