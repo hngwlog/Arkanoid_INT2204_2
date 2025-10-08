@@ -14,11 +14,13 @@ public class AudioManager {
     private MediaPlayer currentMusic = null;
 
     // All audio assets get preloaded here
-//    public static final Media HOME_MUSIC = ResourcesLoader.loadMusic("home_bgm.mp3");
+    public static final Media HOME_MUSIC = ResourcesLoader.loadMusic("home_bgm.mp3");
 //    public static final Media GAME_MUSIC = ResourcesLoader.loadMusic("game_bgm.mp3");
-//    public static final Media GAME_OVER_MUSIC = ResourcesLoader.loadMusic("game_over.mp3");
     // SFX preload
+    public static final AudioClip GAME_OVER_SFX = ResourcesLoader.loadSFX("game_over.wav");
 //    public static final AudioClip BUTTON_CLICK = ResourcesLoader.loadSFX("button_click.wav");
+    public static final AudioClip BRICK_HIT = ResourcesLoader.loadSFX("brick_hit.wav");
+    public static final AudioClip PADDLE_HIT = ResourcesLoader.loadSFX("paddle_hit.wav");
 
     private AudioManager() {
         this.volume = new SimpleDoubleProperty(100); // Default volume level
