@@ -24,7 +24,9 @@ public class HomeScreen extends Screen {
 
         //Play button
         Button play =  centerButton("Play", 200, 2.0, 2.0);
-        play.setOnAction(e -> {System.out.println("Play");});
+        play.setOnAction(e -> {
+            sceneManager.switchScreen(ScreenType.GAME);
+        });
         root.getChildren().add(play);
 
         //Level select button
