@@ -2,6 +2,9 @@ package com.raumania.gameplay.manager;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.raumania.gameplay.objects.*;
@@ -25,7 +28,7 @@ public class GameManager {
     private boolean rightHeld = false;
 //    private List<Ball> balls;
     private Ball ball;
-    private List<Brick> bricks;
+    private List<NormalBrick> bricks = new ArrayList<>();
     private GameState gameState;
 
     /**
@@ -42,19 +45,27 @@ public class GameManager {
      * Initializes all game objects and sets up the starting state of the game.
      * <p>
      * This method clears the rendering root, creates a new {@link Ball} at the
-     * screen center, attaches its {@link javafx.scene.shape.Circle} view to
-     * the scene graph, and setting the state to {@link GameState#RUNNING}.
+     * screen center and a {@link Paddle} near the bottom, populates a grid of bricks, and
+     * sets {@link #gameState} to {@link GameState#RUNNING}.
      * </p>
-     *
-     * <p><b>Note:</b> Brick initialization will be implemented later.</p>
      */
     public void initGame() {
         root.getChildren().clear();
+        bricks.clear();
         gameState = GameState.RUNNING;
         ball = new Ball((WINDOW_WIDTH - BALL_RADIUS * 2) / 2.0, (WINDOW_HEIGHT - BALL_RADIUS * 2) / 2.0);
         paddle = new Paddle((WINDOW_WIDTH - PADDLE_WIDTH) * 0.5, WINDOW_HEIGHT - 80, PADDLE_WIDTH
                 , PADDLE_HEIGHT);
         root.getChildren().setAll(ball.getView(), paddle.getView());
+        for (int r = 0; r < 6; r++) {
+            for (int c = 0; c < 10; c++) {
+                double x = c * (BRICK_WIDTH + BRICK_GAP);
+                double y = r * (BRICK_HEIGHT + BRICK_GAP);
+                NormalBrick brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                bricks.add(brick);
+                root.getChildren().add(brick.getView());
+            }
+        }
     }
 
     /**
@@ -95,6 +106,12 @@ public class GameManager {
      *   <li>A new normalized direction vector {@link Vec2f} is computed from that angle
      *       using sine and cosine, then applied to the ball.</li>
      * </ul>
+     * <p>
+     * For ball–brick collisions, overlap depth on X/Y is compared across all
+     * bricks touched in the frame. If any collision is more horizontal than
+     * vertical, the ball reflects horizontally; otherwise it reflects vertically.
+     * Destroyed bricks are removed from the scene.
+     * </p>
      */
     public void checkCollisions() {
         if (ball.checkOverlap(paddle) && ball.getDirection().y > 0) {
@@ -108,6 +125,36 @@ public class GameManager {
             double dx = Math.sin(angle);
             double dy = - Math.cos(angle);
             ball.setDirection(new Vec2f(dx, dy));
+        }
+        int cntHorizontally = 0;
+        int cntVertically = 0;
+        for (Iterator<NormalBrick> it = bricks.iterator(); it.hasNext();) {
+            Brick brick = it.next();
+            if (ball.checkOverlap(brick)) {
+                brick.takeHit();
+                double ballCenterX = ball.getX() + ball.getWidth() / 2;
+                double ballCenterY = ball.getY() + ball.getHeight() / 2;
+                double brickCenterX = brick.getX() + brick.getWidth() / 2;
+                double brickCenterY = brick.getY() + brick.getHeight() / 2;
+                double dx = ballCenterX - brickCenterX;
+                double dy = ballCenterY - brickCenterY;
+                double overlapX = (brick.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
+                double overlapY = (brick.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
+                if (overlapX < overlapY) {
+                    cntHorizontally++;
+                } else {
+                    cntVertically++;
+                }
+                if (brick.isDestroyed()) {
+                    root.getChildren().remove(brick.getView());
+                    it.remove();
+                }
+            }
+        }
+        if (cntHorizontally > 0) {
+            ball.bounceHorizontally();
+        } else if (cntVertically > 0) {
+            ball.bounceVertically();
         }
     }
 
@@ -135,11 +182,13 @@ public class GameManager {
     /**
      * Updates the logic of all active game objects.
      * <p>
-     * This includes moving the ball, handling paddle input, and constraining
-     * paddle movement within screen bounds.
+     * If the game is not in {@link GameState#RUNNING}, this method returns immediately.
+     * Otherwise it updates the ball and paddle (including clamped movement based on
+     * current input), performs collision detection, and transitions to
+     * {@link #gameOver()} if the ball is inactive.
      * </p>
      *
-     * @param dt delta time in seconds since the last frame update
+     * @param dt delta time in seconds since the last frame
      */
     public void update(double dt) {
         if (gameState != GameState.RUNNING) {
