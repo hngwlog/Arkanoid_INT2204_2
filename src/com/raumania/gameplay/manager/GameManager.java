@@ -1,5 +1,6 @@
 package com.raumania.gameplay.manager;
 
+import com.raumania.core.AudioManager;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.KeyCode;
@@ -100,6 +101,8 @@ public class GameManager {
      */
     public void checkCollisions() {
         if (ball.checkOverlap(paddle) && ball.getDirection().y > 0) {
+            AudioManager.getInstance().playSFX(AudioManager.PADDLE_HIT);
+
             ball.setPosition(ball.getX(), paddle.getY() - ball.getHeight());
             double paddleCenter = paddle.getX() + paddle.getWidth() * 0.5;
             double ballCenter = ball.getX() + ball.getRadius();
