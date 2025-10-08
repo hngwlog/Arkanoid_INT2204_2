@@ -17,6 +17,7 @@ import static com.raumania.utils.Constants.*;
 public class Ball extends MovableObject {
     private double radius;
     private Circle view;
+    private boolean activeStatus;
 
     /**
      * Constructs a ball at the specified position with the default radius and speed.
@@ -30,6 +31,7 @@ public class Ball extends MovableObject {
         this.setDirection(new Vec2f(1, -1));
         this.setSpeed(BALL_SPEED);
         this.view = new Circle(radius, Color.BLACK);
+        this.activeStatus = true;
     }
 
     /**
@@ -77,16 +79,33 @@ public class Ball extends MovableObject {
     }
 
     /**
+     * Checks whether the ball is currently active (still in play).
+     *
+     * @return {@code true} if active, {@code false} if deactivated (lost)
+     */
+    public boolean isActive() {
+        return activeStatus;
+    }
+
+    /**
+     * Deactivates the ball, typically called when it falls below the visible game area.
+     */
+    public void deactivate() {
+        this.activeStatus = false;
+    }
+
+    /**
      * Checks and handles collisions between the ball and the game window boundaries.
      * <p>
-     * When the ball hits the left, right, top, or bottom edges of the visible game
+     * When the ball hits the left, right, or top edges of the visible game
      * area, its corresponding velocity component is inverted to simulate a bounce.
+     * If the ball passes the bottom edge, it is marked as inactive to trigger a "game over" event.
      * The ball’s position is also clamped so that it never goes outside the screen.
      * </p>
      *
      * <p>
      * A small offset (40 pixels) is subtracted from {@code WINDOW_HEIGHT} to account
-     * for the window title bar and decoration height, ensuring that the ball bounces
+     * for the window title bar and decoration height, ensuring that the ball collide
      * correctly at the bottom edge of the visible play area.
      * </p>
      */
@@ -103,8 +122,7 @@ public class Ball extends MovableObject {
             direction.y *= - 1;
         }
         else if (y + height >= WINDOW_HEIGHT - 40) {
-            y = WINDOW_HEIGHT - 40 - height;
-            direction.y *= - 1;
+            deactivate();
         }
     }
 
@@ -118,6 +136,9 @@ public class Ball extends MovableObject {
      */
     @Override
     public void update(double dt) {
+        if (!activeStatus) {
+            return;
+        }
         applyMovement(dt);
         checkCollisionWithBoundary();
         updateView();

@@ -17,6 +17,8 @@ import com.raumania.math.Vec2f;
  * </p>
  */
 public class GameManager {
+    public static enum GameState { RUNNING, PAUSED, GAME_OVER }
+
     private Pane root;
     private Paddle paddle;
     private boolean leftHeld = false;
@@ -24,6 +26,7 @@ public class GameManager {
 //    private List<Ball> balls;
     private Ball ball;
     private List<Brick> bricks;
+    private GameState gameState;
 
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
@@ -39,14 +42,15 @@ public class GameManager {
      * Initializes all game objects and sets up the starting state of the game.
      * <p>
      * This method clears the rendering root, creates a new {@link Ball} at the
-     * screen center, and attaches its {@link javafx.scene.shape.Circle} view to
-     * the scene graph.
+     * screen center, attaches its {@link javafx.scene.shape.Circle} view to
+     * the scene graph, and setting the state to {@link GameState#RUNNING}.
      * </p>
      *
-     * <p><b>Note:</b> Paddle and brick initialization will be implemented later.</p>
+     * <p><b>Note:</b> Brick initialization will be implemented later.</p>
      */
     public void initGame() {
         root.getChildren().clear();
+        gameState = GameState.RUNNING;
         ball = new Ball((WINDOW_WIDTH - BALL_RADIUS * 2) / 2.0, (WINDOW_HEIGHT - BALL_RADIUS * 2) / 2.0);
         paddle = new Paddle((WINDOW_WIDTH - PADDLE_WIDTH) * 0.5, WINDOW_HEIGHT - 80, PADDLE_WIDTH
                 , PADDLE_HEIGHT);
@@ -108,6 +112,27 @@ public class GameManager {
     }
 
     /**
+     * Returns the current {@link GameState} of the game.
+     * <p>
+     * This value indicates whether the game is currently running,
+     * paused, or has ended (game over).
+     * </p>
+     *
+     * @return the current {@link GameState} of the game
+     */
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    /**
+     * Sets the game state to {@link GameState#GAME_OVER}, typically called
+     * when the ball becomes inactive (falls below the screen).
+     */
+    public void gameOver() {
+        gameState = GameState.GAME_OVER;
+    }
+
+    /**
      * Updates the logic of all active game objects.
      * <p>
      * This includes moving the ball, handling paddle input, and constraining
@@ -117,6 +142,9 @@ public class GameManager {
      * @param dt delta time in seconds since the last frame update
      */
     public void update(double dt) {
+        if (gameState != GameState.RUNNING) {
+            return;
+        }
         ball.update(dt);
         if (leftHeld != rightHeld) {
             if (leftHeld) {
@@ -129,5 +157,8 @@ public class GameManager {
         }
         paddle.update(dt);
         checkCollisions();
+        if (!ball.isActive()) {
+            gameOver();
+        }
     }
 }
