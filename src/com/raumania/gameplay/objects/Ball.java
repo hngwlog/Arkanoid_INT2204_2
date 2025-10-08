@@ -5,8 +5,7 @@ import javafx.scene.shape.Circle;
 
 import com.raumania.math.Vec2f;
 
-import static com.raumania.utils.Constants.BALL_RADIUS;
-import static com.raumania.utils.Constants.BALL_SPEED;
+import static com.raumania.utils.Constants.*;
 
 /**
  * Represents the ball in the game.
@@ -78,6 +77,38 @@ public class Ball extends MovableObject {
     }
 
     /**
+     * Checks and handles collisions between the ball and the game window boundaries.
+     * <p>
+     * When the ball hits the left, right, top, or bottom edges of the visible game
+     * area, its corresponding velocity component is inverted to simulate a bounce.
+     * The ball’s position is also clamped so that it never goes outside the screen.
+     * </p>
+     *
+     * <p>
+     * A small offset (40 pixels) is subtracted from {@code WINDOW_HEIGHT} to account
+     * for the window title bar and decoration height, ensuring that the ball bounces
+     * correctly at the bottom edge of the visible play area.
+     * </p>
+     */
+    public void checkCollisionWithBoundary() {
+        if (x <= 0) {
+            x = 0;
+            direction.x *= - 1;
+        } else if (x + width >= WINDOW_WIDTH) {
+            x = WINDOW_WIDTH - width;
+            direction.x *= -1;
+        }
+        if (y <= 0) {
+            y = 0;
+            direction.y *= - 1;
+        }
+        else if (y + height >= WINDOW_HEIGHT - 40) {
+            y = WINDOW_HEIGHT - 40 - height;
+            direction.y *= - 1;
+        }
+    }
+
+    /**
      * Updates the ball’s position according to its velocity and acceleration.
      * <p>
      * Also synchronizes the visual representation by calling {@link #updateView()}.
@@ -88,6 +119,7 @@ public class Ball extends MovableObject {
     @Override
     public void update(double dt) {
         applyMovement(dt);
+        checkCollisionWithBoundary();
         updateView();
     }
 }
