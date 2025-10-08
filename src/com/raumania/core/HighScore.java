@@ -50,7 +50,6 @@ public class HighScore {
     }
 
     public ArrayList<HighScoreEntry> getEntries() {
-        loadHighScores();
         return entries;
     }
 
