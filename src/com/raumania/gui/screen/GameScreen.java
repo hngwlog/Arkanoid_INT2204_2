@@ -61,6 +61,9 @@ public class GameScreen extends Screen {
                 double dt = (now - past) / 1_000_000_000.0;
                 past = now;
                 manager.update(dt);
+                if (manager.getGameState() == GameManager.GameState.GAME_OVER) {
+                    this.stop();
+                }
             }
         };
         loop.start();
