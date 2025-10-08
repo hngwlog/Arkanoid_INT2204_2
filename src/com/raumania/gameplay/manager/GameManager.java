@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.raumania.gameplay.objects.*;
 import static com.raumania.utils.Constants.*;
+import com.raumania.math.Vec2f;
 
 /**
  * Manages the overall game state, including all major game objects such as
@@ -70,6 +71,43 @@ public class GameManager {
     }
 
     /**
+     * Detects and resolves collisions between game objects such as the ball and the paddle.
+     * <p>
+     * When the ball collides with the paddle from above (i.e., the ball is moving downward),
+     * it is pushed back upward and its new reflection angle is computed based on the
+     * horizontal contact point on the paddle:
+     * </p>
+     * <ul>
+     *   <li>The ball’s position is corrected to rest just above the paddle to prevent overlap.</li>
+     *   <li>The contact ratio {@code t} in range [-1, 1] is calculated, where:
+     *     <ul>
+     *       <li>{@code t = -1} → left edge of paddle</li>
+     *       <li>{@code t = 0}  → center of paddle</li>
+     *       <li>{@code t = +1} → right edge of paddle</li>
+     *     </ul>
+     *   </li>
+     *   <li>The reflection angle is limited to a maximum of 60° from the vertical axis
+     *       to prevent near-horizontal trajectories.</li>
+     *   <li>A new normalized direction vector {@link Vec2f} is computed from that angle
+     *       using sine and cosine, then applied to the ball.</li>
+     * </ul>
+     */
+    public void checkCollisions() {
+        if (ball.checkOverlap(paddle) && ball.getDirection().y > 0) {
+            ball.setPosition(ball.getX(), paddle.getY() - ball.getHeight());
+            double paddleCenter = paddle.getX() + paddle.getWidth() * 0.5;
+            double ballCenter = ball.getX() + ball.getRadius();
+            double t = (ballCenter - paddleCenter) / (paddle.getWidth() * 0.5);
+            t = Math.max(-1, Math.min(1, t));
+            double maxAngle = Math.toRadians(60);
+            double angle = t * maxAngle;
+            double dx = Math.sin(angle);
+            double dy = - Math.cos(angle);
+            ball.setDirection(new Vec2f(dx, dy));
+        }
+    }
+
+    /**
      * Updates the logic of all active game objects.
      * <p>
      * This includes moving the ball, handling paddle input, and constraining
@@ -90,5 +128,6 @@ public class GameManager {
             paddle.stop();
         }
         paddle.update(dt);
+        checkCollisions();
     }
 }
