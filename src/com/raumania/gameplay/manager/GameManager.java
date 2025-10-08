@@ -1,5 +1,6 @@
 package com.raumania.gameplay.manager;
 
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import java.util.List;
 
@@ -17,6 +18,8 @@ import static com.raumania.utils.Constants.*;
 public class GameManager {
     private Pane root;
     private Paddle paddle;
+    private boolean leftHeld = false;
+    private boolean rightHeld = false;
 //    private List<Ball> balls;
     private Ball ball;
     private List<Brick> bricks;
@@ -44,19 +47,48 @@ public class GameManager {
     public void initGame() {
         root.getChildren().clear();
         ball = new Ball((WINDOW_WIDTH - BALL_RADIUS * 2) / 2.0, (WINDOW_HEIGHT - BALL_RADIUS * 2) / 2.0);
-        root.getChildren().setAll(ball.getView());
+        paddle = new Paddle((WINDOW_WIDTH - PADDLE_WIDTH) * 0.5, WINDOW_HEIGHT - 80, PADDLE_WIDTH
+                , PADDLE_HEIGHT);
+        root.getChildren().setAll(ball.getView(), paddle.getView());
+    }
+
+    /**
+     * Handles player input to control paddle movement.
+     *
+     * @param key the pressed or released {@link KeyCode}
+     * @param pressed {@code true} if the key was pressed, {@code false} if released
+     */
+    public void handleInput(KeyCode key, boolean pressed) {
+        if (key == null) {
+            return;
+        }
+        switch (key) {
+            case LEFT -> leftHeld = pressed;
+            case RIGHT -> rightHeld = pressed;
+            default -> {}
+        }
     }
 
     /**
      * Updates the logic of all active game objects.
      * <p>
-     * Currently only updates the {@link Ball} each frame using its internal
-     * physics and position logic.
+     * This includes moving the ball, handling paddle input, and constraining
+     * paddle movement within screen bounds.
      * </p>
      *
      * @param dt delta time in seconds since the last frame update
      */
     public void update(double dt) {
         ball.update(dt);
+        if (leftHeld != rightHeld) {
+            if (leftHeld) {
+                paddle.moveLeft();
+            } else {
+                paddle.moveRight();
+            }
+        } else {
+            paddle.stop();
+        }
+        paddle.update(dt);
     }
 }

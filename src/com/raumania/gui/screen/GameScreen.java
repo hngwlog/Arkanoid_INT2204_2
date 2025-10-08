@@ -49,6 +49,8 @@ public class GameScreen extends Screen {
     @Override
     public void onStart() {
         manager.initGame();
+        scene.setOnKeyPressed(e -> manager.handleInput(e.getCode(), true));
+        scene.setOnKeyReleased(e -> manager.handleInput(e.getCode(), false));
         loop = new AnimationTimer() {
             @Override
             public void handle(long now) {

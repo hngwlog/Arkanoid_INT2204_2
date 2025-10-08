@@ -6,4 +6,7 @@ public class Constants {
     public static final String WINDOW_TITLE = "Arkanoid";
     public static final double BALL_RADIUS = 10;
     public static final int BALL_SPEED = 360;
+    public static final int PADDLE_WIDTH = 120;
+    public static final int PADDLE_HEIGHT = 20;
+    public static final int PADDLE_SPEED = 450;
 }
