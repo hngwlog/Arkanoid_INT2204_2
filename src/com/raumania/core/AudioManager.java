@@ -69,6 +69,10 @@ public class AudioManager {
      * @param music the Media object to play
      */
     public void playBGMusic(Media music) {
+        if (isPlaying(music)) {
+            return;
+        }
+
         if (isPlaying()) {
             this.stop();
         }
@@ -96,6 +100,7 @@ public class AudioManager {
     public void stop() {
         if (isPlaying()) {
             currentMusic.stop();
+            currentMusic.volumeProperty().unbind();
             currentMusic.dispose();
             currentMusic = null;
         }
