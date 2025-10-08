@@ -20,6 +20,7 @@ public class SceneManager {
         screens.put(ScreenType.SETTINGS, new SettingScreen(this));
         screens.put(ScreenType.LEVEL_SELECT, new LevelSelectScreen(this));
         screens.put(ScreenType.GAME, new GameScreen(this));
+        screens.put(ScreenType.GAME_OVER, new GameOverScreen(this));
     }
 
     public Stage getPrimaryStage() {
