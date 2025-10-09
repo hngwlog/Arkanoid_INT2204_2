@@ -33,6 +33,7 @@ public class GameManager {
     private Ball ball;
     private List<NormalBrick> bricks = new ArrayList<>();
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
+    private int score = 0;
 
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
@@ -153,6 +154,7 @@ public class GameManager {
                     cntVertically++;
                 }
                 if (brick.isDestroyed()) {
+                    score += 1;
                     root.getChildren().remove(brick.getView());
                     it.remove();
                 }
@@ -163,6 +165,18 @@ public class GameManager {
         } else if (cntVertically > 0) {
             ball.bounceVertically();
         }
+    }
+
+    /**
+     * Returns the current player score.
+     * <p>
+     * The score increases by 1 for each brick destroyed.
+     * </p>
+     *
+     * @return the current player score
+     */
+    public int getScore() {
+        return score;
     }
 
     /**

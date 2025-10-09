@@ -1,6 +1,7 @@
 package com.raumania.gui.screen;
 
 import com.raumania.core.AudioManager;
+import com.raumania.core.HighScore;
 import javafx.animation.AnimationTimer;
 
 import com.raumania.gameplay.manager.GameManager;
@@ -36,6 +37,7 @@ public class GameScreen extends Screen {
         this.manager.gameStateProperty().addListener((obs, oldState, newState) -> {
             if (newState == GameManager.GameState.GAME_OVER) {
                 loop.stop();
+                HighScore.getInstance().setUnsavedScore(manager.getScore());
                 // Pause for 2 seconds before switching screens
                 PauseTransition pause = new PauseTransition();
                 pause.setDuration(Duration.seconds(2));

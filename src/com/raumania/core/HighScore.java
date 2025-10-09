@@ -39,6 +39,8 @@ public class HighScore {
     private final String HIGHSCORE_FILE = "./highscores.json";
     public static final int MAX_ENTRIES = 10;
     private static final HighScore hiScore = new HighScore();
+    private boolean haveUnsavedScore = false;
+    private int unsavedScore = 0;
     private ArrayList<HighScoreEntry> entries;
 
     private HighScore() {
@@ -54,8 +56,28 @@ public class HighScore {
     }
 
     /**
+     * Sets an unsaved score that can be added to the high score list later.
+     * @param score The score to set.
+     */
+    public void setUnsavedScore(int score) {
+        if (score < 0 || (entries.size() == MAX_ENTRIES && score <= entries.getLast().score)) {
+            return;
+        }
+        haveUnsavedScore = true;
+        unsavedScore = score;
+    }
+
+    /**
+     * Check for an unsaved score.
+     * @return true if there is an unsaved score, false otherwise.
+     */
+    public boolean hasUnsavedScore() {
+        return haveUnsavedScore;
+    }
+
+    /**
      * Adds a new high score entry and saves the updated list to file.
-     * If the list exceeds MAX_ENTRIES, the lowest score is removed.
+     * If the list exceeds {@value MAX_ENTRIES}, the lowest score is removed.
      * @param name The name of the player.
      * @param score The score of the player.
      */
@@ -66,6 +88,21 @@ public class HighScore {
             entries.removeLast();
         }
         saveHighScores();
+    }
+
+    /**
+     * Adds the unsaved score with the given name to the high score list.
+     * If there is no unsaved score, this method does nothing.
+     * After adding, the unsaved score is cleared.
+     * @param name The name of the player.
+     */
+    public void addHighScore(String name) {
+        if (!haveUnsavedScore) {
+            return;
+        }
+        addHighScore(name, unsavedScore);
+        haveUnsavedScore = false;
+        unsavedScore = 0;
     }
 
     private void loadHighScores() {
