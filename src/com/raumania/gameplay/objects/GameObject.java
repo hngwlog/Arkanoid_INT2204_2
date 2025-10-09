@@ -25,13 +25,6 @@ public abstract class GameObject {
         this.height = height;
     }
 
-    /**
-     * Updates the object logic every frame.
-     *
-     * @param dt delta time in seconds
-     */
-    public abstract void update(double dt);
-
     /** Moves the object to an absolute position (top-left). */
     public void setPosition(double x, double y) {
         this.x = x;

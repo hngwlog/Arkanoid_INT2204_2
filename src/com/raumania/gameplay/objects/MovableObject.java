@@ -25,6 +25,13 @@ public abstract class MovableObject extends GameObject {
     }
 
     /**
+     * Updates the object logic every frame.
+     *
+     * @param dt delta time in seconds
+     */
+    public abstract void update(double dt);
+
+    /**
      * Applies kinematics: v = v + a*dt, then x = x + dir * v * dt.
      *
      * @param dt delta time in seconds

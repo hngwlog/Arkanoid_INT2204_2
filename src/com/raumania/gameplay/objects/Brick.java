@@ -1,14 +1,22 @@
 package com.raumania.gameplay.objects;
 
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
 /**
  * Represents a single brick in the game.
- * A brick has hit points and can be destroyed after repeated hits.
+ * <p>
+ * A brick has a finite number of hit points and becomes destroyed after
+ * sufficient hits. Each brick also owns a JavaFX {@link Rectangle} view
+ * used for rendering.
+ * </p>
  */
-public class Brick extends GameObject {
+public abstract class Brick extends GameObject {
+    private Rectangle view;
     private int hitPoints;
 
     /**
-     * Constructs a new Brick object with given position and size.
+     * Constructs a new {@code Brick} with the given position and size.
      *
      * @param x the x-coordinate of the brick's top-left corner
      * @param y the y-coordinate of the brick's top-left corner
@@ -17,11 +25,25 @@ public class Brick extends GameObject {
      */
     public Brick(double x, double y, double width, double height) {
         super(x, y, width, height);
-        this.hitPoints = 1;
+        this.view = new Rectangle(width, height);
+        this.view.setX(x);
+        this.view.setY(y);
+        this.view.setFill(Color.RED);
+        this.view.setStroke(Color.BLACK);
+        this.view.setStrokeWidth(3);
     }
 
     /**
-     * Reduces the brick's hit points by one.
+     * Sets the current hit points of this brick.
+     *
+     * @param hitPoints the new hit points value
+     */
+    public void setHitPoints(int hitPoints) {
+        this.hitPoints = hitPoints;
+    }
+
+    /**
+     * Reduces the brick's hit points by one to reflect a successful hit.
      */
     public void takeHit() {
         hitPoints--;
@@ -30,19 +52,18 @@ public class Brick extends GameObject {
     /**
      * Checks whether the brick is destroyed.
      *
-     * @return true if the brick has zero or fewer hit points, false otherwise
+     * @return {@code true} if hit points are zero or less; {@code false} otherwise
      */
     public boolean isDestroyed() {
         return hitPoints <= 0;
     }
 
     /**
-     * Updates the brick state. (Not yet implemented)
+     * Returns the graphical representation of the brick.
      *
-     * @param dt delta time in seconds
+     * @return the {@link Rectangle} node used to render this brick
      */
-    @Override
-    public void update(double dt) {
-        // TODO: @tuld1806
+    public Rectangle getView() {
+        return view;
     }
 }

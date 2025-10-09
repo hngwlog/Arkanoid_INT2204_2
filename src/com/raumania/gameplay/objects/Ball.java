@@ -95,6 +95,22 @@ public class Ball extends MovableObject {
     }
 
     /**
+     * Inverts the horizontal component of the ball’s velocity to simulate a
+     * horizontal bounce.
+     */
+    public void bounceHorizontally() {
+        direction.x = - direction.x;
+    }
+
+    /**
+     * Inverts the vertical component of the ball’s velocity to simulate a
+     * vertical bounce.
+     */
+    public void bounceVertically() {
+        direction.y = - direction.y;
+    }
+
+    /**
      * Checks and handles collisions between the ball and the game window boundaries.
      * <p>
      * When the ball hits the left, right, or top edges of the visible game
@@ -112,16 +128,15 @@ public class Ball extends MovableObject {
     public void checkCollisionWithBoundary() {
         if (x <= 0) {
             x = 0;
-            direction.x *= - 1;
+            bounceHorizontally();
         } else if (x + width >= WINDOW_WIDTH) {
             x = WINDOW_WIDTH - width;
-            direction.x *= -1;
+            bounceHorizontally();
         }
         if (y <= 0) {
             y = 0;
-            direction.y *= - 1;
-        }
-        else if (y + height >= WINDOW_HEIGHT - 40) {
+            bounceVertically();
+        } else if (y + height >= WINDOW_HEIGHT - 40) {
             deactivate();
         }
     }
