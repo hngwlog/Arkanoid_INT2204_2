@@ -1,5 +1,8 @@
 package com.raumania.gameplay.manager;
 
+import com.raumania.core.AudioManager;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 
@@ -20,7 +23,7 @@ import com.raumania.math.Vec2f;
  * </p>
  */
 public class GameManager {
-    public static enum GameState { RUNNING, PAUSED, GAME_OVER }
+    public enum GameState { RUNNING, PAUSED, GAME_OVER }
 
     private Pane root;
     private Paddle paddle;
@@ -28,8 +31,8 @@ public class GameManager {
     private boolean rightHeld = false;
 //    private List<Ball> balls;
     private Ball ball;
-    private List<NormalBrick> bricks = new ArrayList<>();
-    private GameState gameState;
+    private List<Brick> bricks;
+    private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
 
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
@@ -51,8 +54,7 @@ public class GameManager {
      */
     public void initGame() {
         root.getChildren().clear();
-        bricks.clear();
-        gameState = GameState.RUNNING;
+        gameState.set(GameState.RUNNING);
         ball = new Ball((WINDOW_WIDTH - BALL_RADIUS * 2) / 2.0, (WINDOW_HEIGHT - BALL_RADIUS * 2) / 2.0);
         paddle = new Paddle((WINDOW_WIDTH - PADDLE_WIDTH) * 0.5, WINDOW_HEIGHT - 80, PADDLE_WIDTH
                 , PADDLE_HEIGHT);
@@ -115,6 +117,8 @@ public class GameManager {
      */
     public void checkCollisions() {
         if (ball.checkOverlap(paddle) && ball.getDirection().y > 0) {
+            AudioManager.getInstance().playSFX(AudioManager.PADDLE_HIT);
+
             ball.setPosition(ball.getX(), paddle.getY() - ball.getHeight());
             double paddleCenter = paddle.getX() + paddle.getWidth() * 0.5;
             double ballCenter = ball.getX() + ball.getRadius();
@@ -168,6 +172,19 @@ public class GameManager {
      * @return the current {@link GameState} of the game
      */
     public GameState getGameState() {
+        return gameState.get();
+    }
+
+    /**
+     * Returns the observable property representing the current {@link GameState}.
+     * <p>
+     * This property can be observed to react to changes in the game state,
+     * such as transitioning to a game over screen when the state changes.
+     * </p>
+     *
+     * @return the {@link ObjectProperty} representing the current {@link GameState}
+     */
+    public ObjectProperty<GameState> gameStateProperty() {
         return gameState;
     }
 
@@ -176,7 +193,7 @@ public class GameManager {
      * when the ball becomes inactive (falls below the screen).
      */
     public void gameOver() {
-        gameState = GameState.GAME_OVER;
+        gameState.set(GameState.GAME_OVER);
     }
 
     /**
@@ -191,7 +208,7 @@ public class GameManager {
      * @param dt delta time in seconds since the last frame
      */
     public void update(double dt) {
-        if (gameState != GameState.RUNNING) {
+        if (gameState.get() != GameState.RUNNING) {
             return;
         }
         ball.update(dt);

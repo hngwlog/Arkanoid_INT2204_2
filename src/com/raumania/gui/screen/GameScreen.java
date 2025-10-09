@@ -1,9 +1,12 @@
 package com.raumania.gui.screen;
 
+import com.raumania.core.AudioManager;
 import javafx.animation.AnimationTimer;
 
 import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gui.manager.SceneManager;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 
 /**
  * The game play screen that hosts the main game loop.
@@ -29,6 +32,19 @@ public class GameScreen extends Screen {
     public GameScreen(SceneManager sceneManager) {
         super(sceneManager);
         this.manager = new GameManager(root);
+        // handle game over state
+        this.manager.gameStateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == GameManager.GameState.GAME_OVER) {
+                loop.stop();
+                // Pause for 2 seconds before switching screens
+                PauseTransition pause = new PauseTransition();
+                pause.setDuration(Duration.seconds(2));
+                pause.setOnFinished(e -> sceneManager.switchScreen(ScreenType.GAME_OVER));
+                AudioManager.getInstance().stop();
+                AudioManager.getInstance().playSFX(AudioManager.GAME_OVER_SFX);
+                pause.play();
+            }
+        });
     }
 
     /**
@@ -48,9 +64,9 @@ public class GameScreen extends Screen {
      */
     @Override
     public void onStart() {
-        manager.initGame();
-        scene.setOnKeyPressed(e -> manager.handleInput(e.getCode(), true));
-        scene.setOnKeyReleased(e -> manager.handleInput(e.getCode(), false));
+//        AudioManager.getInstance().playBGMusic(AudioManager.GAME_MUSIC);
+        // stop any playing music
+        AudioManager.getInstance().stop();
         loop = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -61,11 +77,11 @@ public class GameScreen extends Screen {
                 double dt = (now - past) / 1_000_000_000.0;
                 past = now;
                 manager.update(dt);
-                if (manager.getGameState() == GameManager.GameState.GAME_OVER) {
-                    this.stop();
-                }
             }
         };
+        manager.initGame();
+        scene.setOnKeyPressed(e -> manager.handleInput(e.getCode(), true));
+        scene.setOnKeyReleased(e -> manager.handleInput(e.getCode(), false));
         loop.start();
     }
 
