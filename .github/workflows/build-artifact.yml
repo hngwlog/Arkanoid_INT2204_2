@@ -28,7 +28,7 @@ jobs:
         shell: cmd
         run: |
           echo @echo off > target/run-windows.bat
-          echo start "" javaw --module-path lib --add-modules javafx.controls,javafx.graphics,javafx.media -cp "arkanoid-1.0.jar;lib/*" -jar arkanoid-1.0.jar >> target/run-windows.bat
+          echo start "" javaw --module-path lib --add-modules javafx.controls,javafx.graphics,javafx.media -cp "arkanoid-1.0.jar;lib/*" com.raumania.main.Main >> target/run-windows.bat
           echo exit >> target/run-windows.bat
 
       - name: Upload JAR artifact
