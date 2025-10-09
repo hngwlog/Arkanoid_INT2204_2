@@ -31,7 +31,7 @@ public class GameManager {
     private boolean rightHeld = false;
 //    private List<Ball> balls;
     private Ball ball;
-    private List<Brick> bricks;
+    private List<NormalBrick> bricks = new ArrayList<>();
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
 
     /**
@@ -54,6 +54,7 @@ public class GameManager {
      */
     public void initGame() {
         root.getChildren().clear();
+        bricks.clear();
         gameState.set(GameState.RUNNING);
         ball = new Ball((WINDOW_WIDTH - BALL_RADIUS * 2) / 2.0, (WINDOW_HEIGHT - BALL_RADIUS * 2) / 2.0);
         paddle = new Paddle((WINDOW_WIDTH - PADDLE_WIDTH) * 0.5, WINDOW_HEIGHT - 80, PADDLE_WIDTH
