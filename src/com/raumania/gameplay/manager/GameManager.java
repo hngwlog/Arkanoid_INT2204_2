@@ -136,6 +136,8 @@ public class GameManager {
         for (Iterator<NormalBrick> it = bricks.iterator(); it.hasNext();) {
             Brick brick = it.next();
             if (ball.checkOverlap(brick)) {
+                AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
+
                 brick.takeHit();
                 double ballCenterX = ball.getX() + ball.getWidth() / 2;
                 double ballCenterY = ball.getY() + ball.getHeight() / 2;
