@@ -69,6 +69,7 @@ public class GameScreen extends Screen {
 //        AudioManager.getInstance().playBGMusic(AudioManager.GAME_MUSIC);
         // stop any playing music
         AudioManager.getInstance().stop();
+        past = -1;
         loop = new AnimationTimer() {
             @Override
             public void handle(long now) {
