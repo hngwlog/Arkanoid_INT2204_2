@@ -175,6 +175,7 @@ public class GameScreen extends Screen {
         gamePlayScreen.setVisible(true);
         manager.getRoot().setVisible(true);
 
+        past = -1;
         loop = new AnimationTimer() {
             double lastFPSUpdate = 0;
             @Override
