@@ -12,4 +12,8 @@ public class Constants {
     public static final int BRICK_WIDTH = 100;
     public static final int BRICK_HEIGHT = 30;
     public static final int BRICK_GAP = 0;
+    public static final int GAME_WIDTH = 910;
+    public static final int GAME_HEIGHT = 600;
+    public static final int GAME_START_X = 10;
+    public static final int GAME_START_Y = 70;
 }

@@ -8,5 +8,5 @@ public enum ScreenType {
     SETTINGS,
     LEVEL_SELECT,
     GAME,
-    GAME_OVER
+    GAME_OVER,
 }
