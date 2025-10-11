@@ -5,8 +5,10 @@ import com.raumania.core.HighScore.HighScoreEntry;
 import com.raumania.gui.manager.SceneManager;
 import com.raumania.utils.Constants;
 import com.raumania.utils.UIUtils;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
@@ -35,6 +37,14 @@ public class GameOverScreen extends Screen {
         backToMenu.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.HOME);
         });
+        gameOverPane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    backToMenu.fire();
+                    break;
+            }
+        });
+
         gameOverPane.getChildren().addAll(title, backToMenu);
 
         // if there is an unsaved score, show input pane
@@ -56,6 +66,14 @@ public class GameOverScreen extends Screen {
             highScoreInputPane.setVisible(false);
             gameOverPane.setVisible(true);
         });
+        highScoreInputPane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    submit.fire();
+                    break;
+            }
+        });
+
         highScoreInputPane.getChildren().addAll(congrats, prompt, nameInput, submit);
 
         root.getChildren().addAll(gameOverPane, highScoreInputPane);

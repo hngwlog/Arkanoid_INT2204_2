@@ -37,13 +37,29 @@ public class GameManager {
 
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
-     *
-     * @param root the {@link Pane} where all game objects are rendered
      */
-    public GameManager(Pane root) {
-        this.root = root;
+    public GameManager() {
+        this.root = new Pane();
         initGame();
     }
+
+    /**
+     * Return the render root that game is rendered on
+     *
+     * @return the root of the game
+     */
+    public Pane getRoot() {
+        return root;
+    }
+
+
+    /**
+     * Set the current {@link GameState} of the game.
+     */
+    public void setGameState(GameState gameState) {
+        this.gameState.set(gameState);
+    }
+
 
     /**
      * Initializes all game objects and sets up the starting state of the game.
@@ -54,7 +70,6 @@ public class GameManager {
      * </p>
      */
     public void initGame() {
-        root.getChildren().clear();
         bricks.clear();
         gameState.set(GameState.RUNNING);
         ball = new Ball((WINDOW_WIDTH - BALL_RADIUS * 2) / 2.0, (WINDOW_HEIGHT - BALL_RADIUS * 2) / 2.0);
@@ -217,7 +232,7 @@ public class GameManager {
      * Updates the logic of all active game objects.
      * <p>
      * If the game is not in {@link GameState#RUNNING}, this method returns immediately.
-     * Otherwise it updates the ball and paddle (including clamped movement based on
+     * Otherwise, it updates the ball and paddle (including clamped movement based on
      * current input), performs collision detection, and transitions to
      * {@link #gameOver()} if the ball is inactive.
      * </p>

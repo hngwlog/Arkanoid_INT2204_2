@@ -2,12 +2,29 @@ package com.raumania.gui.screen;
 
 import com.raumania.core.AudioManager;
 import com.raumania.core.HighScore;
+import com.raumania.utils.UIUtils;
+import com.raumania.utils.Constants;
 import javafx.animation.AnimationTimer;
 
 import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gui.manager.SceneManager;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
+import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+
+import java.awt.*;
+
+import static com.raumania.gui.screen.ScreenType.GAME;
 
 /**
  * The game play screen that hosts the main game loop.
@@ -21,6 +38,13 @@ public class GameScreen extends Screen {
     private GameManager manager;
     private AnimationTimer loop;
     private long past = - 1;
+    Button pause;
+    Pane gamePlayScreen;
+    Pane mainPause;
+    Pane backChoice;
+    StackPane gamePane;
+    Text score;
+    Text fps;
 
     /**
      * Creates a new {@code GameScreen} and binds it to the given {@link SceneManager}.
@@ -32,7 +56,7 @@ public class GameScreen extends Screen {
      */
     public GameScreen(SceneManager sceneManager) {
         super(sceneManager);
-        this.manager = new GameManager(root);
+        this.manager = new GameManager();
         // handle game over state
         this.manager.gameStateProperty().addListener((obs, oldState, newState) -> {
             if (newState == GameManager.GameState.GAME_OVER) {
@@ -47,6 +71,81 @@ public class GameScreen extends Screen {
                 pause.play();
             }
         });
+
+        mainPause = new Pane();
+        backChoice = new Pane();
+        gamePlayScreen = new Pane();
+
+        //Game play screen
+        pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
+        pause.setOnAction(e -> {
+            manager.setGameState(GameManager.GameState.PAUSED);
+            mainPause.setVisible(true);
+            gamePlayScreen.setVisible(false);
+            manager.getRoot().setVisible(false);
+        });
+        //Game border
+        Rectangle border = UIUtils.newRectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT,
+                Constants.GAME_START_X, Constants.GAME_START_Y);
+        border.setFill(Color.TRANSPARENT);
+        border.setStroke(Color.BLACK);
+        border.setStrokeWidth(2);
+        //Score
+        score = UIUtils.newText("Score:", 500, 30, 2.0, 2.0);
+        score.setFont(Font.font("System", FontWeight.BOLD, 14));
+        //FPS
+        fps = UIUtils.newText("FPS:", 350, 30, 2.0, 2.0);
+        fps.setFont(Font.font("System", FontWeight.BOLD, 14));
+        gamePlayScreen.getChildren().addAll(pause, border, score, fps);
+        gamePlayScreen.setVisible(true);
+
+        //Pause screen
+        //Pause Title
+        Text title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
+        title.setFill(Color.GREEN);
+        //Resume button
+        Button resume = UIUtils.centerButton("Resume", 200, 2.0, 2.0);
+        resume.setOnAction(e -> {
+            onStart();
+        });
+        //Home button
+        Button home = UIUtils.centerButton("Back to Home", 300, 2.0, 2.0);
+        home.setOnAction(e -> {
+            mainPause.setVisible(false);
+            backChoice.setVisible(true);
+        });
+        mainPause.getChildren().addAll(title, resume, home);
+        mainPause.setVisible(false);
+
+        // Confirmation Screen
+        // Title
+        Text title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
+        title1.setFill(Color.GREEN);
+        //Yes button
+        //BUG : game over when play again (but still init)
+        Button yes = UIUtils.centerButton("Yes", 200, 2.0, 2.0);
+        yes.setOnAction(e -> {
+            sceneManager.switchScreen(ScreenType.HOME);
+            manager.initGame();
+            manager.setGameState(GameManager.GameState.PAUSED);
+        });
+        //No button
+        Button no = UIUtils.centerButton("No", 300, 2.0, 2.0);
+        no.setOnAction(e -> {
+            mainPause.setVisible(true);
+            backChoice.setVisible(false);
+        });
+        backChoice.getChildren().addAll(title1, yes, no);
+        backChoice.setVisible(false);
+
+        gamePane = new StackPane();
+        gamePane.getChildren().addAll(manager.getRoot(), gamePlayScreen);
+        root.getChildren().addAll(gamePane, mainPause,  backChoice);
+
+    }
+
+    public GameManager getGameManager() {
+        return manager;
     }
 
     /**
@@ -69,7 +168,15 @@ public class GameScreen extends Screen {
 //        AudioManager.getInstance().playBGMusic(AudioManager.GAME_MUSIC);
         // stop any playing music
         AudioManager.getInstance().stop();
+
+        //Turn on game screen
+        mainPause.setVisible(false);
+        backChoice.setVisible(false);
+        gamePlayScreen.setVisible(true);
+        manager.getRoot().setVisible(true);
+
         loop = new AnimationTimer() {
+            double lastFPSUpdate = 0;
             @Override
             public void handle(long now) {
                 if (past < 0) {
@@ -79,10 +186,28 @@ public class GameScreen extends Screen {
                 double dt = (now - past) / 1_000_000_000.0;
                 past = now;
                 manager.update(dt);
+                score.setText("Score: " + manager.getScore());
+                if (now - lastFPSUpdate > 1_000_000_000.0) {
+                    fps.setText("FPS: "+(int)(1.0/dt));
+                    lastFPSUpdate = now;
+                }
             }
         };
-        manager.initGame();
-        scene.setOnKeyPressed(e -> manager.handleInput(e.getCode(), true));
+        switch (manager.getGameState()) {
+            case GAME_OVER -> {
+                manager.initGame();
+            }
+            case PAUSED -> manager.setGameState(GameManager.GameState.RUNNING);
+        }
+        Platform.runLater(root::requestFocus);
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                pause.fire();
+            } else {
+                manager.handleInput(e.getCode(), true);
+            }
+        });
+
         scene.setOnKeyReleased(e -> manager.handleInput(e.getCode(), false));
         loop.start();
     }

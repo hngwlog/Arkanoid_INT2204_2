@@ -3,6 +3,7 @@ package com.raumania.utils;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.text.Text;
+import javafx.scene.shape.Rectangle;
 
 public class UIUtils {
 
@@ -101,6 +102,23 @@ public class UIUtils {
         slider.setShowTickLabels(label);
         slider.setShowTickMarks(mark);
         return slider;
+    }
+
+    /**
+     * Create a new Rectangle.
+     * @param width Rectangle's with
+     * @param height Rectangle's height
+     * @param x Rectangle's start X
+     * @param y Rectangle's start Y
+     * @return new Rectangle
+     */
+    public static Rectangle newRectangle(int width, int height, double x, double y) {
+        Rectangle rectangle = new Rectangle(width, height);
+        rectangle.setLayoutX(x);
+        rectangle.setLayoutY(y);
+        rectangle.setWidth(width);
+        rectangle.setHeight(height);
+        return rectangle;
     }
 
 }
