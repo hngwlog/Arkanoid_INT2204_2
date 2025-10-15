@@ -64,7 +64,7 @@ public class GameManager {
     /**
      * Initializes all game objects and sets up the starting state of the game.
      * <p>
-     * This method clears the rendering root, creates a new {@link Ball} at the
+     * This method creates a new {@link Ball} at the
      * screen center and a {@link Paddle} near the bottom, populates a grid of bricks, and
      * sets {@link #gameState} to {@link GameState#RUNNING}.
      * </p>
