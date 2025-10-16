@@ -12,7 +12,6 @@ import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -77,12 +76,10 @@ public class GameScreen extends Screen {
         gamePlayScreen = new Pane();
 
         //Game play screen
+        //Pause button
         pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
         pause.setOnAction(e -> {
-            manager.setGameState(GameManager.GameState.PAUSED);
-            mainPause.setVisible(true);
-            gamePlayScreen.setVisible(false);
-            manager.getRoot().setVisible(false);
+            this.pause();
         });
         //Game border
         Rectangle border = UIUtils.newRectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT,
@@ -106,7 +103,7 @@ public class GameScreen extends Screen {
         //Resume button
         Button resume = UIUtils.centerButton("Resume", 200, 2.0, 2.0);
         resume.setOnAction(e -> {
-            onStart();
+            this.resume();
         });
         //Home button
         Button home = UIUtils.centerButton("Back to Home", 300, 2.0, 2.0);
@@ -137,6 +134,20 @@ public class GameScreen extends Screen {
         });
         backChoice.getChildren().addAll(title1, yes, no);
         backChoice.setVisible(false);
+
+        // key event
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                if (manager.getGameState() == GameManager.GameState.PAUSED) {
+                    resume.fire();
+                } else if (manager.getGameState() == GameManager.GameState.RUNNING) {
+                    pause.fire();
+                }
+            } else {
+                manager.handleInput(e.getCode(), true);
+            }
+        });
+        scene.setOnKeyReleased(e -> manager.handleInput(e.getCode(), false));
 
         gamePane = new StackPane();
         gamePane.getChildren().addAll(manager.getRoot(), gamePlayScreen);
@@ -172,8 +183,7 @@ public class GameScreen extends Screen {
         //Turn on game screen
         mainPause.setVisible(false);
         backChoice.setVisible(false);
-        gamePlayScreen.setVisible(true);
-        manager.getRoot().setVisible(true);
+        gamePane.setVisible(true);
 
         past = -1;
         loop = new AnimationTimer() {
@@ -201,15 +211,6 @@ public class GameScreen extends Screen {
             case PAUSED -> manager.setGameState(GameManager.GameState.RUNNING);
         }
         Platform.runLater(root::requestFocus);
-        scene.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                pause.fire();
-            } else {
-                manager.handleInput(e.getCode(), true);
-            }
-        });
-
-        scene.setOnKeyReleased(e -> manager.handleInput(e.getCode(), false));
         loop.start();
     }
 
@@ -224,5 +225,22 @@ public class GameScreen extends Screen {
         if (loop != null) {
             loop.stop();
         }
+    }
+
+    public void resume() {
+        past = -1;
+        loop.start();
+        manager.setGameState(GameManager.GameState.RUNNING);
+        mainPause.setVisible(false);
+        backChoice.setVisible(false);
+        gamePane.setVisible(true);
+    }
+
+    public void pause() {
+        loop.stop();
+        manager.setGameState(GameManager.GameState.PAUSED);
+        mainPause.setVisible(true);
+        backChoice.setVisible(false);
+        gamePane.setVisible(false);
     }
 }
