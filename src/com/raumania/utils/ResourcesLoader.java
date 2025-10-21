@@ -3,6 +3,7 @@ package com.raumania.utils;
 import javafx.scene.image.Image;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
+import javafx.scene.text.Font;
 
 import java.net.URL;
 
@@ -36,5 +37,9 @@ public class ResourcesLoader {
 
     public static AudioClip loadSFX(String filename) {
         return new AudioClip(load("/resources/sfx/" + filename));
+    }
+
+    public static Font loadFont(String filename, double size) {
+        return Font.loadFont(load("/resources/fonts/" + filename), size);
     }
 }

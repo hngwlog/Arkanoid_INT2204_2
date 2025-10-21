@@ -1,6 +1,12 @@
 package com.raumania.gui.manager;
 
 import com.raumania.gui.screen.*;
+import com.raumania.utils.ResourcesLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.Labeled;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.EnumMap;
@@ -21,6 +27,12 @@ public class SceneManager {
         screens.put(ScreenType.LEVEL_SELECT, new LevelSelectScreen(this));
         screens.put(ScreenType.GAME, new GameScreen(this));
         screens.put(ScreenType.GAME_OVER, new GameOverScreen(this));
+
+        // apply font for all screens
+        screens.forEach((type, screen) -> {
+            Font font = ResourcesLoader.loadFont("CyberpunkCraftpixPixel.otf", 14);
+            applyFont(screen.getRoot(), font);
+        });
     }
 
     public Stage getPrimaryStage() {
@@ -40,5 +52,17 @@ public class SceneManager {
         currentScreen = screens.get(screenType);
         currentScreen.onStart();
         primaryStage.setScene(currentScreen.getScene());
+    }
+
+    private void applyFont(Parent root, Font font) {
+        for (Node node : root.getChildrenUnmodifiable()) {
+            if (node instanceof Labeled labeled) {
+                labeled.setFont(font);
+            } else if (node instanceof Text text) {
+                text.setFont(font);
+            } else if (node instanceof Parent parent) {
+                applyFont(parent, font);
+            }
+        }
     }
 }
