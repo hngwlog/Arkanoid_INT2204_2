@@ -31,7 +31,7 @@ public class GameManager {
     private boolean rightHeld = false;
 //    private List<Ball> balls;
     private Ball ball;
-    private List<NormalBrick> bricks = new ArrayList<>();
+    private List<Brick> bricks = new ArrayList<>();
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
     private int score = 0;
 
@@ -149,7 +149,7 @@ public class GameManager {
         }
         int cntHorizontally = 0;
         int cntVertically = 0;
-        for (Iterator<NormalBrick> it = bricks.iterator(); it.hasNext();) {
+        for (Iterator<Brick> it = bricks.iterator(); it.hasNext();) {
             Brick brick = it.next();
             if (ball.checkOverlap(brick)) {
                 AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
@@ -255,7 +255,8 @@ public class GameManager {
         }
         paddle.update(dt);
         checkCollisions();
-        if (!ball.isActive()) {
+        if (!ball.isActive()
+            || bricks.stream().noneMatch((b) -> !(b instanceof StrongBrick))) { // all bricks destroyed
             gameOver();
         }
     }
