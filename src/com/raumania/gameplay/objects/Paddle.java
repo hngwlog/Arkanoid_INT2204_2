@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import static com.raumania.utils.Constants.PADDLE_SPEED;
-import static com.raumania.utils.Constants.WINDOW_WIDTH;
+import static com.raumania.utils.Constants.GAME_WIDTH;
 
 import com.raumania.math.Vec2f;
 
@@ -87,8 +87,8 @@ public class Paddle extends MovableObject {
         if (x < 0) {
             x = 0;
         }
-        if (x + width >= WINDOW_WIDTH) {
-            x = WINDOW_WIDTH - width;
+        if (x + width >= GAME_WIDTH) {
+            x = GAME_WIDTH - width;
         }
     }
 

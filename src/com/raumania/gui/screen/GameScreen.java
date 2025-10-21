@@ -18,6 +18,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -138,8 +139,12 @@ public class GameScreen extends Screen {
         backChoice.getChildren().addAll(title1, yes, no);
         backChoice.setVisible(false);
 
+        Pane game = manager.getRoot();
+        game.setClip(new Rectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT));
+        game.getTransforms().add(new Translate(Constants.GAME_START_X, Constants.GAME_START_Y));
+
         gamePane = new StackPane();
-        gamePane.getChildren().addAll(manager.getRoot(), gamePlayScreen);
+        gamePane.getChildren().addAll(game, gamePlayScreen);
         root.getChildren().addAll(gamePane, mainPause,  backChoice);
 
     }
