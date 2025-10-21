@@ -72,17 +72,17 @@ public class GameManager {
     public void initGame() {
         bricks.clear();
         gameState.set(GameState.RUNNING);
-        ball = new Ball((WINDOW_WIDTH - BALL_RADIUS * 2) / 2.0, (WINDOW_HEIGHT - BALL_RADIUS * 2) / 2.0);
-        paddle = new Paddle((WINDOW_WIDTH - PADDLE_WIDTH) * 0.5, WINDOW_HEIGHT - 80, PADDLE_WIDTH
+        ball = new Ball((GAME_WIDTH - BALL_RADIUS * 2) / 2.0, (GAME_HEIGHT - BALL_RADIUS * 2) / 2.0);
+        paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80, PADDLE_WIDTH
                 , PADDLE_HEIGHT);
-        root.getChildren().setAll(ball.getView(), paddle.getView());
+        root.getChildren().setAll(ball.getView(), paddle.getTexture());
         for (int r = 0; r < 6; r++) {
             for (int c = 0; c < 10; c++) {
                 double x = c * (BRICK_WIDTH + BRICK_GAP);
                 double y = r * (BRICK_HEIGHT + BRICK_GAP);
                 NormalBrick brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
                 bricks.add(brick);
-                root.getChildren().add(brick.getView());
+                root.getChildren().add(brick.getTexture());
             }
         }
     }
@@ -170,7 +170,7 @@ public class GameManager {
                 }
                 if (brick.isDestroyed()) {
                     score += 1;
-                    root.getChildren().remove(brick.getView());
+                    root.getChildren().remove(brick.getTexture());
                     it.remove();
                 }
             }

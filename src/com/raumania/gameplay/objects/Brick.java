@@ -1,6 +1,6 @@
 package com.raumania.gameplay.objects;
 
-import javafx.scene.paint.Color;
+import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -12,7 +12,7 @@ import javafx.scene.shape.Rectangle;
  * </p>
  */
 public abstract class Brick extends GameObject {
-    private Rectangle view;
+    private ImageView brickTexture;
     private int hitPoints;
 
     /**
@@ -25,12 +25,28 @@ public abstract class Brick extends GameObject {
      */
     public Brick(double x, double y, double width, double height) {
         super(x, y, width, height);
-        this.view = new Rectangle(width, height);
-        this.view.setX(x);
-        this.view.setY(y);
-        this.view.setFill(Color.RED);
-        this.view.setStroke(Color.BLACK);
-        this.view.setStrokeWidth(3);
+    }
+
+    /**
+     * Sets the graphical representation of the brick.
+     *
+     * @param brick the {@link ImageView} node used to render this brick
+     */
+    public void setBrickTexture(ImageView brick) {
+        this.brickTexture = brick;
+        this.brickTexture.setX(getX());
+        this.brickTexture.setY(getY());
+        this.brickTexture.setFitWidth(getWidth());
+        this.brickTexture.setFitHeight(getHeight());
+    }
+
+    /**
+     * Returns the graphical representation of the brick.
+     *
+     * @return the {@link ImageView} node used to render this brick
+     */
+    public ImageView getTexture() {
+        return brickTexture;
     }
 
     /**
@@ -56,14 +72,5 @@ public abstract class Brick extends GameObject {
      */
     public boolean isDestroyed() {
         return hitPoints <= 0;
-    }
-
-    /**
-     * Returns the graphical representation of the brick.
-     *
-     * @return the {@link Rectangle} node used to render this brick
-     */
-    public Rectangle getView() {
-        return view;
     }
 }

@@ -1,6 +1,7 @@
 package com.raumania.gameplay.objects;
 
-import javafx.scene.paint.Color;
+import com.raumania.utils.ResourcesLoader;
+import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
 
 import static com.raumania.utils.Constants.PADDLE_SPEED;
@@ -17,7 +18,7 @@ import com.raumania.math.Vec2f;
  * </p>
  */
 public class Paddle extends MovableObject {
-    private Rectangle view;
+    private ImageView paddleTexture;
 
     /**
      * Constructs a new {@code Paddle} object with the specified position and size.
@@ -30,30 +31,29 @@ public class Paddle extends MovableObject {
     public Paddle(double x, double y, double width, double height) {
         super(x, y, width, height);
         this.speed = PADDLE_SPEED;
-        this.view = new Rectangle(width, height);
-        this.view.setFill(Color.RED);
-        this.view.setArcWidth(8);
-        this.view.setArcHeight(8);
+        this.paddleTexture = new ImageView(ResourcesLoader.loadImage("paddle.png"));
+        this.paddleTexture.setFitWidth(width);
+        this.paddleTexture.setFitHeight(height);
     }
 
     /**
      * Returns the graphical representation of the paddle.
      *
-     * @return the {@link Rectangle} node used to render this paddle
+     * @return the {@link ImageView} node used to render this paddle
      */
-    public Rectangle getView() {
-        return view;
+    public ImageView getTexture() {
+        return paddleTexture;
     }
 
     /**
-     * Updates the position of the {@link Rectangle} view to match the paddle's current coordinates.
+     * Updates the position of the {@link ImageView} view to match the paddle's current coordinates.
      * <p>
      * Should be called after each movement update.
      * </p>
      */
     public void updateView() {
-        view.setTranslateX(x);
-        view.setTranslateY(y);
+        paddleTexture.setTranslateX(x);
+        paddleTexture.setTranslateY(y);
     }
 
     /**
