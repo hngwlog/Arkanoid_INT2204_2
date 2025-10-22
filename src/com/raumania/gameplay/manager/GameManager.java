@@ -1,6 +1,8 @@
 package com.raumania.gameplay.manager;
 
 import com.raumania.core.AudioManager;
+import com.raumania.gameplay.objects.powerup.AddBallPowerUp;
+import com.raumania.gameplay.objects.powerup.PowerUp;
 import com.raumania.utils.ResourcesLoader;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -35,9 +37,9 @@ public class GameManager {
     private Paddle paddle;
     private boolean leftHeld = false;
     private boolean rightHeld = false;
-//    private List<Ball> balls;
-    private Ball ball;
+    private List<Ball> balls = new ArrayList<>();
     private List<Brick> bricks = new ArrayList<>();
+    private List<PowerUp> powerUps = new ArrayList<>();
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
     private int score = 0;
 
@@ -86,11 +88,13 @@ public class GameManager {
      */
     public void initGame() {
         bricks.clear();
+        powerUps.clear();
+        root.getChildren().clear();
         gameState.set(GameState.RUNNING);
-        ball = new Ball((GAME_WIDTH - BALL_RADIUS * 2) / 2.0, (GAME_HEIGHT - BALL_RADIUS * 2) / 2.0);
         paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80, PADDLE_WIDTH
                 , PADDLE_HEIGHT);
-        root.getChildren().setAll(ball.getView(), paddle.getTexture());
+        spawnAdditionalBall();
+        root.getChildren().add(paddle.getTexture());
         for (int r = 0; r < 6; r++) {
             for (int c = 0; c < 4; c++) {
                 double x = c * BRICK_WIDTH;
@@ -146,54 +150,80 @@ public class GameManager {
      * vertical, the ball reflects horizontally; otherwise it reflects vertically.
      * Destroyed bricks are removed from the scene.
      * </p>
+     * <p>
+     * For paddle-power-up collisions, the power-up is activated and removed from the scene.
+     * </p>
      */
     public void checkCollisions() {
-        if (ball.checkOverlap(paddle) && ball.getDirection().y > 0) {
-            AudioManager.getInstance().playSFX(AudioManager.PADDLE_HIT);
+        for (Iterator<Ball> ballIterator = balls.iterator(); ballIterator.hasNext();) {
+            Ball ball = ballIterator.next();
+            if (!ball.isActive()) {
+                root.getChildren().remove(ball.getView());
+                ballIterator.remove();
+                continue;
+            }
+            if (ball.checkOverlap(paddle) && ball.getDirection().y > 0) {
+                AudioManager.getInstance().playSFX(AudioManager.PADDLE_HIT);
 
-            ball.setPosition(ball.getX(), paddle.getY() - ball.getHeight());
-            double paddleCenter = paddle.getX() + paddle.getWidth() * 0.5;
-            double ballCenter = ball.getX() + ball.getRadius();
-            double t = (ballCenter - paddleCenter) / (paddle.getWidth() * 0.5);
-            t = Math.max(-1, Math.min(1, t));
-            double maxAngle = Math.toRadians(60);
-            double angle = t * maxAngle;
-            double dx = Math.sin(angle);
-            double dy = - Math.cos(angle);
-            ball.setDirection(new Vec2f(dx, dy));
-        }
-        int cntHorizontally = 0;
-        int cntVertically = 0;
-        for (Iterator<Brick> it = bricks.iterator(); it.hasNext();) {
-            Brick brick = it.next();
-            if (ball.checkOverlap(brick)) {
-                AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
+                ball.setPosition(ball.getX(), paddle.getY() - ball.getHeight());
+                double paddleCenter = paddle.getX() + paddle.getWidth() * 0.5;
+                double ballCenter = ball.getX() + ball.getRadius();
+                double t = (ballCenter - paddleCenter) / (paddle.getWidth() * 0.5);
+                t = Math.max(-1, Math.min(1, t));
+                double maxAngle = Math.toRadians(60);
+                double angle = t * maxAngle;
+                double dx = Math.sin(angle);
+                double dy = - Math.cos(angle);
+                ball.setDirection(new Vec2f(dx, dy));
+            }
+            int cntHorizontally = 0;
+            int cntVertically = 0;
+            for (Iterator<Brick> it = bricks.iterator(); it.hasNext();) {
+                Brick brick = it.next();
+                if (ball.checkOverlap(brick)) {
+                    AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
 
-                brick.takeHit();
-                double ballCenterX = ball.getX() + ball.getWidth() / 2;
-                double ballCenterY = ball.getY() + ball.getHeight() / 2;
-                double brickCenterX = brick.getX() + brick.getWidth() / 2;
-                double brickCenterY = brick.getY() + brick.getHeight() / 2;
-                double dx = ballCenterX - brickCenterX;
-                double dy = ballCenterY - brickCenterY;
-                double overlapX = (brick.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
-                double overlapY = (brick.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
-                if (overlapX < overlapY) {
-                    cntHorizontally++;
-                } else {
-                    cntVertically++;
-                }
-                if (brick.isDestroyed()) {
-                    score += 1;
-                    root.getChildren().remove(brick.getTexture());
-                    it.remove();
+                    brick.takeHit();
+                    double ballCenterX = ball.getX() + ball.getWidth() / 2;
+                    double ballCenterY = ball.getY() + ball.getHeight() / 2;
+                    double brickCenterX = brick.getX() + brick.getWidth() / 2;
+                    double brickCenterY = brick.getY() + brick.getHeight() / 2;
+                    double dx = ballCenterX - brickCenterX;
+                    double dy = ballCenterY - brickCenterY;
+                    double overlapX = (brick.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
+                    double overlapY = (brick.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
+                    if (overlapX < overlapY) {
+                        cntHorizontally++;
+                    } else {
+                        cntVertically++;
+                    }
+                    if (brick.isDestroyed()) {
+                        score += 1;
+                        root.getChildren().remove(brick.getTexture());
+                        spawnRandomPowerUp(brick.getX() + (double) BRICK_WIDTH / 2,
+                                brick.getY() + (double) BRICK_HEIGHT / 2);
+                        it.remove();
+                    }
                 }
             }
+            if (cntHorizontally > 0) {
+                ball.bounceHorizontally();
+            } else if (cntVertically > 0) {
+                ball.bounceVertically();
+            }
         }
-        if (cntHorizontally > 0) {
-            ball.bounceHorizontally();
-        } else if (cntVertically > 0) {
-            ball.bounceVertically();
+
+        for (Iterator<PowerUp> it = powerUps.iterator(); it.hasNext();) {
+            PowerUp powerUp = it.next();
+            if (!powerUp.isActive()) {
+                it.remove();
+            }
+            if (powerUp.checkOverlap(paddle)) {
+                powerUp.applyEffect(this);
+                root.getChildren().remove(powerUp.getTexture());
+                powerUp.deactivate();
+                it.remove();
+            }
         }
     }
 
@@ -258,7 +288,12 @@ public class GameManager {
         if (gameState.get() != GameState.RUNNING) {
             return;
         }
-        ball.update(dt);
+        for (Ball ball : balls) {
+            ball.update(dt);
+        }
+        for (PowerUp powerUp : powerUps) {
+            powerUp.update(dt);
+        }
         if (leftHeld != rightHeld) {
             if (leftHeld) {
                 paddle.moveLeft();
@@ -270,9 +305,45 @@ public class GameManager {
         }
         paddle.update(dt);
         checkCollisions();
-        if (!ball.isActive()
-            || bricks.stream().noneMatch((b) -> !(b instanceof StrongBrick))) { // all bricks destroyed
+        if (balls.isEmpty()
+            || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
             gameOver();
+        }
+    }
+
+    /**
+     * Spawns a new ball at the center of the paddle.
+     * <p>
+     * The new ball is added to the list of active balls and its visual
+     * representation is added to the scene graph.
+     * </p>
+     */
+    public void spawnAdditionalBall() {
+        // Create ball at paddle center
+        double ballX = paddle.getX() + (paddle.getWidth() - BALL_RADIUS * 2) / 2.0;
+        double ballY = paddle.getY() - BALL_RADIUS * 2 - 1;
+        Ball newBall = new Ball(ballX, ballY);
+        balls.add(newBall);
+        root.getChildren().add(newBall.getView());
+    }
+
+    /**
+     * Spawns a random power-up at the specified (x, y) position.
+     * <p>
+     * Currently, there is a 50% chance to spawn an {@link AddBallPowerUp}.
+     * The spawned power-up is added to the list of active power-ups and its
+     * visual representation is added to the scene graph.
+     * </p>
+     *
+     * @param x the x-coordinate to spawn the power-up
+     * @param y the y-coordinate to spawn the power-up
+     */
+    public void spawnRandomPowerUp(double x, double y) {
+        double rand = Math.random();
+        if (true) {
+            PowerUp powerUp = new AddBallPowerUp(x, y, 30, 30);
+            powerUps.add(powerUp);
+            root.getChildren().add(powerUp.getTexture());
         }
     }
 }

@@ -95,8 +95,8 @@ public class SpriteSheet {
      */
     public void nextFrame() {
         currentFrame = (currentFrame + 1) % totalFrames;
-        int x = (currentFrame % columns) * width;
-        int y = (currentFrame / columns) * height;
+        int x = (currentFrame % columns) * height;
+        int y = (currentFrame / columns) * width;
         view.setViewport(new Rectangle2D(x, y, width, height));
     }
 
