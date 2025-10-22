@@ -1,10 +1,16 @@
 package com.raumania.gameplay.manager;
 
 import com.raumania.core.AudioManager;
+import com.raumania.utils.ResourcesLoader;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundSize;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,6 +47,15 @@ public class GameManager {
     public GameManager() {
         this.root = new Pane();
         initGame();
+
+        Background bg = new Background(new BackgroundImage(
+            ResourcesLoader.loadImage("gamepane_bg.png"),
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.CENTER,
+            new BackgroundSize(1.0, 1.0, true, true, false, true)
+        ));
+        root.setBackground(bg);
     }
 
     /**
@@ -77,9 +92,9 @@ public class GameManager {
                 , PADDLE_HEIGHT);
         root.getChildren().setAll(ball.getView(), paddle.getTexture());
         for (int r = 0; r < 6; r++) {
-            for (int c = 0; c < 10; c++) {
-                double x = c * (BRICK_WIDTH + BRICK_GAP);
-                double y = r * (BRICK_HEIGHT + BRICK_GAP);
+            for (int c = 0; c < 4; c++) {
+                double x = c * BRICK_WIDTH;
+                double y = r * BRICK_HEIGHT;
                 NormalBrick brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
                 bricks.add(brick);
                 root.getChildren().add(brick.getTexture());
@@ -98,8 +113,8 @@ public class GameManager {
             return;
         }
         switch (key) {
-            case LEFT -> leftHeld = pressed;
-            case RIGHT -> rightHeld = pressed;
+            case LEFT, A -> leftHeld = pressed;
+            case RIGHT, D -> rightHeld = pressed;
             default -> {}
         }
     }
