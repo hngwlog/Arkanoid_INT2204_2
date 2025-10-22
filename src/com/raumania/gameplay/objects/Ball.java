@@ -120,23 +120,22 @@ public class Ball extends MovableObject {
      * </p>
      *
      * <p>
-     * A small offset (40 pixels) is subtracted from {@code WINDOW_HEIGHT} to account
-     * for the window title bar and decoration height, ensuring that the ball collide
-     * correctly at the bottom edge of the visible play area.
+     * The ball is constrained to the GAME_WIDTH and GAME_HEIGHT boundaries,
+     * ensuring it stays within the bounded game pane area.
      * </p>
      */
     public void checkCollisionWithBoundary() {
         if (x <= 0) {
             x = 0;
             bounceHorizontally();
-        } else if (x + width >= WINDOW_WIDTH) {
-            x = WINDOW_WIDTH - width;
+        } else if (x + width >= GAME_WIDTH) {
+            x = GAME_WIDTH - width;
             bounceHorizontally();
         }
         if (y <= 0) {
             y = 0;
             bounceVertically();
-        } else if (y + height >= WINDOW_HEIGHT - 40) {
+        } else if (y + height >= GAME_HEIGHT) {
             deactivate();
         }
     }

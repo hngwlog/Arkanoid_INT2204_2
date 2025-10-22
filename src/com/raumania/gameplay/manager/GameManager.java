@@ -1,10 +1,16 @@
 package com.raumania.gameplay.manager;
 
 import com.raumania.core.AudioManager;
+import com.raumania.utils.ResourcesLoader;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundSize;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,7 +37,7 @@ public class GameManager {
     private boolean rightHeld = false;
 //    private List<Ball> balls;
     private Ball ball;
-    private List<NormalBrick> bricks = new ArrayList<>();
+    private List<Brick> bricks = new ArrayList<>();
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
     private int score = 0;
 
@@ -41,6 +47,15 @@ public class GameManager {
     public GameManager() {
         this.root = new Pane();
         initGame();
+
+        Background bg = new Background(new BackgroundImage(
+            ResourcesLoader.loadImage("gamepane_bg.png"),
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.CENTER,
+            new BackgroundSize(1.0, 1.0, true, true, false, true)
+        ));
+        root.setBackground(bg);
     }
 
     /**
@@ -72,17 +87,17 @@ public class GameManager {
     public void initGame() {
         bricks.clear();
         gameState.set(GameState.RUNNING);
-        ball = new Ball((WINDOW_WIDTH - BALL_RADIUS * 2) / 2.0, (WINDOW_HEIGHT - BALL_RADIUS * 2) / 2.0);
-        paddle = new Paddle((WINDOW_WIDTH - PADDLE_WIDTH) * 0.5, WINDOW_HEIGHT - 80, PADDLE_WIDTH
+        ball = new Ball((GAME_WIDTH - BALL_RADIUS * 2) / 2.0, (GAME_HEIGHT - BALL_RADIUS * 2) / 2.0);
+        paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80, PADDLE_WIDTH
                 , PADDLE_HEIGHT);
-        root.getChildren().setAll(ball.getView(), paddle.getView());
+        root.getChildren().setAll(ball.getView(), paddle.getTexture());
         for (int r = 0; r < 6; r++) {
-            for (int c = 0; c < 10; c++) {
-                double x = c * (BRICK_WIDTH + BRICK_GAP);
-                double y = r * (BRICK_HEIGHT + BRICK_GAP);
+            for (int c = 0; c < 4; c++) {
+                double x = c * BRICK_WIDTH;
+                double y = r * BRICK_HEIGHT;
                 NormalBrick brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
                 bricks.add(brick);
-                root.getChildren().add(brick.getView());
+                root.getChildren().add(brick.getTexture());
             }
         }
     }
@@ -98,8 +113,8 @@ public class GameManager {
             return;
         }
         switch (key) {
-            case LEFT -> leftHeld = pressed;
-            case RIGHT -> rightHeld = pressed;
+            case LEFT, A -> leftHeld = pressed;
+            case RIGHT, D -> rightHeld = pressed;
             default -> {}
         }
     }
@@ -149,7 +164,7 @@ public class GameManager {
         }
         int cntHorizontally = 0;
         int cntVertically = 0;
-        for (Iterator<NormalBrick> it = bricks.iterator(); it.hasNext();) {
+        for (Iterator<Brick> it = bricks.iterator(); it.hasNext();) {
             Brick brick = it.next();
             if (ball.checkOverlap(brick)) {
                 AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
@@ -170,7 +185,7 @@ public class GameManager {
                 }
                 if (brick.isDestroyed()) {
                     score += 1;
-                    root.getChildren().remove(brick.getView());
+                    root.getChildren().remove(brick.getTexture());
                     it.remove();
                 }
             }
@@ -255,7 +270,8 @@ public class GameManager {
         }
         paddle.update(dt);
         checkCollisions();
-        if (!ball.isActive()) {
+        if (!ball.isActive()
+            || bricks.stream().noneMatch((b) -> !(b instanceof StrongBrick))) { // all bricks destroyed
             gameOver();
         }
     }

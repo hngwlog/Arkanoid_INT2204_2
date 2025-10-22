@@ -2,6 +2,7 @@ package com.raumania.gui.screen;
 
 import com.raumania.core.AudioManager;
 import com.raumania.core.HighScore;
+import com.raumania.utils.ResourcesLoader;
 import com.raumania.utils.UIUtils;
 import com.raumania.utils.Constants;
 import javafx.animation.AnimationTimer;
@@ -12,19 +13,16 @@ import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.awt.*;
-
-import static com.raumania.gui.screen.ScreenType.GAME;
 
 /**
  * The game play screen that hosts the main game loop.
@@ -138,10 +136,22 @@ public class GameScreen extends Screen {
         backChoice.getChildren().addAll(title1, yes, no);
         backChoice.setVisible(false);
 
+        Pane game = manager.getRoot();
+        game.setClip(new Rectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT));
+        game.getTransforms().add(new Translate(Constants.GAME_START_X, Constants.GAME_START_Y));
+
         gamePane = new StackPane();
-        gamePane.getChildren().addAll(manager.getRoot(), gamePlayScreen);
+        gamePane.getChildren().addAll(game, gamePlayScreen);
         root.getChildren().addAll(gamePane, mainPause,  backChoice);
 
+        Background bg = new Background(new BackgroundImage(
+            ResourcesLoader.loadImage("gamescreen_bg.png"),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(1.0, 1.0, true, true, false, true)
+        ));
+        root.setBackground(bg);
     }
 
     public GameManager getGameManager() {
@@ -165,7 +175,6 @@ public class GameScreen extends Screen {
      */
     @Override
     public void onStart() {
-//        AudioManager.getInstance().playBGMusic(AudioManager.GAME_MUSIC);
         // stop any playing music
         AudioManager.getInstance().stop();
 
