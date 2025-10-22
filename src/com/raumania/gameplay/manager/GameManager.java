@@ -29,9 +29,9 @@ public class GameManager {
     private Paddle paddle;
     private boolean leftHeld = false;
     private boolean rightHeld = false;
-//    private List<Ball> balls;
+    //    private List<Ball> balls;
     private Ball ball;
-    private List<NormalBrick> bricks = new ArrayList<>();
+    private List<StrongBrick> bricks = new ArrayList<>();
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
     private int score = 0;
 
@@ -64,7 +64,7 @@ public class GameManager {
     /**
      * Initializes all game objects and sets up the starting state of the game.
      * <p>
-     * This method creates a new {@link Ball} at the
+     * This method clears the rendering root, creates a new {@link Ball} at the
      * screen center and a {@link Paddle} near the bottom, populates a grid of bricks, and
      * sets {@link #gameState} to {@link GameState#RUNNING}.
      * </p>
@@ -80,7 +80,7 @@ public class GameManager {
             for (int c = 0; c < 10; c++) {
                 double x = c * (BRICK_WIDTH + BRICK_GAP);
                 double y = r * (BRICK_HEIGHT + BRICK_GAP);
-                NormalBrick brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                StrongBrick brick = new StrongBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
                 bricks.add(brick);
                 root.getChildren().add(brick.getView());
             }
@@ -147,9 +147,12 @@ public class GameManager {
             double dy = - Math.cos(angle);
             ball.setDirection(new Vec2f(dx, dy));
         }
-        int cntHorizontally = 0;
-        int cntVertically = 0;
-        for (Iterator<NormalBrick> it = bricks.iterator(); it.hasNext();) {
+
+        /**
+         * add epsilon and remove horizontally and vertically counter
+         */
+        final double EPSILON = 0.5;
+        for (Iterator<StrongBrick> it = bricks.iterator(); it.hasNext();) {
             Brick brick = it.next();
             if (ball.checkOverlap(brick)) {
                 AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
@@ -164,21 +167,27 @@ public class GameManager {
                 double overlapX = (brick.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
                 double overlapY = (brick.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
                 if (overlapX < overlapY) {
-                    cntHorizontally++;
+                    if (dx > 0) {
+                        ball.setPosition(brick.getX() + brick.getWidth() + EPSILON, ball.getY());
+                    } else {
+                        ball.setPosition(brick.getX() - ball.getWidth() - EPSILON, ball.getY());
+                    }
+                    ball.bounceHorizontally();
                 } else {
-                    cntVertically++;
+                    if (dy > 0) {
+                        ball.setPosition(ball.getX(), brick.getY() + brick.getHeight() + EPSILON);
+                    } else {
+                        ball.setPosition(ball.getX(), brick.getY() - ball.getHeight() - EPSILON);
+                    }
+                    ball.bounceVertically();
                 }
                 if (brick.isDestroyed()) {
                     score += 1;
                     root.getChildren().remove(brick.getView());
                     it.remove();
                 }
+
             }
-        }
-        if (cntHorizontally > 0) {
-            ball.bounceHorizontally();
-        } else if (cntVertically > 0) {
-            ball.bounceVertically();
         }
     }
 
