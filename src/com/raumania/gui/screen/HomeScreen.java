@@ -7,9 +7,7 @@ import com.raumania.utils.UIUtils;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
 import com.raumania.utils.ResourcesLoader;
-import javafx.application.Platform;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -107,6 +105,14 @@ public class HomeScreen extends Screen {
             }
         });
 
+        Background bg = new Background(new BackgroundImage(
+            ResourcesLoader.loadImage("homescreen_bg.png"),
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.CENTER,
+            new BackgroundSize(1.0, 1.0, true, true, false, true)
+        ));
+        root.setBackground(bg);
     }
 
     private int getIndex(Button button) {
