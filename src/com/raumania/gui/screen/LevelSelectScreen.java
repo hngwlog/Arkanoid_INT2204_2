@@ -19,17 +19,14 @@ public class LevelSelectScreen extends Screen {
         // put components here
         //left button
         Button left = newButton("<" , 400, 550, 2.0, 2.0);
-        root.getChildren().add(left);
 
         //right button
         Button right = newButton(">" , 575, 550, 2.0, 2.0);
-        root.getChildren().add(right);
 
         //level button
         //press to select level & back to home
         Button level = centerButton("Level " + (currentLevel+1) , 550, 2.0, 2.0);
         level.setOnAction(e -> {sceneManager.switchScreen(ScreenType.HOME);});
-        root.getChildren().add(level);
 
         //press left button -> level--
         left.setOnAction(e -> {
@@ -67,6 +64,7 @@ public class LevelSelectScreen extends Screen {
             }
         });
 
+        root.getChildren().addAll(left, right, level);
     }
 
     /**

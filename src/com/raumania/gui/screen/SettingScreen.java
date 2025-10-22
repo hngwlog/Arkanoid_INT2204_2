@@ -18,7 +18,6 @@ public class SettingScreen extends Screen {
 
         //Volume Text
         Text volumeText = newText("Volume: " + AudioManager.getInstance().getVolume() + "%", 100, 100, 2.0, 2.0);
-        root.getChildren().add(volumeText);
 
         //Volume Slider
         Slider slider = newSlider(0, AudioManager.getInstance().getVolume() * 100, 100, 400, 100,
@@ -28,13 +27,13 @@ public class SettingScreen extends Screen {
         slider.valueProperty().addListener((obs, oldVal, newVal) -> {
             volumeText.setText("Volume: " + newVal.intValue() + "%");
         });
-        root.getChildren().add(slider);
 
         //Back to Home button
         Button back = centerButton("Back to Home", 500, 2.0, 2.0);
         back.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.HOME);
         });
-        root.getChildren().add(back);
+
+        root.getChildren().addAll(volumeText, slider, back);
     }
 }
