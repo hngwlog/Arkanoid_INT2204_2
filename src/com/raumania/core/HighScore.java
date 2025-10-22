@@ -129,7 +129,7 @@ public class HighScore {
         File file = new File(HIGHSCORE_FILE);
         if (!file.exists()) {
             try {
-                file.createNewFile();
+               file.createNewFile();
             } catch (IOException e) {
                 System.err.println("Error creating high scores file!");
                 return;
