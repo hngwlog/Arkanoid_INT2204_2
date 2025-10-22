@@ -147,6 +147,7 @@ public class GameScreen extends Screen {
                 manager.handleInput(e.getCode(), true);
             }
         });
+
         scene.setOnKeyReleased(e -> manager.handleInput(e.getCode(), false));
 
         gamePane = new StackPane();
@@ -229,6 +230,7 @@ public class GameScreen extends Screen {
 
     public void resume() {
         past = -1;
+        Platform.runLater(root::requestFocus);
         loop.start();
         manager.setGameState(GameManager.GameState.RUNNING);
         mainPause.setVisible(false);
