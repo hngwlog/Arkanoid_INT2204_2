@@ -15,6 +15,18 @@ import java.util.EnumMap;
  * Manages switching screens in the application.
  */
 public class SceneManager {
+//    //code temp
+//    private String selectedLevel = "level_1";
+//
+//    public void setSelectedLevel(String level) {
+//        this.selectedLevel = level;
+//    }
+//
+//    public String getSelectedLevel() {
+//        return selectedLevel;
+//    }
+
+    //code temp
     private final Stage primaryStage;
     // Constructor requires key type
     private EnumMap<ScreenType, Screen> screens = new EnumMap<>(ScreenType.class);
@@ -33,6 +45,10 @@ public class SceneManager {
             Font font = ResourcesLoader.loadFont("CyberpunkCraftpixPixel.otf", 14);
             applyFont(screen.getRoot(), font);
         });
+    }
+
+    public Screen getScreen(ScreenType screenType) {
+        return screens.get(screenType);
     }
 
     public Stage getPrimaryStage() {

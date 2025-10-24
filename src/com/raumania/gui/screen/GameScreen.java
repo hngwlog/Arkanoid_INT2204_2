@@ -71,7 +71,11 @@ public class GameScreen extends Screen {
         });
 
         mainPause = new Pane();
+        mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        mainPause.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         backChoice = new Pane();
+        backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        backChoice.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         gamePlayScreen = new Pane();
 
         //Game play screen
@@ -87,11 +91,13 @@ public class GameScreen extends Screen {
         border.setStroke(Color.BLACK);
         border.setStrokeWidth(2);
         //Score
-        score = UIUtils.newText("Score:", 500, 30, 2.0, 2.0);
+        score = UIUtils.newText("Score:", 600, 30, 2.0, 2.0);
         score.setFont(Font.font("System", FontWeight.BOLD, 14));
+        score.setFill(Color.WHITE);
         //FPS
         fps = UIUtils.newText("FPS:", 350, 30, 2.0, 2.0);
         fps.setFont(Font.font("System", FontWeight.BOLD, 14));
+        fps.setFill(Color.WHITE);
         gamePlayScreen.getChildren().addAll(pause, border, score, fps);
         gamePlayScreen.setVisible(true);
 
@@ -141,6 +147,16 @@ public class GameScreen extends Screen {
                     resume.fire();
                 } else if (manager.getGameState() == GameManager.GameState.RUNNING) {
                     pause.fire();
+                }
+            } else if (e.getCode() == KeyCode.SPACE) {
+                if (manager.getGameState() == GameManager.GameState.PAUSED) {
+                    if (backChoice.isVisible()) {
+                        // If in back choice screen, treat SPACE as "No" button
+                        no.fire();
+                    } else {
+                        // If in main pause screen, resume the game
+                        resume.fire();
+                    }
                 }
             } else {
                 manager.handleInput(e.getCode(), true);
@@ -252,6 +268,6 @@ public class GameScreen extends Screen {
         manager.setGameState(GameManager.GameState.PAUSED);
         mainPause.setVisible(true);
         backChoice.setVisible(false);
-        gamePane.setVisible(false);
+        //gamePane.setVisible(false);
     }
 }

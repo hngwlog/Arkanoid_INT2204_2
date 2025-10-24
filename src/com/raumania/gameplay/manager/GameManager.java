@@ -1,5 +1,7 @@
 package com.raumania.gameplay.manager;
 
+//import com.raumania.gui.manager.SceneManager;
+import com.raumania.core.MapLoader;
 import com.raumania.core.AudioManager;
 import com.raumania.gameplay.objects.powerup.AddBallPowerUp;
 import com.raumania.gameplay.objects.powerup.PowerUp;
@@ -21,6 +23,7 @@ import java.util.List;
 import com.raumania.gameplay.objects.*;
 import static com.raumania.utils.Constants.*;
 import com.raumania.math.Vec2f;
+import com.raumania.core.MapLoader.LevelData;
 
 /**
  * Manages the overall game state, including all major game objects such as
@@ -42,12 +45,14 @@ public class GameManager {
     private List<PowerUp> powerUps = new ArrayList<>();
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
     private int score = 0;
-
+    private LevelData currentLvl;
+    //private SceneManager sceneManager = new SceneManager();
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
      */
     public GameManager() {
         this.root = new Pane();
+
         initGame();
 
         Background bg = new Background(new BackgroundImage(
@@ -86,26 +91,78 @@ public class GameManager {
      * sets {@link #gameState} to {@link GameState#RUNNING}.
      * </p>
      */
+//    public void initGame() {
+//        bricks.clear();
+//        balls.clear();
+//        powerUps.clear();
+//        root.getChildren().clear();
+//        gameState.set(GameState.RUNNING);
+//        paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80, PADDLE_WIDTH
+//                , PADDLE_HEIGHT);
+//        spawnAdditionalBall();
+//        root.getChildren().add(paddle.getTexture());
+//        for (int r = 0; r < 6; r++) {
+//            for (int c = 0; c < 4; c++) {
+//                double x = c * BRICK_WIDTH;
+//                double y = r * BRICK_HEIGHT;
+//                NormalBrick brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+//                bricks.add(brick);
+//                root.getChildren().add(brick.getTexture());
+//            }
+//        }
+//    }
+
+//code temp
     public void initGame() {
+        if (currentLvl == null) return;
+
         bricks.clear();
+        balls.clear();
         powerUps.clear();
         root.getChildren().clear();
         gameState.set(GameState.RUNNING);
-        paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80, PADDLE_WIDTH
-                , PADDLE_HEIGHT);
+
+        paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80,
+                PADDLE_WIDTH, PADDLE_HEIGHT);
         spawnAdditionalBall();
         root.getChildren().add(paddle.getTexture());
-        for (int r = 0; r < 6; r++) {
-            for (int c = 0; c < 4; c++) {
+
+        // Create bricks based on layout
+        for (int r = 0; r < currentLvl.getLayout().size(); r++) {
+            String row = currentLvl.getLayout().get(r);
+            for (int c = 0; c < row.length(); c++) {
+                char type = row.charAt(c);
+                if (type == '0') continue; // Empty space
+
                 double x = c * BRICK_WIDTH;
                 double y = r * BRICK_HEIGHT;
-                NormalBrick brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+
+                Brick brick;
+                if (type == '2') {
+                    System.out.println("spawned strong");
+                    brick = new StrongBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                } else {
+                    brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                }
+
                 bricks.add(brick);
                 root.getChildren().add(brick.getTexture());
             }
         }
-    }
 
+        // Add power-ups
+
+        if (currentLvl.getPowerups() != null) {
+            for (MapLoader.PowerUpData powerup : currentLvl.getPowerups() ) {
+                if (powerup.getType().equals("add_ball")) {
+                    double x = powerup.getCol() * BRICK_WIDTH + BRICK_WIDTH/2;
+                    double y = powerup.getRow() * BRICK_HEIGHT + BRICK_HEIGHT/2;
+                    spawnRandomPowerUp(x, y);
+                }
+            }
+        }
+    }
+//code temp
     /**
      * Handles player input to control paddle movement.
      *
@@ -227,6 +284,11 @@ public class GameManager {
         }
     }
 
+    public void setCurrentLvl(LevelData lvl) {
+        currentLvl = lvl;
+        initGame();
+    }
+
     /**
      * Returns the current player score.
      * <p>
@@ -340,7 +402,7 @@ public class GameManager {
      */
     public void spawnRandomPowerUp(double x, double y) {
         double rand = Math.random();
-        if (true) {
+        if (rand > 0.5) {
             PowerUp powerUp = new AddBallPowerUp(x, y, 30, 30);
             powerUps.add(powerUp);
             root.getChildren().add(powerUp.getTexture());
