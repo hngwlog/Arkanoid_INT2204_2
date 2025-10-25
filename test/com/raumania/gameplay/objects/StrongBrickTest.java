@@ -1,10 +1,11 @@
 package com.raumania.gameplay.objects;
 
+import com.raumania.utils.InitializeJavaFx;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class StrongBrickTest {
+class StrongBrickTest extends InitializeJavaFx {
     @Test
     void testTakeHit() {
         StrongBrick sb = new StrongBrick(0, 0, 1, 1);
