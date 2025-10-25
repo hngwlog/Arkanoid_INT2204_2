@@ -16,7 +16,7 @@ public class HighScoreTest {
         HighScore hs = HighScore.getInstance();
         hs.addHighScore("A", 100);
         hs.addHighScore("B", 200);
-        assertEquals("B", hs.getEntries().get(0).getName());
+        assertEquals("B", hs.getEntries().getFirst().getName());
     }
 
     @Test
