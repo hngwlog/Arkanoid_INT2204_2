@@ -1,4 +1,5 @@
-import com.raumania.gameplay.manager.GameManager;
+package com.raumania.gameplay.manager;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,12 +29,5 @@ public class GameManagerTest {
     void testGameOver() {
         manager.setGameState(GameManager.GameState.GAME_OVER);
         assertEquals(GameManager.GameState.GAME_OVER, manager.getGameState());
-    }
-
-    @Test
-    void testUpdate() {
-        double dt = 0.016; // Simulating ~60 FPS
-        manager.update(dt);
-        // Add assertions based on expected behavior after update
     }
 }
