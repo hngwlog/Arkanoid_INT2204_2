@@ -8,5 +8,6 @@ public enum ScreenType {
     SETTINGS,
     LEVEL_SELECT,
     GAME,
+    MULTIPLAYER,
     GAME_OVER,
 }

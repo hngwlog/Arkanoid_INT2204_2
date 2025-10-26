@@ -60,7 +60,7 @@ public class GameManager {
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.CENTER,
-            new BackgroundSize(1.0, 1.0, true, true, false, true)
+            new BackgroundSize(1.0, 1.0, true, true, false, false)
         ));
         root.setBackground(bg);
     }
@@ -116,6 +116,7 @@ public class GameManager {
     public void initGame() {
         if (currentLvl == null) return;
 
+        score = 0;
         bricks.clear();
         balls.clear();
         powerUps.clear();
@@ -132,17 +133,20 @@ public class GameManager {
             String row = currentLvl.getLayout().get(r);
             for (int c = 0; c < row.length(); c++) {
                 char type = row.charAt(c);
-                if (type == '0') continue; // Empty space
-
                 double x = c * BRICK_WIDTH;
                 double y = r * BRICK_HEIGHT;
 
                 Brick brick;
-                if (type == '2') {
-                    System.out.println("spawned strong");
-                    brick = new StrongBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
-                } else {
-                    brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                switch (currentLvl.getLegend().get(String.valueOf(type))) {
+                    case "normal":
+                        brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                        break;
+                    case "strong":
+                        brick = new StrongBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                        break;
+                    case "empty":
+                    default:
+                        continue;
                 }
 
                 bricks.add(brick);
@@ -333,6 +337,12 @@ public class GameManager {
      */
     public void gameOver() {
         gameState.set(GameState.GAME_OVER);
+    }
+
+    public boolean isWinner() {
+        return gameState.get() == GameState.GAME_OVER
+                && bricks.stream().allMatch(brick -> brick instanceof StrongBrick)
+                && !balls.isEmpty();
     }
 
     /**

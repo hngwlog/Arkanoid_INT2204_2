@@ -69,23 +69,8 @@ public class GameScreen extends Screen {
             }
         });
 
-        mainPause = new Pane();
-        // mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
-        mainPause.setBackground(
-            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
-        );
-        mainPause.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
-        
-        backChoice = new Pane();
-        // backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
-        backChoice.setBackground(
-            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
-        );
-        backChoice.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
-        
-        gamePlayScreen = new Pane();
-
         //Game play screen
+        gamePlayScreen = new Pane();
         //Pause button
         pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
         pause.setOnAction(e -> {
@@ -109,6 +94,12 @@ public class GameScreen extends Screen {
         gamePlayScreen.setVisible(true);
 
         //Pause screen
+        mainPause = new Pane();
+        // mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        mainPause.setBackground(
+            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
+        );
+        mainPause.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         //Pause Title
         Text title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
         title.setFill(Color.GREEN);
@@ -127,6 +118,12 @@ public class GameScreen extends Screen {
         mainPause.setVisible(false);
 
         // Confirmation Screen
+        backChoice = new Pane();
+        // backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        backChoice.setBackground(
+            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
+        );
+        backChoice.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         // Title
         Text title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
         title1.setFill(Color.GREEN);
@@ -216,7 +213,6 @@ public class GameScreen extends Screen {
         //Turn on game screen
         mainPause.setVisible(false);
         backChoice.setVisible(false);
-        gamePane.setVisible(true);
 
         past = -1;
         loop = new AnimationTimer() {
@@ -267,7 +263,6 @@ public class GameScreen extends Screen {
         manager.setGameState(GameManager.GameState.RUNNING);
         mainPause.setVisible(false);
         backChoice.setVisible(false);
-        gamePane.setVisible(true);
     }
 
     public void pause() {
@@ -275,6 +270,5 @@ public class GameScreen extends Screen {
         manager.setGameState(GameManager.GameState.PAUSED);
         mainPause.setVisible(true);
         backChoice.setVisible(false);
-        //gamePane.setVisible(false);
     }
 }
