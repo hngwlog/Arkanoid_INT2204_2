@@ -1,10 +1,11 @@
 package com.raumania.gameplay.manager;
 
+import com.raumania.utils.InitializeJavaFx;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameManagerTest {
+public class GameManagerTest extends InitializeJavaFx {
     private GameManager manager;
 
     @BeforeEach
