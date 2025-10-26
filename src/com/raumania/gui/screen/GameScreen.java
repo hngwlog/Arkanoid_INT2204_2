@@ -71,11 +71,19 @@ public class GameScreen extends Screen {
         });
 
         mainPause = new Pane();
-        mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        // mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        mainPause.setBackground(
+            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
+        );
         mainPause.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        
         backChoice = new Pane();
-        backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        // backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        backChoice.setBackground(
+            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
+        );
         backChoice.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        
         gamePlayScreen = new Pane();
 
         //Game play screen
