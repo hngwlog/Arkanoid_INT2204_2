@@ -21,8 +21,7 @@ import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-
-import java.awt.*;
+import javafx.geometry.Insets;
 
 /**
  * The game play screen that hosts the main game loop.
