@@ -1,5 +1,6 @@
 package com.raumania.gui.screen;
 
+import com.raumania.core.MapLoader;
 import com.raumania.gui.manager.SceneManager;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -26,7 +27,13 @@ public class LevelSelectScreen extends Screen {
         //level button
         //press to select level & back to home
         Button level = centerButton("Level " + (currentLevel+1) , 550, 2.0, 2.0);
-        level.setOnAction(e -> {sceneManager.switchScreen(ScreenType.HOME);});
+        level.setOnAction(e -> {
+            MapLoader.LevelData levelData = MapLoader.loadLevel("level_" + (currentLevel + 1));
+            ((GameScreen) sceneManager.getScreen(ScreenType.GAME))
+                    .getGameManager()
+                    .setCurrentLvl(levelData);
+            sceneManager.switchScreen(ScreenType.GAME);
+        });
 
         //press left button -> level--
         left.setOnAction(e -> {
