@@ -44,6 +44,7 @@ public class LevelSelectScreen extends Screen {
             left.setLayoutX(leftX);
             right.setLayoutY(Y);
             right.setLayoutX(rightX);
+        });
         //level button
         //press to select level & back to home
         level.setOnAction(e -> {
