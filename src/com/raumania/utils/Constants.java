@@ -15,4 +15,6 @@ public class Constants {
     public static final int GAME_HEIGHT = 620;
     public static final int GAME_START_X = (WINDOW_WIDTH - GAME_WIDTH) / 2;
     public static final int GAME_START_Y = (WINDOW_HEIGHT - GAME_HEIGHT) / 2 + 10;
+    public static final boolean IMORTAL = true;
+    public static final boolean MORTAL = false;
 }

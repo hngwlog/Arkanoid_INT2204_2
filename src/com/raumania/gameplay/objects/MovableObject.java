@@ -67,6 +67,14 @@ public abstract class MovableObject extends GameObject {
         return speed;
     }
 
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public double getWidth() {
+        return this.width;
+    }
+
     /** Sets acceleration (can be negative). */
     public void setAcceleration(double acceleration) {
         this.acceleration = acceleration;
