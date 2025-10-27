@@ -36,7 +36,13 @@ public class AudioManager {
     }
 
     public void setVolume(int volume) {
-        this.volume.set(volume);
+        if (volume < 0) {
+            this.volume.set(0);
+        } else if (volume > 100) {
+            this.volume.set(100);
+        } else {
+            this.volume.set(volume);
+        }
     }
 
     public int getVolume() {

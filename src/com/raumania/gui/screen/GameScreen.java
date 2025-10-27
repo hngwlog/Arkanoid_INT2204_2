@@ -26,6 +26,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javafx.geometry.Insets;
 
 /**
  * The game play screen that hosts the main game loop.
@@ -84,11 +85,8 @@ public class GameScreen extends Screen {
             }
         });
 
-        mainPause = new Pane();
-        backChoice = new Pane();
-        gamePlayScreen = new Pane();
-
         //Game play screen
+        gamePlayScreen = new Pane();
         //Pause button
         pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
         pause.setOnAction(e -> {
@@ -101,15 +99,23 @@ public class GameScreen extends Screen {
         border.setStroke(Color.BLACK);
         border.setStrokeWidth(2);
         //Score
-        score = UIUtils.newText("Score:", 500, 30, 2.0, 2.0);
+        score = UIUtils.newText("Score:", 600, 30, 2.0, 2.0);
         score.setFont(Font.font("System", FontWeight.BOLD, 14));
+        score.setFill(Color.WHITE);
         //FPS
         fps = UIUtils.newText("FPS:", 350, 30, 2.0, 2.0);
         fps.setFont(Font.font("System", FontWeight.BOLD, 14));
+        fps.setFill(Color.WHITE);
         gamePlayScreen.getChildren().addAll(pause, border, score, fps);
         gamePlayScreen.setVisible(true);
 
         //Pause screen
+        mainPause = new Pane();
+        // mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        mainPause.setBackground(
+            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
+        );
+        mainPause.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         //Pause Title
         Text title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
         title.setFill(Color.GREEN);
@@ -149,6 +155,12 @@ public class GameScreen extends Screen {
         mainPause.setVisible(false);
 
         // Confirmation Screen
+        backChoice = new Pane();
+        // backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        backChoice.setBackground(
+            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
+        );
+        backChoice.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         // Title
         Text title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
         title1.setFill(Color.GREEN);

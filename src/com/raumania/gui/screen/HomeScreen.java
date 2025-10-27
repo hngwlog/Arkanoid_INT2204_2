@@ -36,10 +36,10 @@ public class HomeScreen extends Screen {
         chooseArrowRight = UIUtils.newText("<" , 568.769, 212.5, 2.0, 2.0);
 
         //Play button
-        Button play =  UIUtils.centerButton("Play", 200, 2.0, 2.0);
+        Button play =  UIUtils.centerButton("Play Multiplayer", 200, 2.0, 2.0);
         //Button play = new Button("Play");
         play.setOnAction(e -> {
-            sceneManager.switchScreen(ScreenType.GAME);
+            sceneManager.switchScreen(ScreenType.MULTIPLAYER);
         });
 
         //Level select button

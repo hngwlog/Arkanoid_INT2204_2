@@ -1,9 +1,12 @@
 package com.raumania.gameplay.objects;
 
+import com.raumania.utils.InitializeJavaFx;
+import javafx.application.Platform;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PaddleTest {
+public class PaddleTest extends InitializeJavaFx {
 
     @Test
     void testMoveDirections() {
