@@ -121,6 +121,7 @@ public class GameManager {
         balls.clear();
         powerUps.clear();
         root.getChildren().clear();
+        score = 0;
         gameState.set(GameState.RUNNING);
 
         paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80,
@@ -303,6 +304,10 @@ public class GameManager {
      */
     public int getScore() {
         return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     /**

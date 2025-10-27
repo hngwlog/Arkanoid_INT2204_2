@@ -21,6 +21,11 @@ import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javafx.geometry.Insets;
 
 /**
@@ -42,6 +47,17 @@ public class GameScreen extends Screen {
     StackPane gamePane;
     Text score;
     Text fps;
+    int pauseState = 0;
+    int pauseCnt = 0;
+    int homeCnt = 0;
+    List<Button> pauseButtons;
+    List<Button> homeButtons;
+    List<Double> pauseButtonYs;
+    List<Double> homeButtonYs;
+    Text pauseChooseArrowLeft;
+    Text pauseChooseArrowRight;
+    Text homeChooseArrowLeft;
+    Text homeChooseArrowRight;
 
     /**
      * Creates a new {@code GameScreen} and binds it to the given {@link SceneManager}.
@@ -113,8 +129,29 @@ public class GameScreen extends Screen {
         home.setOnAction(e -> {
             mainPause.setVisible(false);
             backChoice.setVisible(true);
+            pauseState = 2;
+            pauseCnt = 0;
+            updateCnt();
+            Platform.runLater(root::requestFocus);
         });
-        mainPause.getChildren().addAll(title, resume, home);
+        //choose arrows
+        pauseChooseArrowLeft = UIUtils.newText(">" , 383.75, 212.5, 2.0, 2.0);
+        pauseChooseArrowRight = UIUtils.newText("<" , 610.76, 212.5, 2.0, 2.0);
+        //buttons list
+        pauseButtons = new ArrayList<>();
+        Collections.addAll(pauseButtons, resume, home);
+        for (Button button : pauseButtons) {
+            button.setOnMouseEntered(e -> {
+                pauseCnt = getIndex(button);
+                updateCnt();
+            });
+        }
+        //button's Y list
+        pauseButtonYs = new ArrayList<>();
+        Collections.addAll(pauseButtonYs, 200.0, 300.0);
+        //add to mainPause pane
+        mainPause.getChildren().addAll(pauseButtons);
+        mainPause.getChildren().addAll(title, pauseChooseArrowLeft, pauseChooseArrowRight);
         mainPause.setVisible(false);
 
         // Confirmation Screen
@@ -138,10 +175,31 @@ public class GameScreen extends Screen {
         //No button
         Button no = UIUtils.centerButton("No", 300, 2.0, 2.0);
         no.setOnAction(e -> {
+            Platform.runLater(root::requestFocus);
             mainPause.setVisible(true);
             backChoice.setVisible(false);
+            pauseState = 1;
+            homeCnt = 0;
+            updateCnt();
         });
-        backChoice.getChildren().addAll(title1, yes, no);
+        //choose arrow
+        homeChooseArrowLeft = UIUtils.newText(">" , 383.75, 212.5, 2.0, 2.0);
+        homeChooseArrowRight = UIUtils.newText("<" , 610.76, 212.5, 2.0, 2.0);
+        //buttons list
+        homeButtons = new ArrayList<>();
+        Collections.addAll(homeButtons, yes, no);
+        for (Button button : homeButtons) {
+            button.setOnMouseEntered(e -> {
+                homeCnt = getIndex(button);
+                updateCnt();
+            });
+        }
+        //button's Y list
+        homeButtonYs = new ArrayList<>();
+        Collections.addAll(homeButtonYs, 200.0, 300.0);
+        //add to backChoice pane
+        backChoice.getChildren().addAll(homeButtons);
+        backChoice.getChildren().addAll(title1, homeChooseArrowLeft, homeChooseArrowRight);
         backChoice.setVisible(false);
 
         // key event
@@ -152,17 +210,40 @@ public class GameScreen extends Screen {
                 } else if (manager.getGameState() == GameManager.GameState.RUNNING) {
                     pause.fire();
                 }
-            } else if (e.getCode() == KeyCode.SPACE) {
-                if (manager.getGameState() == GameManager.GameState.PAUSED) {
-                    if (backChoice.isVisible()) {
-                        // If in back choice screen, treat SPACE as "No" button
-                        no.fire();
-                    } else {
-                        // If in main pause screen, resume the game
-                        resume.fire();
-                    }
+            } else if (e.getCode() == KeyCode.UP) {
+                // if on mainPause pane
+                if (pauseState == 1) {
+                    pauseCnt = 1 - pauseCnt;
+                    updateCnt();
                 }
-            } else {
+                // if on backChoice pane
+                else if (pauseState == 2) {
+                    homeCnt = 1 - homeCnt;
+                    updateCnt();
+                }
+            } else if (e.getCode() == KeyCode.DOWN) {
+                // if on mainPause pane
+                if (pauseState == 1) {
+                    pauseCnt = 1 - pauseCnt;
+                    updateCnt();
+                }
+                // if on backChoice pane
+                else if (pauseState == 2) {
+                    homeCnt = 1 - homeCnt;
+                    updateCnt();
+                }
+            } else if (e.getCode() == KeyCode.ENTER) {
+                // if on mainPause pane
+                if (pauseState == 1) {
+                    pauseButtons.get(pauseCnt).fire();
+                }
+                // if on backChoice pane
+                else if (pauseState == 2) {
+                    homeButtons.get(homeCnt).fire();
+                }
+            }
+            // game manager handle input
+            else {
                 manager.handleInput(e.getCode(), true);
             }
         });
@@ -213,6 +294,8 @@ public class GameScreen extends Screen {
         //Turn on game screen
         mainPause.setVisible(false);
         backChoice.setVisible(false);
+        gamePane.setVisible(true);
+        pauseState = 0;
 
         past = -1;
         loop = new AnimationTimer() {
@@ -256,6 +339,10 @@ public class GameScreen extends Screen {
         }
     }
 
+    /**
+     * pause -> resume.
+     * set gameState, unfocus, start loop,set visible
+     */
     public void resume() {
         past = -1;
         Platform.runLater(root::requestFocus);
@@ -263,12 +350,67 @@ public class GameScreen extends Screen {
         manager.setGameState(GameManager.GameState.RUNNING);
         mainPause.setVisible(false);
         backChoice.setVisible(false);
+        gamePane.setVisible(true);
+        pauseState = 0;
     }
 
+    /**
+     * pause.
+     * set gameState, unfocus, stop loop, set visible
+     */
     public void pause() {
         loop.stop();
         manager.setGameState(GameManager.GameState.PAUSED);
         mainPause.setVisible(true);
         backChoice.setVisible(false);
+        gamePane.setVisible(false);
+        pauseState = 1;
+        Platform.runLater(root::requestFocus);
     }
+
+    /**
+     * update arrow buttons when change cnt.
+     */
+    private void updateCnt() {
+        double gap = 60 + Math.max(pauseButtons.get(pauseCnt).getWidth() - 60, 0) / 2;
+        double arrowY = pauseButtonYs.get(pauseCnt) + pauseButtons.get(pauseCnt).getHeight() / 2;
+        double arrowLeftX = pauseButtons.get(pauseCnt).getLayoutX() - gap
+                - pauseChooseArrowLeft.getLayoutBounds().getWidth();
+        double arrowRightX = pauseButtons.get(pauseCnt).getLayoutX() + gap
+                + pauseButtons.get(pauseCnt).getWidth();
+        pauseChooseArrowLeft.setY(arrowY);
+        pauseChooseArrowLeft.setX(arrowLeftX);
+        pauseChooseArrowRight.setY(arrowY);
+        pauseChooseArrowRight.setX(arrowRightX);
+        gap = 60 + Math.max(homeButtons.get(homeCnt).getWidth() - 60, 0) / 2;
+        arrowY = homeButtonYs.get(homeCnt) + homeButtons.get(homeCnt).getHeight() / 2;
+        arrowLeftX = homeButtons.get(homeCnt).getLayoutX() - gap
+                - homeChooseArrowLeft.getLayoutBounds().getWidth();
+        arrowRightX = homeButtons.get(homeCnt).getLayoutX() + gap
+                + homeButtons.get(homeCnt).getWidth();
+        homeChooseArrowLeft.setY(arrowY);
+        homeChooseArrowLeft.setX(arrowLeftX);
+        homeChooseArrowRight.setY(arrowY);
+        homeChooseArrowRight.setX(arrowRightX);
+    }
+
+    /**
+     * get button index of buttonList.
+     * @param button Button
+     * @return button's index
+     */
+    private int getIndex(Button button) {
+        int i = 0;
+        for (Button b : pauseButtons) {
+            if (b.equals(button)) return i;
+            i++;
+        }
+        i = 0;
+        for (Button b : homeButtons) {
+            if (b.equals(button)) return i;
+            i++;
+        }
+        return -1;
+    }
+
 }

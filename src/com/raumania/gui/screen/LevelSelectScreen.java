@@ -18,15 +18,34 @@ public class LevelSelectScreen extends Screen {
     public LevelSelectScreen(SceneManager sceneManager) {
         super(sceneManager);
         // put components here
+        //level button
+        //press to select level & back to home
+        Button level = centerButton("Level " + (currentLevel+1) , 550, 2.0, 2.0);
+        System.out.println(level.getLayoutX());
+        level.setOnAction(e -> {sceneManager.switchScreen(ScreenType.HOME);});
+
         //left button
         Button left = newButton("<" , 400, 550, 2.0, 2.0);
 
         //right button
         Button right = newButton(">" , 575, 550, 2.0, 2.0);
 
+        int gap = 70;
+
+        level.layoutBoundsProperty().addListener((obs, oldVal, newVal) -> {
+            double Y = level.getLayoutY() + newVal.getHeight() / 2 - left.getHeight() / 2;
+
+            double leftX = level.getLayoutX() - gap
+                    - left.getLayoutBounds().getWidth();
+            double rightX = level.getLayoutX() + gap
+                    + newVal.getWidth();
+
+            left.setLayoutY(Y);
+            left.setLayoutX(leftX);
+            right.setLayoutY(Y);
+            right.setLayoutX(rightX);
         //level button
         //press to select level & back to home
-        Button level = centerButton("Level " + (currentLevel+1) , 550, 2.0, 2.0);
         level.setOnAction(e -> {
             MapLoader.LevelData levelData = MapLoader.loadLevel("level_" + (currentLevel + 1));
             ((GameScreen) sceneManager.getScreen(ScreenType.GAME))

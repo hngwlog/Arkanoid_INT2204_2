@@ -125,7 +125,7 @@ public class HomeScreen extends Screen {
     }
 
     private void updateCnt() {
-        double gap = 50;
+        double gap = 60 + Math.max(buttons.get(cnt).getWidth()-60, 0) / 2;
         double arrowY = buttonY.get(cnt) + buttons.get(cnt).getHeight()/2;
         double arrowLeftX = buttons.get(cnt).getLayoutX() - gap
                 - chooseArrowLeft.getLayoutBounds().getWidth();
