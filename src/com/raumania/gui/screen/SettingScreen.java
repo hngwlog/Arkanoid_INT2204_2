@@ -15,6 +15,7 @@ import com.raumania.utils.UIUtils;
 
 public class SettingScreen extends Screen {
     private int volume = 50;
+    // file to save the volume
     private final String VOLUME_FILE = "volume.json";
     public SettingScreen(SceneManager sceneManager) {
         super(sceneManager);
@@ -47,6 +48,9 @@ public class SettingScreen extends Screen {
         root.getChildren().addAll(volumeText, slider, back);
     }
 
+    /**
+     * write present volume to VOLUME_FILE.
+     */
     private void writeVolume() {
         File file = new File(VOLUME_FILE);
         if (!file.exists()) {
@@ -65,6 +69,9 @@ public class SettingScreen extends Screen {
         }
     }
 
+    /**
+     * get the volume from VOLUME_FILE.
+     */
     private void loadVolume() {
         File file = new File(VOLUME_FILE);
         if (!file.exists() || file.length() == 0) {

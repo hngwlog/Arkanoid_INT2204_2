@@ -93,7 +93,6 @@ public class GameScreen extends Screen {
         pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
         pause.setOnAction(e -> {
             this.pause();
-            Platform.runLater(root::requestFocus);
         });
         //Game border
         Rectangle border = UIUtils.newRectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT,
@@ -129,8 +128,10 @@ public class GameScreen extends Screen {
             updateCnt();
             Platform.runLater(root::requestFocus);
         });
+        //choose arrows
         pauseChooseArrowLeft = UIUtils.newText(">" , 383.75, 212.5, 2.0, 2.0);
         pauseChooseArrowRight = UIUtils.newText("<" , 610.76, 212.5, 2.0, 2.0);
+        //buttons list
         pauseButtons = new ArrayList<>();
         Collections.addAll(pauseButtons, resume, home);
         for (Button button : pauseButtons) {
@@ -139,8 +140,10 @@ public class GameScreen extends Screen {
                 updateCnt();
             });
         }
+        //button's Y list
         pauseButtonYs = new ArrayList<>();
         Collections.addAll(pauseButtonYs, 200.0, 300.0);
+        //add to mainPause pane
         mainPause.getChildren().addAll(pauseButtons);
         mainPause.getChildren().addAll(title, pauseChooseArrowLeft, pauseChooseArrowRight);
         mainPause.setVisible(false);
@@ -167,8 +170,10 @@ public class GameScreen extends Screen {
             homeCnt = 0;
             updateCnt();
         });
+        //choose arrow
         homeChooseArrowLeft = UIUtils.newText(">" , 383.75, 212.5, 2.0, 2.0);
         homeChooseArrowRight = UIUtils.newText("<" , 610.76, 212.5, 2.0, 2.0);
+        //buttons list
         homeButtons = new ArrayList<>();
         Collections.addAll(homeButtons, yes, no);
         for (Button button : homeButtons) {
@@ -177,8 +182,10 @@ public class GameScreen extends Screen {
                 updateCnt();
             });
         }
+        //button's Y list
         homeButtonYs = new ArrayList<>();
         Collections.addAll(homeButtonYs, 200.0, 300.0);
+        //add to backChoice pane
         backChoice.getChildren().addAll(homeButtons);
         backChoice.getChildren().addAll(title1, homeChooseArrowLeft, homeChooseArrowRight);
         backChoice.setVisible(false);
@@ -192,31 +199,39 @@ public class GameScreen extends Screen {
                     pause.fire();
                 }
             } else if (e.getCode() == KeyCode.UP) {
+                // if on mainPause pane
                 if (pauseState == 1) {
                     pauseCnt = 1 - pauseCnt;
                     updateCnt();
                 }
+                // if on backChoice pane
                 else if (pauseState == 2) {
                     homeCnt = 1 - homeCnt;
                     updateCnt();
                 }
             } else if (e.getCode() == KeyCode.DOWN) {
+                // if on mainPause pane
                 if (pauseState == 1) {
                     pauseCnt = 1 - pauseCnt;
                     updateCnt();
                 }
+                // if on backChoice pane
                 else if (pauseState == 2) {
                     homeCnt = 1 - homeCnt;
                     updateCnt();
                 }
             } else if (e.getCode() == KeyCode.ENTER) {
+                // if on mainPause pane
                 if (pauseState == 1) {
                     pauseButtons.get(pauseCnt).fire();
                 }
+                // if on backChoice pane
                 else if (pauseState == 2) {
                     homeButtons.get(homeCnt).fire();
                 }
-            }else {
+            }
+            // game manager handle input
+            else {
                 manager.handleInput(e.getCode(), true);
             }
         });
@@ -312,6 +327,10 @@ public class GameScreen extends Screen {
         }
     }
 
+    /**
+     * pause -> resume.
+     * set gameState, unfocus, start loop,set visible
+     */
     public void resume() {
         past = -1;
         Platform.runLater(root::requestFocus);
@@ -323,6 +342,10 @@ public class GameScreen extends Screen {
         pauseState = 0;
     }
 
+    /**
+     * pause.
+     * set gameState, unfocus, stop loop, set visible
+     */
     public void pause() {
         loop.stop();
         manager.setGameState(GameManager.GameState.PAUSED);
@@ -330,8 +353,12 @@ public class GameScreen extends Screen {
         backChoice.setVisible(false);
         gamePane.setVisible(false);
         pauseState = 1;
+        Platform.runLater(root::requestFocus);
     }
 
+    /**
+     * update arrow buttons when change cnt.
+     */
     private void updateCnt() {
         double gap = 60 + Math.max(pauseButtons.get(pauseCnt).getWidth() - 60, 0) / 2;
         double arrowY = pauseButtonYs.get(pauseCnt) + pauseButtons.get(pauseCnt).getHeight() / 2;
@@ -355,6 +382,11 @@ public class GameScreen extends Screen {
         homeChooseArrowRight.setX(arrowRightX);
     }
 
+    /**
+     * get button index of buttonList.
+     * @param button Button
+     * @return button's index
+     */
     private int getIndex(Button button) {
         int i = 0;
         for (Button b : pauseButtons) {
