@@ -10,10 +10,7 @@ import javafx.scene.text.Text;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
-
-import static com.raumania.utils.UIUtils.centerButton;
-import static com.raumania.utils.UIUtils.newText;
-import static com.raumania.utils.UIUtils.newSlider;
+import com.raumania.utils.UIUtils;
 
 
 public class SettingScreen extends Screen {
@@ -27,9 +24,11 @@ public class SettingScreen extends Screen {
         AudioManager.getInstance().setVolume(volume);
 
         //Volume Text
-        Text volumeText = newText("Volume: " + AudioManager.getInstance().getVolume() + "%", 100, 100, 2.0, 2.0);
+        Text volumeText = UIUtils.newText("Volume: " + AudioManager.getInstance().getVolume()
+                + "%", 100, 100, 2.0, 2.0);
         //Volume Slider
-        Slider slider = newSlider(0, AudioManager.getInstance().getVolume() * 100, 100, 400, 100,
+        Slider slider = UIUtils.newSlider(0,
+                AudioManager.getInstance().getVolume() * 100, 100, 400, 100,
                 3.0, 3.0, false, false);
         slider.valueProperty().bindBidirectional(AudioManager.getInstance().getVolumeProperty());
         //Slider change value -> volume
@@ -37,11 +36,10 @@ public class SettingScreen extends Screen {
             volumeText.setText("Volume: " + newVal.intValue() + "%");
             volume = newVal.intValue();
             writeVolume();
-
         });
 
         //Back to Home button
-        Button back = centerButton("Back to Home", 500, 2.0, 2.0);
+        Button back = UIUtils.centerButton("Back to Home", 500, 2.0, 2.0);
         back.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.HOME);
         });
