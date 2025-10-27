@@ -46,7 +46,6 @@ public class LevelSelectScreen extends Screen {
             right.setLayoutX(rightX);
         //level button
         //press to select level & back to home
-        Button level = centerButton("Level " + (currentLevel+1) , 550, 2.0, 2.0);
         level.setOnAction(e -> {
             MapLoader.LevelData levelData = MapLoader.loadLevel("level_" + (currentLevel + 1));
             ((GameScreen) sceneManager.getScreen(ScreenType.GAME))
