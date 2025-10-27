@@ -1,5 +1,7 @@
 package com.raumania.gui.screen;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.raumania.core.AudioManager;
@@ -14,16 +16,30 @@ import com.raumania.utils.UIUtils;
 
 
 public class SettingScreen extends Screen {
-    private int volume = 50;
+    private static class Config {
+        private int volume;
+
+        public Config(@JsonProperty("volume") int volume) {
+            this.volume = volume;
+        }
+
+        @JsonGetter
+        public int getVolume() {
+            return volume;
+        }
+    }
     // file to save the volume
-    private final String VOLUME_FILE = "volume.json";
+    private static final String CONFIG_FILE = "config.json";
+    private static final Config DEFAULT_CONFIG = new Config(100);
+    private Config config;
+
     public SettingScreen(SceneManager sceneManager) {
         super(sceneManager);
+
+        this.loadConfig();
+        AudioManager.getInstance().setVolume(config.getVolume());
+
         // put components here
-
-        loadVolume();
-        AudioManager.getInstance().setVolume(volume);
-
         //Volume Text
         Text volumeText = UIUtils.newText("Volume: " + AudioManager.getInstance().getVolume()
                 + "%", 100, 100, 2.0, 2.0);
@@ -35,8 +51,8 @@ public class SettingScreen extends Screen {
         //Slider change value -> volume
         slider.valueProperty().addListener((obs, oldVal, newVal) -> {
             volumeText.setText("Volume: " + newVal.intValue() + "%");
-            volume = newVal.intValue();
-            writeVolume();
+            config.volume = newVal.intValue();
+            saveConfig();
         });
 
         //Back to Home button
@@ -49,10 +65,10 @@ public class SettingScreen extends Screen {
     }
 
     /**
-     * write present volume to VOLUME_FILE.
+     * Save the current config to {@value CONFIG_FILE}.
      */
-    private void writeVolume() {
-        File file = new File(VOLUME_FILE);
+    private void saveConfig() {
+        File file = new File(CONFIG_FILE);
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -63,29 +79,32 @@ public class SettingScreen extends Screen {
         }
         ObjectMapper mapper = new ObjectMapper();
         try {
-            mapper.writeValue(file, volume);
+            mapper.writeValue(file, config);
         } catch (IOException e) {
             System.err.println("Error saving volume file!" + e);
         }
     }
 
     /**
-     * get the volume from VOLUME_FILE.
+     * Get the config from {@value CONFIG_FILE}.
+     * If not exists then use default.
      */
-    private void loadVolume() {
-        File file = new File(VOLUME_FILE);
+    private void loadConfig() {
+        File file = new File(CONFIG_FILE);
         if (!file.exists() || file.length() == 0) {
+            config = DEFAULT_CONFIG;
             return;
         }
+
         ObjectMapper mapper = new ObjectMapper();
         try {
-            volume = mapper.readValue(file, Integer.class);
+            config = mapper.readValue(file, Config.class);
         } catch (DatabindException e) {
-            System.err.println("Volume file has corrupted structure!");
+            System.err.println("Config file has corrupted structure!");
         } catch (StreamReadException e) {
-            System.err.println("Cant read volume file!");
+            System.err.println("Cant read config file!");
         } catch (IOException e) {
-            System.err.println("Error loading high scores file!");
+            System.err.println("Error loading config file!");
         }
     }
 
