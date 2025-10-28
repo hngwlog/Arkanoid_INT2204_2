@@ -18,7 +18,7 @@ public class Ball extends MovableObject {
     private double radius;
     private Circle view;
     private boolean activeStatus;
-    private boolean isImortal;
+    private boolean isImmortal;
 
     /**
      * Constructs a ball at the specified position with the default radius and speed.
@@ -33,7 +33,7 @@ public class Ball extends MovableObject {
         this.setSpeed(BALL_SPEED);
         this.view = new Circle(radius, Color.BLACK);
         this.activeStatus = true;
-        this.isImortal = MORTAL;
+        this.isImmortal = false;
     }
 
     /**
@@ -69,8 +69,8 @@ public class Ball extends MovableObject {
         return view;
     }
 
-    public void setIsImortal (boolean currentState) {
-        isImortal = currentState;
+    public void setImmortal (boolean currentState) {
+        isImmortal = currentState;
     }
     /**
      * Updates the position of the {@link Circle} view to match the ball's current coordinates.
@@ -141,7 +141,7 @@ public class Ball extends MovableObject {
             y = 0;
             bounceVertically();
         } else if (y + height >= GAME_HEIGHT) {
-            if (!isImortal) deactivate();
+            if (!isImmortal) deactivate();
             else {
                 y = GAME_HEIGHT - height;
                 bounceVertically();
@@ -168,8 +168,4 @@ public class Ball extends MovableObject {
         updateView();
     }
 
-    /**
-     * Updates the ball’s state: imortal or mortal.
-     * in limit time
-     */
 }

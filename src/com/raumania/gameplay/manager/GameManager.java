@@ -5,7 +5,7 @@ import com.raumania.core.MapLoader;
 import com.raumania.core.AudioManager;
 import com.raumania.gameplay.objects.powerup.AddBallPowerUp;
 import com.raumania.gameplay.objects.powerup.ExtendPaddlePowerUp;
-import com.raumania.gameplay.objects.powerup.ImortalPowerUp;
+import com.raumania.gameplay.objects.powerup.ImmortalPowerUp;
 import com.raumania.gameplay.objects.powerup.PowerUp;
 import com.raumania.utils.ResourcesLoader;
 import javafx.beans.property.ObjectProperty;
@@ -302,6 +302,20 @@ public class GameManager {
     }
 
     /**
+     * Returns current alive balls on the GameScreen.
+     */
+    public List<Ball> getBallsList() {
+        return balls;
+    }
+
+    /**
+     * Returns the player paddle.
+     */
+    public Paddle getPaddle() {
+        return this.paddle;
+    }
+
+    /**
      * Returns the observable property representing the current {@link GameState}.
      * <p>
      * This property can be observed to react to changes in the game state,
@@ -382,19 +396,6 @@ public class GameManager {
         root.getChildren().add(newBall.getView());
     }
 
-
-    public void applyImortalBalls(/*boolean state*/) {
-        for (Iterator<Ball> ballIterator = balls.iterator(); ballIterator.hasNext();) {
-            Ball ball = ballIterator.next();
-            ball.setIsImortal(IMORTAL);
-        }
-    }
-
-    public void extendPaddle() {
-        double currentPaddleWidth = paddle.getWidth()*1.2;
-        paddle.setWidth(currentPaddleWidth);
-        paddle.getTexture().setFitWidth(currentPaddleWidth);
-    }
     /**
      * Spawns a random power-up at the specified (x, y) position.
      * <p>
@@ -409,9 +410,6 @@ public class GameManager {
     public void spawnRandomPowerUp(double x, double y) {
         double rand = Math.random();
         if (rand > 0.5) {
-            //PowerUp powerUp = new AddBallPowerUp(x, y, 30, 30);
-            //PowerUp powerUp = new ImortalPowerUp(x, y, 30, 30);
-            //
             PowerUp powerUp = new ExtendPaddlePowerUp(x, y, 30, 30);
             powerUps.add(powerUp);
             root.getChildren().add(powerUp.getTexture());
