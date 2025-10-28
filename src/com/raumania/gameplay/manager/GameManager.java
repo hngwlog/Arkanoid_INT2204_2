@@ -4,6 +4,8 @@ package com.raumania.gameplay.manager;
 import com.raumania.core.MapLoader;
 import com.raumania.core.AudioManager;
 import com.raumania.gameplay.objects.powerup.AddBallPowerUp;
+import com.raumania.gameplay.objects.powerup.ExtendPaddlePowerUp;
+import com.raumania.gameplay.objects.powerup.ImmortalPowerUp;
 import com.raumania.gameplay.objects.powerup.PowerUp;
 import com.raumania.utils.ResourcesLoader;
 import javafx.beans.property.ObjectProperty;
@@ -46,7 +48,7 @@ public class GameManager {
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
     private int score = 0;
     private LevelData currentLvl;
-    //private SceneManager sceneManager = new SceneManager();
+
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
      */
@@ -91,30 +93,12 @@ public class GameManager {
      * sets {@link #gameState} to {@link GameState#RUNNING}.
      * </p>
      */
-//    public void initGame() {
-//        bricks.clear();
-//        balls.clear();
-//        powerUps.clear();
-//        root.getChildren().clear();
-//        gameState.set(GameState.RUNNING);
-//        paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80, PADDLE_WIDTH
-//                , PADDLE_HEIGHT);
-//        spawnAdditionalBall();
-//        root.getChildren().add(paddle.getTexture());
-//        for (int r = 0; r < 6; r++) {
-//            for (int c = 0; c < 4; c++) {
-//                double x = c * BRICK_WIDTH;
-//                double y = r * BRICK_HEIGHT;
-//                NormalBrick brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
-//                bricks.add(brick);
-//                root.getChildren().add(brick.getTexture());
-//            }
-//        }
-//    }
 
-//code temp
     public void initGame() {
-        if (currentLvl == null) return;
+        if (currentLvl == null) {
+            System.out.println("Level is null now.");
+            return;
+        }
 
         score = 0;
         bricks.clear();
@@ -167,7 +151,6 @@ public class GameManager {
             }
         }
     }
-//code temp
     /**
      * Handles player input to control paddle movement.
      *
@@ -324,6 +307,20 @@ public class GameManager {
     }
 
     /**
+     * Returns current alive balls on the GameScreen.
+     */
+    public List<Ball> getBallsList() {
+        return balls;
+    }
+
+    /**
+     * Returns the player paddle.
+     */
+    public Paddle getPaddle() {
+        return this.paddle;
+    }
+
+    /**
      * Returns the observable property representing the current {@link GameState}.
      * <p>
      * This property can be observed to react to changes in the game state,
@@ -418,7 +415,7 @@ public class GameManager {
     public void spawnRandomPowerUp(double x, double y) {
         double rand = Math.random();
         if (rand > 0.5) {
-            PowerUp powerUp = new AddBallPowerUp(x, y, 30, 30);
+            PowerUp powerUp = new ExtendPaddlePowerUp(x, y, 30, 30);
             powerUps.add(powerUp);
             root.getChildren().add(powerUp.getTexture());
         }
