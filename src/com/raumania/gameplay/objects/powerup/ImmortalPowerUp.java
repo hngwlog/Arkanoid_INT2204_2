@@ -6,6 +6,7 @@ import com.raumania.gameplay.objects.Ball;
 import com.raumania.utils.ResourcesLoader;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
+import java.util.List;
 
 public class ImmortalPowerUp extends PowerUp {
     private static final double DURATION = 10;
@@ -21,15 +22,13 @@ public class ImmortalPowerUp extends PowerUp {
     @Override
     public void applyEffect(GameManager gameManager) {
         List<Ball> balls = gameManager.getBallsList();
-        for (Iterator<Ball> ballIterator = balls.iterator(); ballIterator.hasNext();) {
-            Ball ball = ballIterator.next();
+        for (Ball ball : balls) {
             ball.setImmortal(true);
         }
 
         PauseTransition timer = new PauseTransition(Duration.seconds(DURATION));
         timer.setOnFinished(e -> {
-            for (Iterator<Ball> ballIterator = balls.iterator(); ballIterator.hasNext();) {
-                Ball ball = ballIterator.next();
+            for (Ball ball : balls) {
                 ball.setImmortal(false);
             }
         });
