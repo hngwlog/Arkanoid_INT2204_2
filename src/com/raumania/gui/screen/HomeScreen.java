@@ -43,7 +43,7 @@ public class HomeScreen extends Screen {
         });
 
         //Level select button
-        Button levelSelect =  UIUtils.centerButton("Level Select", 300, 2.0, 2.0);
+        Button levelSelect =  UIUtils.centerButton("Single player", 300, 2.0, 2.0);
         //Button levelSelect = new Button("Select Level");
         levelSelect.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.LEVEL_SELECT);

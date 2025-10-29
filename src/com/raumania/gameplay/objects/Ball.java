@@ -26,12 +26,12 @@ public class Ball extends MovableObject {
      * @param x the x-coordinate of the ball's center
      * @param y the y-coordinate of the ball's center
      */
-    public Ball(double x, double y) {
+    public Ball(double x, double y, Color color) {
         super(x, y, BALL_RADIUS * 2.0, BALL_RADIUS * 2.0);
         this.radius = BALL_RADIUS;
         this.setDirection(new Vec2f(1, -1));
         this.setSpeed(BALL_SPEED);
-        this.view = new Circle(radius, Color.BLACK);
+        this.view = new Circle(radius, color);
         this.activeStatus = true;
         this.isImmortal = false;
     }

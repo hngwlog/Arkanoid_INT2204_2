@@ -17,7 +17,9 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.paint.Color;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +44,7 @@ public class GameManager {
     private Paddle paddle;
     private boolean leftHeld = false;
     private boolean rightHeld = false;
+    private Ball mainBall = null;
     private List<Ball> balls = new ArrayList<>();
     private List<Brick> bricks = new ArrayList<>();
     private List<PowerUp> powerUps = new ArrayList<>();
@@ -110,7 +113,8 @@ public class GameManager {
 
         paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80,
                 PADDLE_WIDTH, PADDLE_HEIGHT);
-        spawnAdditionalBall();
+        spawnBall(Color.BLACK);
+        mainBall = balls.get(0);
         root.getChildren().add(paddle.getTexture());
 
         // Create bricks based on layout
@@ -140,8 +144,7 @@ public class GameManager {
         }
 
         // Add power-ups
-
-        if (currentLvl.getPowerups() != null) {
+        /*if (currentLvl.getPowerups() != null) {
             for (MapLoader.PowerUpData powerup : currentLvl.getPowerups() ) {
                 if (powerup.getType().equals("add_ball")) {
                     double x = powerup.getCol() * BRICK_WIDTH + BRICK_WIDTH/2;
@@ -149,7 +152,7 @@ public class GameManager {
                     spawnRandomPowerUp(x, y);
                 }
             }
-        }
+        }*/
     }
     /**
      * Handles player input to control paddle movement.
@@ -204,13 +207,17 @@ public class GameManager {
             Ball ball = ballIterator.next();
             if (!ball.isActive()) {
                 root.getChildren().remove(ball.getView());
+                if (ball == mainBall) {
+                    mainBall = null;
+                }
                 ballIterator.remove();
                 continue;
             }
-            if (ball.checkOverlap(paddle) && ball.getDirection().y > 0) {
+            if (ball.checkOverlap(paddle) /*&& ball.getDirection().y > 0*/) {
                 AudioManager.getInstance().playSFX(AudioManager.PADDLE_HIT);
+                double sign = (ball.getDirection().y > 0) ? 1 : -1;
 
-                ball.setPosition(ball.getX(), paddle.getY() - ball.getHeight());
+                ball.setPosition(ball.getX(), paddle.getY() - sign*ball.getHeight());
                 double paddleCenter = paddle.getX() + paddle.getWidth() * 0.5;
                 double ballCenter = ball.getX() + ball.getRadius();
                 double t = (ballCenter - paddleCenter) / (paddle.getWidth() * 0.5);
@@ -218,7 +225,7 @@ public class GameManager {
                 double maxAngle = Math.toRadians(60);
                 double angle = t * maxAngle;
                 double dx = Math.sin(angle);
-                double dy = - Math.cos(angle);
+                double dy = - sign*Math.cos(angle);
                 ball.setDirection(new Vec2f(dx, dy));
             }
             int cntHorizontally = 0;
@@ -246,7 +253,7 @@ public class GameManager {
                         score += 1;
                         root.getChildren().remove(brick.getTexture());
                         spawnRandomPowerUp(brick.getX() + (double) BRICK_WIDTH / 2,
-                                brick.getY() + (double) BRICK_HEIGHT / 2);
+                                brick.getY() + (double) BRICK_HEIGHT / 2, 0.5);
                         it.remove();
                     }
                 }
@@ -379,7 +386,8 @@ public class GameManager {
         }
         paddle.update(dt);
         checkCollisions();
-        if (balls.isEmpty()
+
+        if (mainBall == null
             || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
             gameOver();
         }
@@ -392,11 +400,11 @@ public class GameManager {
      * representation is added to the scene graph.
      * </p>
      */
-    public void spawnAdditionalBall() {
+    public void spawnBall(Color color) {
         // Create ball at paddle center
         double ballX = paddle.getX() + (paddle.getWidth() - BALL_RADIUS * 2) / 2.0;
         double ballY = paddle.getY() - BALL_RADIUS * 2 - 1;
-        Ball newBall = new Ball(ballX, ballY);
+        Ball newBall = new Ball(ballX, ballY, color);
         balls.add(newBall);
         root.getChildren().add(newBall.getView());
     }
@@ -412,10 +420,13 @@ public class GameManager {
      * @param x the x-coordinate to spawn the power-up
      * @param y the y-coordinate to spawn the power-up
      */
-    public void spawnRandomPowerUp(double x, double y) {
+    public void spawnRandomPowerUp(double x, double y, double randomThreshold) {
         double rand = Math.random();
-        if (rand > 0.5) {
-            PowerUp powerUp = new ExtendPaddlePowerUp(x, y, 30, 30);
+        if (rand < randomThreshold) {
+            PowerUp powerUp;
+            if (rand < randomThreshold/3) powerUp = new AddBallPowerUp(x, y, 30, 30);
+            else if (rand < randomThreshold*2/3) powerUp = new ExtendPaddlePowerUp(x, y, 30, 30);
+            else powerUp = new ImmortalPowerUp(x, y, 30, 30);
             powerUps.add(powerUp);
             root.getChildren().add(powerUp.getTexture());
         }

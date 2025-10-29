@@ -17,8 +17,5 @@
   "layout": [
     "1111",
     "2112"
-  ],
-  "powerups": [
-    {"type": "add_ball", "row": 2, "col": 3}
   ]
 }

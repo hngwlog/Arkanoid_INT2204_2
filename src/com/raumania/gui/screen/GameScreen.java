@@ -106,6 +106,7 @@ public class GameScreen extends Screen {
         fps = UIUtils.newText("FPS:", 350, 30, 2.0, 2.0);
         fps.setFont(Font.font("System", FontWeight.BOLD, 14));
         fps.setFill(Color.WHITE);
+
         gamePlayScreen.getChildren().addAll(pause, border, score, fps);
         gamePlayScreen.setVisible(true);
 

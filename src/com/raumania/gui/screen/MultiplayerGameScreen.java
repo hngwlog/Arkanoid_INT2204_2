@@ -307,8 +307,8 @@ public class MultiplayerGameScreen extends Screen {
                 "random_map",
                 new MapLoader.BrickConfig(100, 30, 0, 5, 0, 40),
                 legends,
-                bricks,
-                new ArrayList<>()
+                bricks//,
+                //new ArrayList<>()
         );
     }
 

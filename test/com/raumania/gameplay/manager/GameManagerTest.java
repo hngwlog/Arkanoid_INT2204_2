@@ -31,4 +31,6 @@ public class GameManagerTest extends InitializeJavaFx {
         manager.setGameState(GameManager.GameState.GAME_OVER);
         assertEquals(GameManager.GameState.GAME_OVER, manager.getGameState());
     }
+
+
 }

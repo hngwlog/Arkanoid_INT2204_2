@@ -20,10 +20,5 @@
     "1111",
     "2112",
     "1111"
-  ],
-  "powerups": [
-    {"type": "add_ball", "row": 2, "col": 1},
-    {"type": "add_ball", "row": 3, "col": 2},
-    {"type": "add_ball", "row": 4, "col": 1}
   ]
 }

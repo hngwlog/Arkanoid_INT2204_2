@@ -8,7 +8,7 @@ import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
 public class ExtendPaddlePowerUp extends PowerUp{
-    private static final double SCALE = 1.2;
+    private static final double SCALE = 1.5;
     private static final double DURATION = 5;
 
     public ExtendPaddlePowerUp(double x, double y, double width, double height) {
