@@ -4,7 +4,7 @@ import com.raumania.core.AudioManager;
 import com.raumania.core.MapLoader;
 import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gui.manager.SceneManager;
-import com.raumania.utils.Constants;
+import com.raumania.main.Main;
 import com.raumania.utils.ResourcesLoader;
 import com.raumania.utils.UIUtils;
 import javafx.animation.AnimationTimer;
@@ -75,7 +75,7 @@ public class MultiplayerGameScreen extends Screen {
         winPane.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
-        winPane.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        winPane.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         Text win = new Text();
         win.setFill(Color.YELLOW);
         win.setScaleX(3.0);
@@ -92,13 +92,13 @@ public class MultiplayerGameScreen extends Screen {
         });
 
         // Border
-        Rectangle leftBorder = UIUtils.newRectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT,
-                30, Constants.GAME_START_Y);
+        Rectangle leftBorder = UIUtils.newRectangle(GameScreen.GAME_WIDTH, GameScreen.GAME_HEIGHT,
+                30, GameScreen.GAME_START_Y);
         leftBorder.setFill(Color.TRANSPARENT);
         leftBorder.setStroke(Color.BLACK);
         leftBorder.setStrokeWidth(2);
-        Rectangle rightBorder = UIUtils.newRectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT,
-                Constants.WINDOW_WIDTH - Constants.GAME_WIDTH - 30, Constants.GAME_START_Y);
+        Rectangle rightBorder = UIUtils.newRectangle(GameScreen.GAME_WIDTH, GameScreen.GAME_HEIGHT,
+                Main.WINDOW_WIDTH - GameScreen.GAME_WIDTH - 30, GameScreen.GAME_START_Y);
         rightBorder.setFill(Color.TRANSPARENT);
         rightBorder.setStroke(Color.BLACK);
         rightBorder.setStrokeWidth(2);
@@ -118,7 +118,7 @@ public class MultiplayerGameScreen extends Screen {
         mainPause.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
-        mainPause.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        mainPause.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         //Pause Title
         Text title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
         title.setFill(Color.GREEN);
@@ -142,7 +142,7 @@ public class MultiplayerGameScreen extends Screen {
         backChoice.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
-        backChoice.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        backChoice.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         // Title
         Text title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
         title1.setFill(Color.GREEN);
@@ -196,12 +196,12 @@ public class MultiplayerGameScreen extends Screen {
         });
 
         Pane leftGame = leftManager.getRoot();
-        leftGame.setClip(new Rectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT));
-        leftGame.getTransforms().add(new Translate(30, Constants.GAME_START_Y));
+        leftGame.setClip(new Rectangle(GameScreen.GAME_WIDTH, GameScreen.GAME_HEIGHT));
+        leftGame.getTransforms().add(new Translate(30, GameScreen.GAME_START_Y));
 
         Pane rightGame = rightManager.getRoot();
-        rightGame.setClip(new Rectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT));
-        rightGame.getTransforms().add(new Translate(Constants.WINDOW_WIDTH - Constants.GAME_WIDTH - 30, Constants.GAME_START_Y));
+        rightGame.setClip(new Rectangle(GameScreen.GAME_WIDTH, GameScreen.GAME_HEIGHT));
+        rightGame.getTransforms().add(new Translate(Main.WINDOW_WIDTH - GameScreen.GAME_WIDTH - 30, GameScreen.GAME_START_Y));
 
         gamePane = new StackPane();
         gamePane.getChildren().addAll(leftGame, rightGame, gamePlayScreen);
@@ -281,8 +281,8 @@ public class MultiplayerGameScreen extends Screen {
         winPane.setVisible(true);
         Text win = (Text) winPane.getChildren().getFirst();
         win.setText("Player " + winPlayer + " wins!");
-        win.setX((double) Constants.WINDOW_WIDTH / 2 - win.getBoundsInLocal().getWidth() / 2);
-        win.setY((double) Constants.WINDOW_HEIGHT / 2 - win.getBoundsInLocal().getHeight() / 2);
+        win.setX((double) Main.WINDOW_WIDTH / 2 - win.getBoundsInLocal().getWidth() / 2);
+        win.setY((double) Main.WINDOW_HEIGHT / 2 - win.getBoundsInLocal().getHeight() / 2);
 
         AudioManager.getInstance().stop();
         AudioManager.getInstance().playSFX(AudioManager.GAME_OVER_SFX);

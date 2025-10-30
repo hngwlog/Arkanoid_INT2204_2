@@ -2,13 +2,12 @@ package com.raumania.gui.screen;
 
 import com.raumania.core.AudioManager;
 import com.raumania.core.HighScore;
+import com.raumania.main.Main;
 import com.raumania.utils.ResourcesLoader;
 import com.raumania.utils.UIUtils;
-import com.raumania.utils.Constants;
 import javafx.animation.AnimationTimer;
 
 import com.raumania.gameplay.manager.*;
-import com.raumania.gameplay.objects.powerup.PowerUp;
 import com.raumania.gui.manager.SceneManager;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -23,7 +22,6 @@ import javafx.util.Duration;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +36,10 @@ import java.util.Iterator;
  * </p>
  */
 public class GameScreen extends Screen {
+    public static final int GAME_WIDTH = 400;
+    public static final int GAME_START_X = (Main.WINDOW_WIDTH - GAME_WIDTH) / 2;
+    public static final int GAME_HEIGHT = 620;
+    public static final int GAME_START_Y = (Main.WINDOW_HEIGHT - GAME_HEIGHT) / 2 + 10;
     private GameManager manager;
     private AnimationTimer loop;
     private long past = - 1;
@@ -94,8 +96,8 @@ public class GameScreen extends Screen {
             this.pause();
         });
         //Game border
-        Rectangle border = UIUtils.newRectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT,
-                Constants.GAME_START_X, Constants.GAME_START_Y);
+        Rectangle border = UIUtils.newRectangle(GAME_WIDTH, GAME_HEIGHT,
+                GAME_START_X, GAME_START_Y);
         border.setFill(Color.TRANSPARENT);
         border.setStroke(Color.BLACK);
         border.setStrokeWidth(2);
@@ -122,7 +124,7 @@ public class GameScreen extends Screen {
         mainPause.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
-        mainPause.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        mainPause.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         //Pause Title
         Text title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
         title.setFill(Color.GREEN);
@@ -167,7 +169,7 @@ public class GameScreen extends Screen {
         backChoice.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
-        backChoice.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        backChoice.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         // Title
         Text title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
         title1.setFill(Color.GREEN);
@@ -257,8 +259,8 @@ public class GameScreen extends Screen {
 
         scene.setOnKeyReleased(e -> manager.handleInput(e.getCode(), false));
         Pane game = manager.getRoot();
-        game.setClip(new Rectangle(Constants.GAME_WIDTH, Constants.GAME_HEIGHT));
-        game.getTransforms().add(new Translate(Constants.GAME_START_X, Constants.GAME_START_Y));
+        game.setClip(new Rectangle(GAME_WIDTH, GAME_HEIGHT));
+        game.getTransforms().add(new Translate(GAME_START_X, GAME_START_Y));
 
         gamePane = new StackPane();
         gamePane.getChildren().addAll(game, gamePlayScreen);

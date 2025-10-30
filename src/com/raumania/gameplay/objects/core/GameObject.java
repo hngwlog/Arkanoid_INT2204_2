@@ -1,4 +1,4 @@
-package com.raumania.gameplay.objects;
+package com.raumania.gameplay.objects.core;
 
 /**
  * Base class for all in-game objects (e.g., bricks, ball, paddle).

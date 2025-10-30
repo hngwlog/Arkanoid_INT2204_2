@@ -1,4 +1,4 @@
-package com.raumania.gameplay.objects;
+package com.raumania.gameplay.objects.core;
 
 import com.raumania.math.Vec2f;
 

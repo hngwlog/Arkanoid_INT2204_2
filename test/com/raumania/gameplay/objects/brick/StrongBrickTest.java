@@ -1,4 +1,4 @@
-package com.raumania.gameplay.objects;
+package com.raumania.gameplay.objects.brick;
 
 import com.raumania.utils.InitializeJavaFx;
 import org.junit.jupiter.api.Test;

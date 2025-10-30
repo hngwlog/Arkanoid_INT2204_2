@@ -2,9 +2,9 @@ package com.raumania.gameplay.objects.powerup;
 
 import com.raumania.core.SpriteSheet;
 import com.raumania.gameplay.manager.GameManager;
-import com.raumania.gameplay.objects.MovableObject;
+import com.raumania.gameplay.objects.core.MovableObject;
+import com.raumania.gui.screen.GameScreen;
 import com.raumania.math.Vec2f;
-import com.raumania.utils.Constants;
 import javafx.scene.image.ImageView;
 
 public abstract class PowerUp extends MovableObject {
@@ -47,7 +47,7 @@ public abstract class PowerUp extends MovableObject {
     public void update(double dt) {
         applyMovement(dt);
         updateView();
-        if (getY() > Constants.GAME_HEIGHT) {
+        if (getY() > GameScreen.GAME_HEIGHT) {
             deactivate();
         }
     }
