@@ -271,7 +271,8 @@ public class GameManager {
                 double curTime = System.currentTimeMillis() / 1000.0;
                 PowerUpType type = powerUp.getType();
 
-                if (effectCountDownList.stream().anyMatch(x -> x.getEffectType() == type)) {
+                if (type != PowerUpType.ADD_BALL
+                        && effectCountDownList.stream().anyMatch(x -> x.getEffectType() == type)) {
                     effectCountDownList.forEach(e -> {
                         if (e.getEffectType() == type) {
                             e.setStartTime(curTime);
