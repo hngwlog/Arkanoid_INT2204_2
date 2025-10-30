@@ -1,10 +1,13 @@
 package com.raumania.main;
 
-import static com.raumania.utils.Constants.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+    public static final int WINDOW_WIDTH = 1000;
+    public static final int WINDOW_HEIGHT = 720;
+    public static final String WINDOW_TITLE = "Arkanoid";
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle(WINDOW_TITLE);

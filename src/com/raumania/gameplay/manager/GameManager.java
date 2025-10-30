@@ -1,12 +1,16 @@
 package com.raumania.gameplay.manager;
 
 //import com.raumania.gui.manager.SceneManager;
-import com.raumania.core.MapLoader;
 import com.raumania.core.AudioManager;
+import com.raumania.gameplay.objects.brick.Brick;
+import com.raumania.gameplay.objects.brick.InvisibleBrick;
+import com.raumania.gameplay.objects.brick.NormalBrick;
+import com.raumania.gameplay.objects.brick.StrongBrick;
 import com.raumania.gameplay.objects.powerup.AddBallPowerUp;
 import com.raumania.gameplay.objects.powerup.ExtendPaddlePowerUp;
 import com.raumania.gameplay.objects.powerup.ImmortalPowerUp;
 import com.raumania.gameplay.objects.powerup.PowerUp;
+import com.raumania.gui.screen.GameScreen;
 import com.raumania.utils.ResourcesLoader;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,13 +23,11 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.paint.Color;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import com.raumania.gameplay.objects.*;
-import static com.raumania.utils.Constants.*;
 import com.raumania.math.Vec2f;
 import com.raumania.core.MapLoader.LevelData;
 
@@ -112,8 +114,8 @@ public class GameManager {
         score = 0;
         gameState.set(GameState.RUNNING);
 
-        paddle = new Paddle((GAME_WIDTH - PADDLE_WIDTH) * 0.5, GAME_HEIGHT - 80,
-                PADDLE_WIDTH, PADDLE_HEIGHT);
+        paddle = new Paddle((GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5, GameScreen.GAME_HEIGHT - 80,
+                Paddle.PADDLE_WIDTH, Paddle.PADDLE_HEIGHT);
         spawnBall(Color.BLACK);
         mainBall = balls.get(0);
         root.getChildren().add(paddle.getTexture());
@@ -123,19 +125,19 @@ public class GameManager {
             String row = currentLvl.getLayout().get(r);
             for (int c = 0; c < row.length(); c++) {
                 char type = row.charAt(c);
-                double x = c * BRICK_WIDTH;
-                double y = r * BRICK_HEIGHT;
+                double x = c * Brick.BRICK_WIDTH;
+                double y = r * Brick.BRICK_HEIGHT;
 
                 Brick brick;
                 switch (currentLvl.getLegend().get(String.valueOf(type))) {
                     case "normal":
-                        brick = new NormalBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                        brick = new NormalBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
                         break;
                     case "strong":
-                        brick = new StrongBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                        brick = new StrongBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
                         break;
                     case "invisible":
-                        brick = new InvisibleBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                        brick = new InvisibleBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
                         break;
                     case "empty":
                     default:
@@ -246,8 +248,8 @@ public class GameManager {
                     if (brick.isDestroyed()) {
                         score += 1;
                         root.getChildren().remove(brick.getTexture());
-                        spawnRandomPowerUp(brick.getX() + (double) BRICK_WIDTH / 2,
-                                brick.getY() + (double) BRICK_HEIGHT / 2, 0.4);
+                        spawnRandomPowerUp(brick.getX() + (double) Brick.BRICK_WIDTH / 2,
+                                brick.getY() + (double) Brick.BRICK_HEIGHT / 2, 0.4);
                         it.remove();
                     }
                 }
@@ -418,8 +420,8 @@ public class GameManager {
      */
     public Ball spawnBall(Color color) {
         // Create ball at paddle center
-        double ballX = paddle.getX() + (paddle.getWidth() - BALL_RADIUS * 2) / 2.0;
-        double ballY = paddle.getY() - BALL_RADIUS * 2 - 1;
+        double ballX = paddle.getX() + (paddle.getWidth() - Ball.BALL_RADIUS * 2) / 2.0;
+        double ballY = paddle.getY() - Ball.BALL_RADIUS * 2 - 1;
         Ball newBall = new Ball(ballX, ballY, color);
         balls.add(newBall);
         root.getChildren().add(newBall.getView());

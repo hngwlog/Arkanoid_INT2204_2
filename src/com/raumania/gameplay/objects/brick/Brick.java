@@ -1,5 +1,6 @@
-package com.raumania.gameplay.objects;
+package com.raumania.gameplay.objects.brick;
 
+import com.raumania.gameplay.objects.core.GameObject;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
 
@@ -12,6 +13,9 @@ import javafx.scene.shape.Rectangle;
  * </p>
  */
 public abstract class Brick extends GameObject {
+    public static final int BRICK_WIDTH = 40;
+    public static final int BRICK_HEIGHT = 20;
+
     private ImageView brickTexture;
     private int hitPoints;
 

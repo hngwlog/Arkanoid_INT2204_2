@@ -1,11 +1,10 @@
 package com.raumania.gameplay.objects;
 
+import com.raumania.gameplay.objects.core.MovableObject;
 import com.raumania.utils.ResourcesLoader;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Rectangle;
 
-import static com.raumania.utils.Constants.PADDLE_SPEED;
-import static com.raumania.utils.Constants.GAME_WIDTH;
+import static com.raumania.gui.screen.GameScreen.GAME_WIDTH;
 
 import com.raumania.math.Vec2f;
 
@@ -18,6 +17,10 @@ import com.raumania.math.Vec2f;
  * </p>
  */
 public class Paddle extends MovableObject {
+    public static final int PADDLE_WIDTH = 100;
+    public static final int PADDLE_HEIGHT = 15;
+    public static final int PADDLE_SPEED = 350;
+    
     private ImageView paddleTexture;
 
     /**

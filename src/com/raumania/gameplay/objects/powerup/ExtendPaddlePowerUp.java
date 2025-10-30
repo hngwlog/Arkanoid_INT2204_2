@@ -6,9 +6,7 @@ import com.raumania.gameplay.objects.Paddle;
 import com.raumania.utils.ResourcesLoader;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
-import javafx.animation.Animation;
 
-import static com.raumania.utils.Constants.*;
 public class ExtendPaddlePowerUp extends PowerUp {
     private static final double SCALE = 1.5;
     private PauseTransition timer;
@@ -26,20 +24,20 @@ public class ExtendPaddlePowerUp extends PowerUp {
     public void applyEffect(GameManager gameManager) {
         powerUpCounter++;
         Paddle paddle = gameManager.getPaddle();
-        paddle.setWidth(PADDLE_WIDTH * SCALE);
-        paddle.getTexture().setFitWidth(PADDLE_WIDTH * SCALE);
+        paddle.setWidth(Paddle.PADDLE_WIDTH * SCALE);
+        paddle.getTexture().setFitWidth(Paddle.PADDLE_WIDTH * SCALE);
         PauseTransition timer = new PauseTransition(Duration.seconds(getDuration()));
         timer.setOnFinished(e -> {
             powerUpCounter--;
             if (powerUpCounter == 0) {
-                paddle.setWidth(PADDLE_WIDTH);
-                paddle.getTexture().setFitWidth(PADDLE_WIDTH);
+                paddle.setWidth(Paddle.PADDLE_WIDTH);
+                paddle.getTexture().setFitWidth(Paddle.PADDLE_WIDTH);
             }
         });
         timer.play();
     }
     private boolean isActivated(Paddle paddle) {
-        return paddle.getWidth() == PADDLE_WIDTH;
+        return paddle.getWidth() == Paddle.PADDLE_WIDTH;
     }
 
     @Override

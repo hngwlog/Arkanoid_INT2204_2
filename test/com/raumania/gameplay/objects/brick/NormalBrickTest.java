@@ -1,9 +1,6 @@
-package com.raumania.gameplay.objects;
+package com.raumania.gameplay.objects.brick;
 
 import com.raumania.utils.InitializeJavaFx;
-import javafx.application.Platform;
-import javafx.scene.layout.Pane;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

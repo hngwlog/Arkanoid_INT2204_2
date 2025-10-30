@@ -1,8 +1,7 @@
 package com.raumania.gui.screen;
 
-import static com.raumania.utils.Constants.*;
-
 import com.raumania.gui.manager.SceneManager;
+import com.raumania.main.Main;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
@@ -15,7 +14,7 @@ public abstract class Screen {
 
     public Screen(SceneManager sceneManager) {
         this.root = new Pane();
-        this.scene = new Scene(this.root, WINDOW_WIDTH, WINDOW_HEIGHT); // Default size, can be adjusted
+        this.scene = new Scene(this.root, Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT); // Default size, can be adjusted
     }
 
     public Scene getScene() {

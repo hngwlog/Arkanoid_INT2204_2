@@ -1,11 +1,11 @@
 package com.raumania.gameplay.objects;
 
+import com.raumania.gameplay.objects.core.MovableObject;
+import com.raumania.gui.screen.GameScreen;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import com.raumania.math.Vec2f;
-
-import static com.raumania.utils.Constants.*;
 
 /**
  * Represents the ball in the game.
@@ -15,6 +15,9 @@ import static com.raumania.utils.Constants.*;
  * </p>
  */
 public class Ball extends MovableObject {
+    public static final double BALL_RADIUS = 8;
+    public static final int BALL_SPEED = 360;
+
     private double radius;
     private Circle view;
     private boolean activeStatus;
@@ -133,17 +136,17 @@ public class Ball extends MovableObject {
         if (x <= 0) {
             x = 0;
             bounceHorizontally();
-        } else if (x + width >= GAME_WIDTH) {
-            x = GAME_WIDTH - width;
+        } else if (x + width >= GameScreen.GAME_WIDTH) {
+            x = GameScreen.GAME_WIDTH - width;
             bounceHorizontally();
         }
         if (y <= 0) {
             y = 0;
             bounceVertically();
-        } else if (y + height >= GAME_HEIGHT) {
+        } else if (y + height >= GameScreen.GAME_HEIGHT) {
             if (!isImmortal) deactivate();
             else {
-                y = GAME_HEIGHT - height;
+                y = GameScreen.GAME_HEIGHT - height;
                 bounceVertically();
             }
         }

@@ -1,5 +1,6 @@
 package com.raumania.utils;
 
+import com.raumania.main.Main;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.text.Text;
@@ -19,7 +20,7 @@ public class UIUtils {
         Button button =  newButton(title, 1, y, xScale, yScale);
         button.layoutBoundsProperty().addListener((
                 obs, oldVal, newVal) -> {
-            button.setLayoutX((Constants.WINDOW_WIDTH - newVal.getWidth())/2);});
+            button.setLayoutX((Main.WINDOW_WIDTH - newVal.getWidth())/2);});
         return button;
     }
 
@@ -69,11 +70,11 @@ public class UIUtils {
      */
     public static Text centerText(String title, double y,  double xScale, double yScale) {
         Text text = newText(title, 1, y, xScale, yScale);
-        double textX = (Constants.WINDOW_WIDTH - text.getLayoutBounds().getWidth())/2;
+        double textX = (Main.WINDOW_WIDTH - text.getLayoutBounds().getWidth())/2;
         text.setX(textX);
 
         text.textProperty().addListener((obs, oldVal, newVal) -> {
-            text.setX((Constants.WINDOW_WIDTH - text.getLayoutBounds().getWidth())/2);
+            text.setX((Main.WINDOW_WIDTH - text.getLayoutBounds().getWidth())/2);
         });
 
         return text;
