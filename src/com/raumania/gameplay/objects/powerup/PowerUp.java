@@ -61,8 +61,8 @@ public abstract class PowerUp extends MovableObject {
         return type.getDuration();
     }
 
-    public String getType() {
-        return type.name();
+    public PowerUpType getType() {
+        return type;
     }
 
     public abstract void applyEffect(GameManager gameManager);

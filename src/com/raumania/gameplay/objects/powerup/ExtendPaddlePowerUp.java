@@ -26,6 +26,7 @@ public class ExtendPaddlePowerUp extends PowerUp {
         Paddle paddle = gameManager.getPaddle();
         paddle.setWidth(Paddle.PADDLE_WIDTH * SCALE);
         paddle.getTexture().setFitWidth(Paddle.PADDLE_WIDTH * SCALE);
+
         PauseTransition timer = new PauseTransition(Duration.seconds(getDuration()));
         timer.setOnFinished(e -> {
             powerUpCounter--;
@@ -35,9 +36,6 @@ public class ExtendPaddlePowerUp extends PowerUp {
             }
         });
         timer.play();
-    }
-    private boolean isActivated(Paddle paddle) {
-        return paddle.getWidth() == Paddle.PADDLE_WIDTH;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class Paddle extends MovableObject {
     public static final int PADDLE_WIDTH = 100;
     public static final int PADDLE_HEIGHT = 15;
     public static final int PADDLE_SPEED = 350;
-    
+
     private ImageView paddleTexture;
 
     /**

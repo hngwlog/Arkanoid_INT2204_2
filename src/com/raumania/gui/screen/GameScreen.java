@@ -428,8 +428,7 @@ public class GameScreen extends Screen {
         double y = 0;
         double currentTime = System.currentTimeMillis() / 1000.0;
 
-        Iterator<EffectCountDown> iterator = manager.effectCountDownList.iterator();
-        while (iterator.hasNext()) {
+        for (Iterator<EffectCountDown> iterator = manager.getEffectCountDownList().iterator(); iterator.hasNext();) {
             EffectCountDown effectCountDown = iterator.next();
             double timeRemaining = effectCountDown.getTimeRemaining(currentTime);
 
@@ -456,7 +455,7 @@ public class GameScreen extends Screen {
                 text.setFill(Color.WHITE);
             }
 
-            text.setText(effectCountDown.effectType + ": " + String.format("%.1f", timeRemaining) + "s");
+            text.setText(effectCountDown.getEffectType() + ": " + String.format("%.1f", timeRemaining) + "s");
             text.setLayoutX(0);
             text.setLayoutY(y + 20);
             y += 20;
