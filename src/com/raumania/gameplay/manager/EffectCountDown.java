@@ -1,11 +1,13 @@
 package com.raumania.gameplay.manager;
 
-public class EffectCountDown {
-    public double startTime;
-    public double duration;
-    public String effectType;
+import com.raumania.gameplay.objects.powerup.PowerUpType;
 
-    public EffectCountDown(double startTime, double duration, String effectType) {
+public class EffectCountDown {
+    private double startTime;
+    private double duration;
+    private PowerUpType effectType;
+
+    public EffectCountDown(double startTime, double duration, PowerUpType effectType) {
         this.startTime = startTime;
         this.duration = duration;
         this.effectType = effectType;
@@ -13,5 +15,21 @@ public class EffectCountDown {
 
     public double getTimeRemaining(double now) {
         return Math.max(0.0, duration - (now - startTime));
+    }
+
+    public void setStartTime(double startTime) {
+        this.startTime = startTime;
+    }
+
+    public double getStartTime() {
+        return startTime;
+    }
+
+    public double getDuration() {
+        return duration;
+    }
+
+    public PowerUpType getEffectType() {
+        return effectType;
     }
 }

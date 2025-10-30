@@ -30,7 +30,7 @@ public class ImmortalPowerUp extends PowerUp {
         PauseTransition timer = new PauseTransition(Duration.seconds(getDuration()));
         timer.setOnFinished(e -> {
             powerUpCounter--;
-            if ( powerUpCounter == 0) {
+            if (powerUpCounter == 0) {
                 for (Ball ball : balls) {
                     ball.setImmortal(false);
                 }

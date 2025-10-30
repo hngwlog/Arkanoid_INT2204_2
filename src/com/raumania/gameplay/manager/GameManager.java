@@ -6,10 +6,7 @@ import com.raumania.gameplay.objects.brick.Brick;
 import com.raumania.gameplay.objects.brick.InvisibleBrick;
 import com.raumania.gameplay.objects.brick.NormalBrick;
 import com.raumania.gameplay.objects.brick.StrongBrick;
-import com.raumania.gameplay.objects.powerup.AddBallPowerUp;
-import com.raumania.gameplay.objects.powerup.ExtendPaddlePowerUp;
-import com.raumania.gameplay.objects.powerup.ImmortalPowerUp;
-import com.raumania.gameplay.objects.powerup.PowerUp;
+import com.raumania.gameplay.objects.powerup.*;
 import com.raumania.gui.screen.GameScreen;
 import com.raumania.utils.ResourcesLoader;
 import javafx.beans.property.ObjectProperty;
@@ -53,7 +50,7 @@ public class GameManager {
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
     private int score = 0;
     private LevelData currentLvl;
-    public List<EffectCountDown> effectCountDownList = new ArrayList<>();
+    private List<EffectCountDown> effectCountDownList = new ArrayList<>();
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
      */
@@ -272,21 +269,15 @@ public class GameManager {
                 powerUp.applyEffect(this);
 
                 double curTime = System.currentTimeMillis() / 1000.0;
-                String type = powerUp.getType();
+                PowerUpType type = powerUp.getType();
 
-                //  Kiểm tra xem loại power-up này đã có countdown chưa
-                //boolean found = false;
-                for (EffectCountDown countdown : effectCountDownList) {
-                    if (type != "ADD_BALL" && countdown.effectType.equals(type)) {
-                        // Nếu đã có, thì reset thời gian bắt đầu
-                        countdown.startTime = curTime;
-                        //found = true;
-                        break;
-                    }
-                }
-
-                //  Nếu chưa có countdown nào cho loại này → thêm mới
-                if (powerUp.getCounter() == 0) {
+                if (effectCountDownList.stream().anyMatch(x -> x.getEffectType() == type)) {
+                    effectCountDownList.forEach(e -> {
+                        if (e.getEffectType() == type) {
+                            e.setStartTime(curTime);
+                        }
+                    });
+                } else {
                     effectCountDownList.add(new EffectCountDown(curTime, powerUp.getDuration(), type));
                 }
 
@@ -343,6 +334,10 @@ public class GameManager {
      */
     public Paddle getPaddle() {
         return this.paddle;
+    }
+
+    public List<EffectCountDown> getEffectCountDownList() {
+        return effectCountDownList;
     }
 
     /**
@@ -443,10 +438,11 @@ public class GameManager {
         double rand = Math.random();
         if (rand < randomThreshold) {
             PowerUp powerUp;
+
             if (rand < randomThreshold/3) powerUp = new AddBallPowerUp(x, y, 30, 30);
             else if (rand < randomThreshold*2/3) powerUp = new ExtendPaddlePowerUp(x, y, 30, 30);
             else powerUp = new ImmortalPowerUp(x, y, 30, 30);
-            //powerUp = new ExtendPaddlePowerUp(x, y, 30, 30);
+
             powerUps.add(powerUp);
             root.getChildren().add(powerUp.getTexture());
         }
