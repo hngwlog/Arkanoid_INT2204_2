@@ -2,8 +2,8 @@
   "levelNumber": 1,
   "name": "Level 1",
   "brick": {
-    "width": 100,
-    "height": 30,
+    "width": 60,
+    "height": 24,
     "paddingX": 0,
     "paddingY": 5,
     "offsetX": 0,
@@ -12,13 +12,18 @@
   "legend": {
     "0": "empty",
     "1": "normal",
-    "2": "strong"
+    "2": "strong",
+    "3": "invisible"
   },
   "layout": [
-    "1111",
-    "2112"
-  ],
-  "powerups": [
-    {"type": "add_ball", "row": 2, "col": 3}
+    "0000000000",
+    "0000000000",
+    "0000000000",
+    "0000000000",
+    "0000000000",
+    "1111111111",
+    "3111111113",
+    "0000000000",
+    "1122222211"
   ]
 }

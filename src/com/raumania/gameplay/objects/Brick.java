@@ -40,6 +40,10 @@ public abstract class Brick extends GameObject {
         this.brickTexture.setFitHeight(getHeight());
     }
 
+    public ImageView getBrickTexture() {
+        return this.brickTexture;
+    }
+
     /**
      * Returns the graphical representation of the brick.
      *
@@ -56,6 +60,10 @@ public abstract class Brick extends GameObject {
      */
     public void setHitPoints(int hitPoints) {
         this.hitPoints = hitPoints;
+    }
+
+    public int getHitPoints() {
+        return this.hitPoints;
     }
 
     /**

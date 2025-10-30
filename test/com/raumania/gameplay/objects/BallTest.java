@@ -1,5 +1,6 @@
 package com.raumania.gameplay.objects;
 
+import javafx.scene.paint.Color;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,7 +8,7 @@ public class BallTest {
 
     @Test
     void testBounceHorizontallyVertically() {
-        Ball b = new Ball(100, 100);
+        Ball b = new Ball(100, 100, Color.BLACK);
         double dx = b.getDirection().x;
         double dy = b.getDirection().y;
         b.bounceHorizontally();
@@ -18,7 +19,7 @@ public class BallTest {
 
     @Test
     void testDeactivateAndIsActive() {
-        Ball b = new Ball(100, 100);
+        Ball b = new Ball(100, 100, Color.BLACK);
         assertTrue(b.isActive());
         b.deactivate();
         assertFalse(b.isActive());

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raumania.gameplay.objects.powerup.PowerUp;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,22 +22,20 @@ public class MapLoader {
         private final BrickConfig brick;
         private final Map<String, String> legend;
         private final List<String> layout;
-        private final List<PowerUpData> powerups;
-
+        //private final List<PowerUp> powerUps;
         @JsonCreator
         public LevelData(
                 @JsonProperty("levelNumber") int levelNumber,
                 @JsonProperty("name") String name,
                 @JsonProperty("brick") BrickConfig brick,
                 @JsonProperty("legend") Map<String, String> legend,
-                @JsonProperty("layout") List<String> layout,
-                @JsonProperty("powerups") List<PowerUpData> powerups) {
+                @JsonProperty("layout") List<String> layout) {
             this.levelNumber = levelNumber;
             this.name = name;
             this.brick = brick;
             this.legend = legend;
             this.layout = layout;
-            this.powerups = powerups;
+            //this.powerups = powerups;
         }
 
         @JsonGetter("levelNumber")
@@ -54,8 +53,8 @@ public class MapLoader {
         @JsonGetter("layout")
         public List<String> getLayout() { return layout; }
 
-        @JsonGetter("powerups")
-        public List<PowerUpData> getPowerups() { return powerups; }
+        /*@JsonGetter("powerups")
+        public List<PowerUpData> getPowerups() { return powerups; }*/
     }
 
     public static class BrickConfig {
@@ -101,7 +100,7 @@ public class MapLoader {
         public int getOffsetY() { return offsetY; }
     }
 
-    public static class PowerUpData {
+    /*public static class PowerUpData {
         private final String type;
         private final int row;
         private final int col;
@@ -124,7 +123,7 @@ public class MapLoader {
 
         @JsonGetter("col")
         public int getCol() { return col; }
-    }
+    }*/
 
     private MapLoader() {
     }

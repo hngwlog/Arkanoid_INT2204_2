@@ -7,7 +7,8 @@ import com.raumania.utils.UIUtils;
 import com.raumania.utils.Constants;
 import javafx.animation.AnimationTimer;
 
-import com.raumania.gameplay.manager.GameManager;
+import com.raumania.gameplay.manager.*;
+import com.raumania.gameplay.objects.powerup.PowerUp;
 import com.raumania.gui.manager.SceneManager;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javafx.geometry.Insets;
-
+import java.util.Iterator;
 /**
  * The game play screen that hosts the main game loop.
  * <p>
@@ -44,6 +45,7 @@ public class GameScreen extends Screen {
     Pane gamePlayScreen;
     Pane mainPause;
     Pane backChoice;
+    Pane timeRemainings;
     StackPane gamePane;
     Text score;
     Text fps;
@@ -58,7 +60,6 @@ public class GameScreen extends Screen {
     Text pauseChooseArrowRight;
     Text homeChooseArrowLeft;
     Text homeChooseArrowRight;
-
     /**
      * Creates a new {@code GameScreen} and binds it to the given {@link SceneManager}.
      * <p>
@@ -106,14 +107,20 @@ public class GameScreen extends Screen {
         fps = UIUtils.newText("FPS:", 350, 30, 2.0, 2.0);
         fps.setFont(Font.font("System", FontWeight.BOLD, 14));
         fps.setFill(Color.WHITE);
+
+        timeRemainings = new Pane();
+        timeRemainings.setLayoutX(80);
+        timeRemainings.setLayoutY(80);
+        gamePlayScreen.getChildren().add(timeRemainings);
+
         gamePlayScreen.getChildren().addAll(pause, border, score, fps);
         gamePlayScreen.setVisible(true);
 
         //Pause screen
         mainPause = new Pane();
-        // mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
+        //mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
         mainPause.setBackground(
-            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
+                new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
         mainPause.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         //Pause Title
@@ -158,7 +165,7 @@ public class GameScreen extends Screen {
         backChoice = new Pane();
         // backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
         backChoice.setBackground(
-            new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
+                new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
         backChoice.setPrefSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         // Title
@@ -258,7 +265,7 @@ public class GameScreen extends Screen {
         root.getChildren().addAll(gamePane, mainPause,  backChoice);
 
         Background bg = new Background(new BackgroundImage(
-            ResourcesLoader.loadImage("gamescreen_bg.png"),
+                ResourcesLoader.loadImage("gamescreen_bg.png"),
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
@@ -314,6 +321,7 @@ public class GameScreen extends Screen {
                     fps.setText("FPS: "+(int)(1.0/dt));
                     lastFPSUpdate = now;
                 }
+                showTime();
             }
         };
         switch (manager.getGameState()) {
@@ -413,4 +421,45 @@ public class GameScreen extends Screen {
         return -1;
     }
 
+    private void showTime() {
+        timeRemainings.getChildren().clear();
+        double y = 0;
+        double currentTime = System.currentTimeMillis() / 1000.0;
+
+        Iterator<EffectCountDown> iterator = manager.effectCountDownList.iterator();
+        while (iterator.hasNext()) {
+            EffectCountDown effectCountDown = iterator.next();
+            double timeRemaining = effectCountDown.getTimeRemaining(currentTime);
+
+            // Nếu hết thời gian thì xóa
+            if (timeRemaining <= 0) {
+                iterator.remove();
+                continue;
+            }
+
+            Text text = new Text();
+            text.setFont(Font.font("System", FontWeight.BOLD, 14));
+            // if time remaining is less than 1.5s, apply blink effect
+            if (timeRemaining <= 1.5) {
+                long millis = System.currentTimeMillis();
+
+                // frequency = 4Hz
+                boolean blink = (millis / 250) % 2 == 0;
+
+                if (blink)
+                    text.setFill(Color.RED);
+                else
+                    text.setFill(Color.WHITE);
+            } else {
+                text.setFill(Color.WHITE);
+            }
+
+            text.setText(effectCountDown.effectType + ": " + String.format("%.1f", timeRemaining) + "s");
+            text.setLayoutX(0);
+            text.setLayoutY(y + 20);
+            y += 20;
+
+            timeRemainings.getChildren().add(text);
+        }
+    }
 }
