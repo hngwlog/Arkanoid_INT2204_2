@@ -9,7 +9,7 @@ public class Constants {
     public static final int PADDLE_WIDTH = 100;
     public static final int PADDLE_HEIGHT = 15;
     public static final int PADDLE_SPEED = 350;
-    public static final int BRICK_WIDTH = 80;
+    public static final int BRICK_WIDTH = 60;
     public static final int BRICK_HEIGHT = 24;
     public static final int GAME_WIDTH = 480;
     public static final int GAME_HEIGHT = 620;
