@@ -3,6 +3,7 @@ package com.raumania.gui.screen;
 import com.raumania.core.AudioManager;
 import com.raumania.core.MapLoader;
 import com.raumania.gameplay.manager.GameManager;
+import com.raumania.gameplay.manager.InputHandler;
 import com.raumania.gui.manager.SceneManager;
 import com.raumania.main.Main;
 import com.raumania.utils.ResourcesLoader;
@@ -26,7 +27,9 @@ import java.util.*;
 
 public class MultiplayerGameScreen extends Screen {
     private GameManager leftManager;
+    private InputHandler leftInputHandler;
     private GameManager rightManager;
+    private InputHandler rightInputHandler;
     private AnimationTimer loop;
     private long past = - 1;
     Button pause;
@@ -42,6 +45,7 @@ public class MultiplayerGameScreen extends Screen {
         super(sceneManager);
 
         this.leftManager = new GameManager();
+        this.leftInputHandler = new InputHandler(this.leftManager, KeyCode.A, KeyCode.D);
         // handle game over state
         this.leftManager.gameStateProperty().addListener((obs, oldState, newState) -> {
             if (newState == GameManager.GameState.GAME_OVER) {
@@ -56,7 +60,9 @@ public class MultiplayerGameScreen extends Screen {
                 pause.play();
             }
         });
+
         this.rightManager = new GameManager();
+        this.rightInputHandler = new InputHandler(this.rightManager, KeyCode.LEFT, KeyCode.RIGHT);
         this.rightManager.gameStateProperty().addListener((obs, oldState, newState) -> {
             if (newState == GameManager.GameState.GAME_OVER) {
                 if (rightManager.isWinner()) {
@@ -182,17 +188,14 @@ public class MultiplayerGameScreen extends Screen {
                     }
                 }
             } else {
-                if (e.getCode() == KeyCode.A ||  e.getCode() == KeyCode.D) {
-                    leftManager.handleInput(e.getCode(), true);
-                } else if (e.getCode() == KeyCode.LEFT ||  e.getCode() == KeyCode.RIGHT) {
-                    rightManager.handleInput(e.getCode(), true);
-                }
+                leftInputHandler.onKeyPressed(e.getCode());
+                rightInputHandler.onKeyPressed(e.getCode());
             }
         });
 
         scene.setOnKeyReleased(e -> {
-            leftManager.handleInput(e.getCode(), false);
-            rightManager.handleInput(e.getCode(), false);
+            leftInputHandler.onKeyReleased(e.getCode());
+            rightInputHandler.onKeyReleased(e.getCode());
         });
 
         Pane leftGame = leftManager.getRoot();
@@ -260,6 +263,8 @@ public class MultiplayerGameScreen extends Screen {
 
         Platform.runLater(root::requestFocus);
         loop.start();
+        leftInputHandler.start();
+        rightInputHandler.start();
     }
 
     /**
@@ -272,6 +277,12 @@ public class MultiplayerGameScreen extends Screen {
     public void onStop() {
         if (loop != null) {
             loop.stop();
+        }
+        if (leftInputHandler != null) {
+            leftInputHandler.stop();
+        }
+        if (rightInputHandler != null) {
+            rightInputHandler.stop();
         }
     }
 

@@ -40,28 +40,30 @@ public class GameScreen extends Screen {
     public static final int GAME_START_X = (Main.WINDOW_WIDTH - GAME_WIDTH) / 2;
     public static final int GAME_HEIGHT = 620;
     public static final int GAME_START_Y = (Main.WINDOW_HEIGHT - GAME_HEIGHT) / 2 + 10;
+
     private GameManager manager;
+    private InputHandler inputHandler;
     private AnimationTimer loop;
     private long past = - 1;
-    Button pause;
-    Pane gamePlayScreen;
-    Pane mainPause;
-    Pane backChoice;
-    Pane timeRemainings;
-    StackPane gamePane;
-    Text score;
-    Text fps;
-    int pauseState = 0;
-    int pauseCnt = 0;
-    int homeCnt = 0;
-    List<Button> pauseButtons;
-    List<Button> homeButtons;
-    List<Double> pauseButtonYs;
-    List<Double> homeButtonYs;
-    Text pauseChooseArrowLeft;
-    Text pauseChooseArrowRight;
-    Text homeChooseArrowLeft;
-    Text homeChooseArrowRight;
+    private Button pause;
+    private Pane gamePlayScreen;
+    private Pane mainPause;
+    private Pane backChoice;
+    private Pane timeRemainings;
+    private StackPane gamePane;
+    private Text score;
+    private Text fps;
+    private int pauseState = 0;
+    private int pauseCnt = 0;
+    private int homeCnt = 0;
+    private List<Button> pauseButtons;
+    private List<Button> homeButtons;
+    private List<Double> pauseButtonYs;
+    private List<Double> homeButtonYs;
+    private Text pauseChooseArrowLeft;
+    private Text pauseChooseArrowRight;
+    private Text homeChooseArrowLeft;
+    private Text homeChooseArrowRight;
     /**
      * Creates a new {@code GameScreen} and binds it to the given {@link SceneManager}.
      * <p>
@@ -73,10 +75,12 @@ public class GameScreen extends Screen {
     public GameScreen(SceneManager sceneManager) {
         super(sceneManager);
         this.manager = new GameManager();
+        this.inputHandler = new InputHandler(manager, KeyCode.A, KeyCode.D);
         // handle game over state
         this.manager.gameStateProperty().addListener((obs, oldState, newState) -> {
             if (newState == GameManager.GameState.GAME_OVER) {
                 loop.stop();
+                inputHandler.stop();
                 HighScore.getInstance().setUnsavedScore(manager.getScore());
                 // Pause for 2 seconds before switching screens
                 PauseTransition pause = new PauseTransition();
@@ -253,11 +257,11 @@ public class GameScreen extends Screen {
             }
             // game manager handle input
             else {
-                manager.handleInput(e.getCode(), true);
+                inputHandler.onKeyPressed(e.getCode());
             }
         });
 
-        scene.setOnKeyReleased(e -> manager.handleInput(e.getCode(), false));
+        scene.setOnKeyReleased(e -> inputHandler.onKeyReleased(e.getCode()));
         Pane game = manager.getRoot();
         game.setClip(new Rectangle(GAME_WIDTH, GAME_HEIGHT));
         game.getTransforms().add(new Translate(GAME_START_X, GAME_START_Y));
@@ -334,6 +338,7 @@ public class GameScreen extends Screen {
         }
         Platform.runLater(root::requestFocus);
         loop.start();
+        inputHandler.start();
     }
 
     /**
@@ -346,6 +351,9 @@ public class GameScreen extends Screen {
     public void onStop() {
         if (loop != null) {
             loop.stop();
+        }
+        if (inputHandler != null) {
+            inputHandler.stop();
         }
     }
 
