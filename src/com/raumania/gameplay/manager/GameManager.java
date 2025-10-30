@@ -273,18 +273,18 @@ public class GameManager {
                 String type = powerUp.getType();
 
                 //  Kiểm tra xem loại power-up này đã có countdown chưa
-                boolean found = false;
+                //boolean found = false;
                 for (EffectCountDown countdown : effectCountDownList) {
-                    if (countdown.effectType.equals(type)) {
+                    if (type != "ADD_BALL" && countdown.effectType.equals(type)) {
                         // Nếu đã có, thì reset thời gian bắt đầu
                         countdown.startTime = curTime;
-                        found = true;
+                        //found = true;
                         break;
                     }
                 }
 
                 //  Nếu chưa có countdown nào cho loại này → thêm mới
-                if (!found) {
+                if (powerUp.getCounter() == 0) {
                     effectCountDownList.add(new EffectCountDown(curTime, powerUp.getDuration(), type));
                 }
 
