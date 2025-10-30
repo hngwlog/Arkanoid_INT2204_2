@@ -51,7 +51,7 @@ public class GameManager {
     private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
     private int score = 0;
     private LevelData currentLvl;
-
+    public List<EffectCountDown> effectCountDownList = new ArrayList<>();
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
      */
@@ -61,11 +61,11 @@ public class GameManager {
         initGame();
 
         Background bg = new Background(new BackgroundImage(
-            ResourcesLoader.loadImage("gamepane_bg.png"),
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.CENTER,
-            new BackgroundSize(1.0, 1.0, true, true, false, false)
+                ResourcesLoader.loadImage("gamepane_bg.png"),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(1.0, 1.0, true, true, false, false)
         ));
         root.setBackground(bg);
     }
@@ -107,6 +107,7 @@ public class GameManager {
         bricks.clear();
         balls.clear();
         powerUps.clear();
+        effectCountDownList.clear();
         root.getChildren().clear();
         score = 0;
         gameState.set(GameState.RUNNING);
@@ -133,6 +134,9 @@ public class GameManager {
                     case "strong":
                         brick = new StrongBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
                         break;
+                    case "invisible":
+                        brick = new InvisibleBrick(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                        break;
                     case "empty":
                     default:
                         continue;
@@ -143,16 +147,6 @@ public class GameManager {
             }
         }
 
-        // Add power-ups
-        /*if (currentLvl.getPowerups() != null) {
-            for (MapLoader.PowerUpData powerup : currentLvl.getPowerups() ) {
-                if (powerup.getType().equals("add_ball")) {
-                    double x = powerup.getCol() * BRICK_WIDTH + BRICK_WIDTH/2;
-                    double y = powerup.getRow() * BRICK_HEIGHT + BRICK_HEIGHT/2;
-                    spawnRandomPowerUp(x, y);
-                }
-            }
-        }*/
     }
     /**
      * Handles player input to control paddle movement.
@@ -253,7 +247,7 @@ public class GameManager {
                         score += 1;
                         root.getChildren().remove(brick.getTexture());
                         spawnRandomPowerUp(brick.getX() + (double) BRICK_WIDTH / 2,
-                                brick.getY() + (double) BRICK_HEIGHT / 2, 0.5);
+                                brick.getY() + (double) BRICK_HEIGHT / 2, 0.4);
                         it.remove();
                     }
                 }
@@ -269,9 +263,31 @@ public class GameManager {
             PowerUp powerUp = it.next();
             if (!powerUp.isActive()) {
                 it.remove();
+                continue;
             }
+
             if (powerUp.checkOverlap(paddle)) {
                 powerUp.applyEffect(this);
+
+                double curTime = System.currentTimeMillis() / 1000.0;
+                String type = powerUp.getType();
+
+                //  Kiểm tra xem loại power-up này đã có countdown chưa
+                boolean found = false;
+                for (EffectCountDown countdown : effectCountDownList) {
+                    if (countdown.effectType.equals(type)) {
+                        // Nếu đã có, thì reset thời gian bắt đầu
+                        countdown.startTime = curTime;
+                        found = true;
+                        break;
+                    }
+                }
+
+                //  Nếu chưa có countdown nào cho loại này → thêm mới
+                if (!found) {
+                    effectCountDownList.add(new EffectCountDown(curTime, powerUp.getDuration(), type));
+                }
+
                 root.getChildren().remove(powerUp.getTexture());
                 powerUp.deactivate();
                 it.remove();
@@ -388,7 +404,7 @@ public class GameManager {
         checkCollisions();
 
         if (mainBall == null
-            || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
+                || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
             gameOver();
         }
     }
@@ -400,13 +416,14 @@ public class GameManager {
      * representation is added to the scene graph.
      * </p>
      */
-    public void spawnBall(Color color) {
+    public Ball spawnBall(Color color) {
         // Create ball at paddle center
         double ballX = paddle.getX() + (paddle.getWidth() - BALL_RADIUS * 2) / 2.0;
         double ballY = paddle.getY() - BALL_RADIUS * 2 - 1;
         Ball newBall = new Ball(ballX, ballY, color);
         balls.add(newBall);
         root.getChildren().add(newBall.getView());
+        return newBall;
     }
 
     /**
@@ -427,6 +444,7 @@ public class GameManager {
             if (rand < randomThreshold/3) powerUp = new AddBallPowerUp(x, y, 30, 30);
             else if (rand < randomThreshold*2/3) powerUp = new ExtendPaddlePowerUp(x, y, 30, 30);
             else powerUp = new ImmortalPowerUp(x, y, 30, 30);
+            //powerUp = new ExtendPaddlePowerUp(x, y, 30, 30);
             powerUps.add(powerUp);
             root.getChildren().add(powerUp.getTexture());
         }

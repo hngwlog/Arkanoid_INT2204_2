@@ -6,13 +6,16 @@ import com.raumania.gameplay.objects.Paddle;
 import com.raumania.utils.ResourcesLoader;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
+import javafx.animation.Animation;
 
-public class ExtendPaddlePowerUp extends PowerUp{
+import static com.raumania.utils.Constants.*;
+public class ExtendPaddlePowerUp extends PowerUp {
     private static final double SCALE = 1.5;
-    private static final double DURATION = 5;
+    private PauseTransition timer;
+    protected static int powerUpCounter = 0;
 
     public ExtendPaddlePowerUp(double x, double y, double width, double height) {
-        super(x, y, width, height);
+        super(x, y, width, height, PowerUpType.EXTEND_PADDLE);
         SpriteSheet texture = new SpriteSheet(
                 ResourcesLoader.loadImage("extendpaddlepowerup.png"),
                 16, 16, 6, 6);
@@ -21,18 +24,27 @@ public class ExtendPaddlePowerUp extends PowerUp{
 
     @Override
     public void applyEffect(GameManager gameManager) {
+        powerUpCounter++;
         Paddle paddle = gameManager.getPaddle();
-        double originalWidth = paddle.getWidth();
-        double currentPaddleWidth = originalWidth * SCALE;
-
-        paddle.setWidth(currentPaddleWidth);
-        paddle.getTexture().setFitWidth(currentPaddleWidth);
-
-        PauseTransition timer = new PauseTransition(Duration.seconds(DURATION));
+        paddle.setWidth(PADDLE_WIDTH * SCALE);
+        paddle.getTexture().setFitWidth(PADDLE_WIDTH * SCALE);
+        PauseTransition timer = new PauseTransition(Duration.seconds(getDuration()));
         timer.setOnFinished(e -> {
-            paddle.setWidth(originalWidth);
-            paddle.getTexture().setFitWidth(originalWidth);
+            powerUpCounter--;
+            if (powerUpCounter == 0) {
+                paddle.setWidth(PADDLE_WIDTH);
+                paddle.getTexture().setFitWidth(PADDLE_WIDTH);
+            }
         });
         timer.play();
     }
+    private boolean isActivated(Paddle paddle) {
+        return paddle.getWidth() == PADDLE_WIDTH;
+    }
+
+    @Override
+    public int getCounter() {
+        return powerUpCounter;
+    }
+
 }

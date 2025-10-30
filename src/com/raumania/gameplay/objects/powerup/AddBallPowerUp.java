@@ -12,9 +12,10 @@ import java.util.List;
 import java.awt.*;
 
 public class AddBallPowerUp extends PowerUp {
-    private static final double DURATION = 5;
+    private static int powerUpCounter = 0;
+
     public AddBallPowerUp(double x, double y, double width, double height) {
-        super(x, y, width, height);
+        super(x, y, width, height, PowerUpType.ADD_BALL);
         SpriteSheet texture = new SpriteSheet(
                 ResourcesLoader.loadImage("addballpowerup.png"),
                 16, 16, 6, 6);
@@ -23,16 +24,19 @@ public class AddBallPowerUp extends PowerUp {
 
     @Override
     public void applyEffect(GameManager gameManager) {
-        gameManager.spawnBall(Color.WHITESMOKE);
-
-        PauseTransition timer = new PauseTransition(Duration.seconds(DURATION));
+        Ball spawned = gameManager.spawnBall(Color.WHITESMOKE);
+        PauseTransition timer = new PauseTransition(Duration.seconds(getDuration()));
         timer.setOnFinished(e -> {
-            List<Ball> balls
-                    = gameManager.getBallsList();
-            for (int i = 1; i < balls.size(); i++) {
-                (balls.get(i)).deactivate();
+            if (spawned != null && spawned.isActive()) {
+                spawned.deactivate();
             }
         });
         timer.play();
     }
+
+    @Override
+    public int getCounter() {
+        return powerUpCounter;
+    }
+
 }

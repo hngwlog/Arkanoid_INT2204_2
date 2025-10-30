@@ -9,10 +9,10 @@ import javafx.util.Duration;
 import java.util.List;
 
 public class ImmortalPowerUp extends PowerUp {
-    private static final double DURATION = 10;
+    protected static int powerUpCounter = 0;
 
     public ImmortalPowerUp(double x, double y, double width, double height) {
-        super(x, y, width, height);
+        super(x, y, width, height, PowerUpType.IMMORTAL);
         SpriteSheet texture = new SpriteSheet(
                 ResourcesLoader.loadImage("immortalpowerup.png"),
                 16, 16, 6, 6);
@@ -21,17 +21,26 @@ public class ImmortalPowerUp extends PowerUp {
 
     @Override
     public void applyEffect(GameManager gameManager) {
+        powerUpCounter++;
         List<Ball> balls = gameManager.getBallsList();
         for (Ball ball : balls) {
             ball.setImmortal(true);
         }
 
-        PauseTransition timer = new PauseTransition(Duration.seconds(DURATION));
+        PauseTransition timer = new PauseTransition(Duration.seconds(getDuration()));
         timer.setOnFinished(e -> {
-            for (Ball ball : balls) {
-                ball.setImmortal(false);
+            powerUpCounter--;
+            if ( powerUpCounter == 0) {
+                for (Ball ball : balls) {
+                    ball.setImmortal(false);
+                }
             }
         });
         timer.play();
+    }
+
+    @Override
+    public int getCounter() {
+        return powerUpCounter;
     }
 }

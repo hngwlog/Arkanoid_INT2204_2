@@ -2,8 +2,8 @@
   "levelNumber": 1,
   "name": "Level 1",
   "brick": {
-    "width": 100,
-    "height": 30,
+    "width": 80,
+    "height": 24,
     "paddingX": 0,
     "paddingY": 5,
     "offsetX": 0,
@@ -12,10 +12,16 @@
   "legend": {
     "0": "empty",
     "1": "normal",
-    "2": "strong"
+    "2": "strong",
+    "3": "invisible"
   },
   "layout": [
-    "1111",
-    "2112"
+    "000000",
+    "000000",
+    "000000",
+    "111111",
+    "311113",
+    "000000",
+    "112211"
   ]
 }
