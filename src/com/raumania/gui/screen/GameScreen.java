@@ -308,8 +308,6 @@ public class GameScreen extends Screen {
         //change player's key
         KeyCode leftKey = SettingScreen.sharedConfig.getFirstLeftKey();
         KeyCode rightKey = SettingScreen.sharedConfig.getFirstRightKey();
-        System.out.println(leftKey.getName());
-        System.out.println(rightKey.getName());
         inputHandler = new InputHandler(manager, leftKey, rightKey);
 
         //Turn on game screen

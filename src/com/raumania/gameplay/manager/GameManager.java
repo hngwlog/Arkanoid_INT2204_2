@@ -147,22 +147,6 @@ public class GameManager {
         }
 
     }
-    /**
-     * Handles player input to control paddle movement.
-     *
-     * @param key the pressed or released {@link KeyCode}
-     * @param pressed {@code true} if the key was pressed, {@code false} if released
-     */
-    public void handleInput(KeyCode key, boolean pressed) {
-        if (key == null) {
-            return;
-        }
-        switch (key) {
-            case LEFT, A -> leftHeld = pressed;
-            case RIGHT, D -> rightHeld = pressed;
-            default -> {}
-        }
-    }
 
     /**
      * Detects and resolves collisions between game objects such as the ball and the paddle.
@@ -388,15 +372,6 @@ public class GameManager {
         }
         for (PowerUp powerUp : powerUps) {
             powerUp.update(dt);
-        }
-        if (leftHeld != rightHeld) {
-            if (leftHeld) {
-                paddle.moveLeft();
-            } else {
-                paddle.moveRight();
-            }
-        } else {
-            paddle.stop();
         }
         paddle.update(dt);
         checkCollisions();

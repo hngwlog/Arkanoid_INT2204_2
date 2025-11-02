@@ -8,12 +8,10 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.raumania.core.AudioManager;
 import com.raumania.gui.manager.SceneManager;
 import javafx.application.Platform;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -33,12 +31,15 @@ public class SettingScreen extends Screen {
         @JsonIgnore
         private KeyCode secondRightKey;
 
-        private KeyCode getKey(String key, String defaultKey) {
-            return KeyCode.getKeyCode(key == null ?  defaultKey : key.toUpperCase());
-        }
-
-        private String getKeyName(KeyCode key,  String defaultKey) {
-            return key == null ?  defaultKey : key.getName();
+        private KeyCode getKey(String key, KeyCode defaultKey) {
+            if (key == null) {
+                return defaultKey;
+            }
+            try {
+                return KeyCode.valueOf(key.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return defaultKey;
+            }
         }
 
         public KeyCode getFirstLeftKey() {
@@ -59,22 +60,22 @@ public class SettingScreen extends Screen {
 
         @JsonProperty("firstRightKey")
         public void setFirstRightKey(String name) {
-            this.firstRightKey = getKey(name, "A");
+            this.firstRightKey = getKey(name, KeyCode.D);
         }
 
         @JsonProperty("firstLeftKey")
         public void setFirstLeftKey(String name) {
-            this.firstLeftKey = getKey(name, "D");
+            this.firstLeftKey = getKey(name, KeyCode.A);
         }
 
         @JsonProperty("secondLeftKey")
         public void setSecondLeftKey(String name) {
-            this.secondLeftKey = getKey(name, "LEFT");
+            this.secondLeftKey = getKey(name, KeyCode.LEFT);
         }
 
         @JsonProperty("secondRightKey")
         public void setSecondRightKey(String name) {
-            this.secondRightKey = getKey(name, "RIGHT");
+            this.secondRightKey = getKey(name, KeyCode.RIGHT);
         }
 
         public Config(@JsonProperty("volume") int volume,
@@ -83,10 +84,11 @@ public class SettingScreen extends Screen {
                       @JsonProperty("secondLeftKey") String secondLeftKey,
                       @JsonProperty("secondRightKey") String secondRightKey) {
             this.volume = volume;
-            this.firstLeftKey = getKey(firstLeftKey, "A");
-            this.firstRightKey = getKey(firstRightKey, "D");
-            this.secondLeftKey = getKey(secondLeftKey, "LEFT");
-            this.secondRightKey = getKey(secondRightKey, "RIGHT");
+
+            this.firstLeftKey  = getKey(firstLeftKey,  KeyCode.A);
+            this.firstRightKey = getKey(firstRightKey, KeyCode.D);
+            this.secondLeftKey = getKey(secondLeftKey, KeyCode.LEFT);
+            this.secondRightKey = getKey(secondRightKey, KeyCode.RIGHT);
         }
 
         @JsonGetter
@@ -96,22 +98,22 @@ public class SettingScreen extends Screen {
 
         @JsonGetter("firstLeftKey")
         public String getFirstLeftKeyName() {
-            return getKeyName(firstLeftKey, "A");
+            return firstLeftKey.name();
         }
 
         @JsonGetter("firstRightKey")
         public String getFirstRightKeyName() {
-            return getKeyName(firstRightKey, "D");
+            return firstRightKey.name();
         }
 
         @JsonGetter("secondLeftKey")
         public String getSecondLeftKeyName() {
-            return getKeyName(secondLeftKey, "LEFT");
+            return secondLeftKey.name();
         }
 
         @JsonGetter("secondRightKey")
         public String getSecondRightKeyName() {
-            return getKeyName(secondRightKey, "RIGHT");
+            return secondRightKey.name();
         }
     }
 
@@ -165,20 +167,7 @@ public class SettingScreen extends Screen {
                 2.0, 2.0);
         firstLeftKeyButton = UIUtils.newButton(config.getFirstLeftKeyName(),
                 450, 235, 2.0, 2.0);
-        firstLeftKeyButton.setOnMouseClicked(e -> {
-            Platform.runLater(root::requestFocus);
-            if (activeButton != null && activeButton!= firstLeftKeyButton) {
-                restoreButton(activeButton);
-            }
-            activeButton = firstLeftKeyButton;
-            firstLeftKeyButton.setText("Press any key...");
-            scene.setOnKeyPressed(ev -> {
-                config.setFirstLeftKey(ev.getCode().getName());
-                firstLeftKeyButton.setText(config.getFirstLeftKeyName());
-                saveConfig();
-                scene.setOnKeyPressed(null);
-            });
-        });
+        firstLeftKeyButton.setOnMouseClicked(this::changeKeyHandler);
 //        HBox firstLeft = new HBox(20);
 //        firstLeft.setAlignment(Pos.CENTER_LEFT);
 //        firstLeft.getChildren().addAll(firstLeftKeyText, firstLeftKeyButton);
@@ -187,20 +176,7 @@ public class SettingScreen extends Screen {
                 2.0, 2.0);
         firstRightKeyButton = UIUtils.newButton(config.getFirstRightKeyName(),
                 450, 285, 2.0, 2.0);
-        firstRightKeyButton.setOnMouseClicked(e -> {
-            Platform.runLater(root::requestFocus);
-            if (activeButton != null && activeButton!= firstRightKeyButton) {
-                restoreButton(activeButton);
-            }
-            activeButton = firstRightKeyButton;
-            firstRightKeyButton.setText("Press any key...");
-            scene.setOnKeyPressed(ev -> {
-                config.setFirstRightKey(ev.getCode().getName());
-                firstRightKeyButton.setText(config.getFirstRightKeyName());
-                saveConfig();
-                scene.setOnKeyPressed(null);
-            });
-        });
+        firstRightKeyButton.setOnMouseClicked(this::changeKeyHandler);
 //        HBox firstRight = new HBox(20);
 //        firstRight.setAlignment(Pos.CENTER_LEFT);
 //        firstRight.getChildren().addAll(firstRightKeyText, firstRightKeyButton);
@@ -209,20 +185,7 @@ public class SettingScreen extends Screen {
                 2.0, 2.0);
         secondLeftKeyButton = UIUtils.newButton(config.getSecondLeftKeyName(),
                 450, 335, 2.0, 2.0);
-        secondLeftKeyButton.setOnMouseClicked(e -> {
-            Platform.runLater(root::requestFocus);
-            if (activeButton != null && activeButton!= secondLeftKeyButton) {
-                restoreButton(activeButton);
-            }
-            activeButton = secondLeftKeyButton;
-            secondLeftKeyButton.setText("Press any key...");
-            scene.setOnKeyPressed(ev -> {
-                config.setSecondLeftKey(ev.getCode().getName());
-                secondLeftKeyButton.setText(config.getSecondLeftKeyName());
-                saveConfig();
-                scene.setOnKeyPressed(null);
-            });
-        });
+        secondLeftKeyButton.setOnMouseClicked(this::changeKeyHandler);
 //        HBox secondLeft = new HBox(20);
 //        secondLeft.setAlignment(Pos.CENTER_LEFT);
 //        secondLeft.getChildren().addAll(secondLeftKeyText, secondLeftKeyButton);
@@ -231,20 +194,7 @@ public class SettingScreen extends Screen {
                 2.0, 2.0);
         secondRightKeyButton = UIUtils.newButton(config.getSecondRightKeyName(),
                 450, 385, 2.0, 2.0);
-        secondRightKeyButton.setOnMouseClicked(e -> {
-            Platform.runLater(root::requestFocus);
-            if (activeButton != null && activeButton!= secondRightKeyButton) {
-                restoreButton(activeButton);
-            }
-            activeButton = secondRightKeyButton;
-            secondRightKeyButton.setText("Press any key...");
-            scene.setOnKeyPressed(ev -> {
-                config.setSecondRightKey(ev.getCode().getName());
-                secondRightKeyButton.setText(config.getSecondRightKeyName());
-                saveConfig();
-                scene.setOnKeyPressed(null);
-            });
-        });
+        secondRightKeyButton.setOnMouseClicked(this::changeKeyHandler);
 //        HBox secondRight = new HBox(20);
 //        secondRight.setAlignment(Pos.CENTER_LEFT);
 //        secondRight.getChildren().addAll(secondRightKeyText, secondRightKeyButton);
@@ -260,6 +210,21 @@ public class SettingScreen extends Screen {
                 firstLeftKeyButton, firstRightKeyText, firstRightKeyButton,
                 secondLeftKeyText, secondRightKeyText, secondLeftKeyButton,
                 secondRightKeyButton, back);
+    }
+
+    private void changeKeyHandler(MouseEvent event) {
+        Platform.runLater(root::requestFocus);
+        if (activeButton != null && activeButton != event.getSource()) {
+            restoreButton(activeButton);
+        }
+        activeButton = (Button) event.getSource();
+        ((Button) event.getSource()).setText("Press any key...");
+        scene.setOnKeyPressed(ev -> {
+            config.setFirstLeftKey(ev.getCode().name());
+            ((Button) event.getSource()).setText(config.getFirstLeftKey().getName());
+            saveConfig();
+            scene.setOnKeyPressed(null);
+        });
     }
 
     private void restoreButton(Button btn) {

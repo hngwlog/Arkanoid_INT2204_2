@@ -1,5 +1,6 @@
 package com.raumania.gameplay.manager;
 
+import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,15 +34,18 @@ public class InputHandler {
         thread = new Thread(() -> {
             while (running.get()) {
                 // if not pressed, send release event will not hurt
-                if (leftPressed)
-                    gameManager.handleInput(leftKey, true);
-                else
-                    gameManager.handleInput(leftKey, false);
-
-                if (rightPressed)
-                    gameManager.handleInput(rightKey, true);
-                else
-                    gameManager.handleInput(rightKey, false);
+                // use Platform.runLater because movement affects UI
+                if (leftPressed != rightPressed) {
+                    Platform.runLater(() -> {
+                        if (leftPressed) {
+                            Platform.runLater(gameManager.getPaddle()::moveLeft);
+                        } else if (rightPressed) {
+                            Platform.runLater(gameManager.getPaddle()::moveRight);
+                        }
+                    });
+                } else {
+                    Platform.runLater(gameManager.getPaddle()::stop);
+                }
 
                 try {
                     // avoid full CPU
@@ -51,6 +55,8 @@ public class InputHandler {
                 }
             }
         });
+        // close thread when application exits
+        thread.setDaemon(true);
         thread.start();
     }
 
