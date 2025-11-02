@@ -11,17 +11,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class HighScore {
     /**
      * A single high score entry.
      */
     public static class HighScoreEntry {
+        String level;
         String name;
         int score;
 
         @JsonCreator
-        HighScoreEntry(@JsonProperty("name") String name, @JsonProperty("score") int score) {
+        HighScoreEntry(@JsonProperty("level") String level, @JsonProperty("name") String name, @JsonProperty("score") int score) {
+            this.level = level;
             this.name = name;
             this.score = score;
         }
@@ -35,13 +38,18 @@ public class HighScore {
         public int getScore() {
             return score;
         }
+
+        @JsonGetter("level")
+        public String getLevel() {
+            return level;
+        }
     }
     private final String HIGHSCORE_FILE = "./highscores.json";
     public static final int MAX_ENTRIES = 10;
     private static final HighScore hiScore = new HighScore();
     private boolean haveUnsavedScore = false;
     private int unsavedScore = 0;
-    private ArrayList<HighScoreEntry> entries;
+    private List<HighScoreEntry> entries;
 
     private HighScore() {
         loadHighScores();
@@ -51,28 +59,8 @@ public class HighScore {
         return hiScore;
     }
 
-    public ArrayList<HighScoreEntry> getEntries() {
+    public List<HighScoreEntry> getEntries() {
         return entries;
-    }
-
-    /**
-     * Sets an unsaved score that can be added to the high score list later.
-     * @param score The score to set.
-     */
-    public void setUnsavedScore(int score) {
-        if (score < 0 || (entries.size() == MAX_ENTRIES && score <= entries.getLast().score)) {
-            return;
-        }
-        haveUnsavedScore = true;
-        unsavedScore = score;
-    }
-
-    /**
-     * Check for an unsaved score.
-     * @return true if there is an unsaved score, false otherwise.
-     */
-    public boolean hasUnsavedScore() {
-        return haveUnsavedScore;
     }
 
     /**
@@ -81,28 +69,16 @@ public class HighScore {
      * @param name The name of the player.
      * @param score The score of the player.
      */
-    public void addHighScore(String name, int score) {
-        entries.add(new HighScoreEntry(name, score));
+    public void addHighScore(String level, String name, int score) {
+        entries.add(new HighScoreEntry(level, name, score));
         entries.sort((a, b) -> b.score - a.score);
-        if (entries.size() > MAX_ENTRIES) {
-            entries.removeLast();
-        }
-        saveHighScores();
-    }
 
-    /**
-     * Adds the unsaved score with the given name to the high score list.
-     * If there is no unsaved score, this method does nothing.
-     * After adding, the unsaved score is cleared.
-     * @param name The name of the player.
-     */
-    public void addHighScore(String name) {
-        if (!haveUnsavedScore) {
-            return;
+        List<HighScoreEntry> toRemove = entries.stream().filter(e -> e.level.equals(level)).toList();
+        if (toRemove.size() > MAX_ENTRIES) {
+            entries.removeAll(toRemove.subList(MAX_ENTRIES, toRemove.size()));
         }
-        addHighScore(name, unsavedScore);
-        haveUnsavedScore = false;
-        unsavedScore = 0;
+
+        saveHighScores();
     }
 
     private void loadHighScores() {

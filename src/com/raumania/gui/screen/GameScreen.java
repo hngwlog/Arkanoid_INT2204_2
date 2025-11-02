@@ -80,7 +80,6 @@ public class GameScreen extends Screen {
             if (newState == GameManager.GameState.GAME_OVER) {
                 loop.stop();
                 inputHandler.stop();
-                HighScore.getInstance().setUnsavedScore(manager.getScore());
                 // Pause for 2 seconds before switching screens
                 PauseTransition pause = new PauseTransition();
                 pause.setDuration(Duration.seconds(2));

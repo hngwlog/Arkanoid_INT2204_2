@@ -273,6 +273,10 @@ public class GameManager {
         }
     }
 
+    public LevelData getCurrentLvl() {
+        return currentLvl;
+    }
+
     public void setCurrentLvl(LevelData lvl) {
         currentLvl = lvl;
         initGame();
