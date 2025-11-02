@@ -41,29 +41,28 @@ public class GameScreen extends Screen {
     public static final int GAME_HEIGHT = 620;
     public static final int GAME_START_Y = (Main.WINDOW_HEIGHT - GAME_HEIGHT) / 2 + 10;
 
-    private GameManager manager;
+    private final GameManager manager;
     private InputHandler inputHandler;
     private AnimationTimer loop;
     private long past = - 1;
-    private Button pause;
-    private Pane gamePlayScreen;
+    private final Button pause;
     private Pane mainPause;
     private Pane backChoice;
     private Pane timeRemainings;
     private StackPane gamePane;
-    private Text score;
-    private Text fps;
+    private final Text score;
+    private final Text fps;
     private int pauseState = 0;
     private int pauseCnt = 0;
     private int homeCnt = 0;
-    private List<Button> pauseButtons;
-    private List<Button> homeButtons;
-    private List<Double> pauseButtonYs;
-    private List<Double> homeButtonYs;
-    private Text pauseChooseArrowLeft;
-    private Text pauseChooseArrowRight;
-    private Text homeChooseArrowLeft;
-    private Text homeChooseArrowRight;
+    private final List<Button> pauseButtons;
+    private final List<Button> homeButtons;
+    private final List<Double> pauseButtonYs;
+    private final List<Double> homeButtonYs;
+    private final Text pauseChooseArrowLeft;
+    private final Text pauseChooseArrowRight;
+    private final Text homeChooseArrowLeft;
+    private final Text homeChooseArrowRight;
     /**
      * Creates a new {@code GameScreen} and binds it to the given {@link SceneManager}.
      * <p>
@@ -77,7 +76,8 @@ public class GameScreen extends Screen {
         this.manager = new GameManager();
         this.inputHandler = new InputHandler(manager, KeyCode.A, KeyCode.D);
         // handle game over state
-        this.manager.gameStateProperty().addListener((obs, oldState, newState) -> {
+        this.manager.gameStateProperty().addListener((obs, oldState,
+                                                      newState) -> {
             if (newState == GameManager.GameState.GAME_OVER) {
                 loop.stop();
                 inputHandler.stop();
@@ -93,7 +93,7 @@ public class GameScreen extends Screen {
         });
 
         //Game play screen
-        gamePlayScreen = new Pane();
+        Pane gamePlayScreen = new Pane();
         //Pause button
         pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
         pause.setOnAction(e -> {
@@ -149,7 +149,9 @@ public class GameScreen extends Screen {
         });
         //choose arrows
         pauseChooseArrowLeft = UIUtils.newText(">" , 383.75, 212.5, 2.0, 2.0);
+        pauseChooseArrowLeft.setFill(Color.GREEN);
         pauseChooseArrowRight = UIUtils.newText("<" , 610.76, 212.5, 2.0, 2.0);
+        pauseChooseArrowRight.setFill(Color.GREEN);
         //buttons list
         pauseButtons = new ArrayList<>();
         Collections.addAll(pauseButtons, resume, home);
@@ -303,6 +305,13 @@ public class GameScreen extends Screen {
     public void onStart() {
         // stop any playing music
         AudioManager.getInstance().stop();
+
+        //change player's key
+        KeyCode leftKey = SettingScreen.sharedConfig.getFirstLeftKey();
+        KeyCode rightKey = SettingScreen.sharedConfig.getFirstRightKey();
+        System.out.println(leftKey.getName());
+        System.out.println(rightKey.getName());
+        inputHandler = new InputHandler(manager, leftKey, rightKey);
 
         //Turn on game screen
         mainPause.setVisible(false);

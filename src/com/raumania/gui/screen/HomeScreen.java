@@ -37,28 +37,24 @@ public class HomeScreen extends Screen {
 
         //Play button
         Button play =  UIUtils.centerButton("Play Multiplayer", 200, 2.0, 2.0);
-        //Button play = new Button("Play");
         play.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.MULTIPLAYER);
         });
 
         //Level select button
         Button levelSelect =  UIUtils.centerButton("Single player", 300, 2.0, 2.0);
-        //Button levelSelect = new Button("Select Level");
         levelSelect.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.LEVEL_SELECT);
         });
 
         //Setting button
         Button setting = UIUtils.centerButton("Setting", 400, 2.0, 2.0);
-        //Button setting = new Button("Setting");
         setting.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.SETTINGS);
         });
 
         //Quit button
         Button quit = UIUtils.centerButton("Quit", 500, 2.0, 2.0);
-        //Button quit = new Button("Quit");
         quit.setOnAction(e -> {
             Platform.exit();
         });
@@ -77,16 +73,7 @@ public class HomeScreen extends Screen {
 
         int n = buttons.size();
         root.getChildren().addAll(title, chooseArrowLeft ,chooseArrowRight);
-        //VBox button = new VBox(100);
-        //button.setAlignment(Pos.CENTER);
-//        button.getChildren().addAll(title
-//                //, chooseArrowLeft
-//                //, chooseArrowRight
-//                );
-        //button.getChildren().addAll(buttons);
         root.getChildren().addAll(buttons);
-        //button.layoutXProperty().bind(root.widthProperty().subtract(button.widthProperty()).divide(2));
-        //button.layoutYProperty().bind(root.heightProperty().subtract(button.heightProperty()).divide(2));
         Platform.runLater(root::requestFocus);
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
@@ -139,6 +126,8 @@ public class HomeScreen extends Screen {
 
     @Override
     public void onStart() {
+        Platform.runLater(this::updateCnt);
+        Platform.runLater(root::requestFocus);
         AudioManager.getInstance().playBGMusic(AudioManager.HOME_MUSIC);
     }
 }

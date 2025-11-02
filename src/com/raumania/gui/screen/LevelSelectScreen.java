@@ -2,6 +2,7 @@ package com.raumania.gui.screen;
 
 import com.raumania.core.MapLoader;
 import com.raumania.gui.manager.SceneManager;
+import com.raumania.utils.UIUtils;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
@@ -75,6 +76,12 @@ public class LevelSelectScreen extends Screen {
             }
         });
 
+        //exit button
+        Button exit = UIUtils.newButton("Back", 60, 40, 2.0, 2.0);
+        exit.setOnAction(e -> {
+            sceneManager.switchScreen(ScreenType.HOME);
+        });
+
         //arrow key -> left, right , enter -> chose level
         Platform.runLater(root::requestFocus);
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -88,10 +95,13 @@ public class LevelSelectScreen extends Screen {
                 case ENTER:
                     level.fire();
                     break;
+                case ESCAPE:
+                    exit.fire();
+                    break;
             }
         });
 
-        root.getChildren().addAll(left, right, level);
+        root.getChildren().addAll(left, right, level, exit);
     }
 
     /**
@@ -108,6 +118,11 @@ public class LevelSelectScreen extends Screen {
      */
     private void updateLevel(Button level) {
         level.setText("Level " + (currentLevel+1));
+    }
+
+    @Override
+    public void onStart() {
+        Platform.runLater(root::requestFocus);
     }
 
 }
