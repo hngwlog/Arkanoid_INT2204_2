@@ -36,23 +36,46 @@ public class SettingScreen extends Screen {
         private KeyCode getKey(String key, String defaultKey) {
             return KeyCode.getKeyCode(key == null ?  defaultKey : key.toUpperCase());
         }
+
         private String getKeyName(KeyCode key,  String defaultKey) {
             return key == null ?  defaultKey : key.getName();
         }
 
-        public KeyCode getFirstLeftKey() {return firstLeftKey;}
-        public KeyCode getFirstRightKey() {return firstRightKey;}
-        public KeyCode getSecondLeftKey() {return secondLeftKey;}
-        public KeyCode getSecondRightKey() {return secondRightKey;}
+        public KeyCode getFirstLeftKey() {
+            return firstLeftKey;    
+        }
+
+        public KeyCode getFirstRightKey() {
+            return firstRightKey;
+        }
+
+        public KeyCode getSecondLeftKey() {
+            return secondLeftKey;
+        }
+
+        public KeyCode getSecondRightKey() {
+            return secondRightKey;
+        }
 
         @JsonProperty("firstRightKey")
-        public void setFirstRightKey(String name) {this.firstRightKey = getKey(name, "A");}
+        public void setFirstRightKey(String name) {
+            this.firstRightKey = getKey(name, "A");
+        }
+
         @JsonProperty("firstLeftKey")
-        public void setFirstLeftKey(String name) {this.firstLeftKey = getKey(name, "D");}
+        public void setFirstLeftKey(String name) {
+            this.firstLeftKey = getKey(name, "D");
+        }
+
         @JsonProperty("secondLeftKey")
-        public void setSecondLeftKey(String name) {this.secondLeftKey = getKey(name, "LEFT");}
+        public void setSecondLeftKey(String name) {
+            this.secondLeftKey = getKey(name, "LEFT");
+        }
+
         @JsonProperty("secondRightKey")
-        public void setSecondRightKey(String name) {this.secondRightKey = getKey(name, "RIGHT");}
+        public void setSecondRightKey(String name) {
+            this.secondRightKey = getKey(name, "RIGHT");
+        }
 
         public Config(@JsonProperty("volume") int volume,
                       @JsonProperty("firstLeftKey") String firstLeftKey,
@@ -70,16 +93,28 @@ public class SettingScreen extends Screen {
         public int getVolume() {
             return volume;
         }
-        @JsonGetter("firstLeftKey")
-        public String getFirstLeftKeyName() {return getKeyName(firstLeftKey, "A");}
-        @JsonGetter("firstRightKey")
-        public String getFirstRightKeyName() {return getKeyName(firstRightKey, "D");}
-        @JsonGetter("secondLeftKey")
-        public String getSecondLeftKeyName() {return getKeyName(secondLeftKey, "LEFT");}
-        @JsonGetter("secondRightKey")
-        public String getSecondRightKeyName() {return getKeyName(secondRightKey, "RIGHT");}
 
+        @JsonGetter("firstLeftKey")
+        public String getFirstLeftKeyName() {
+            return getKeyName(firstLeftKey, "A");
+        }
+
+        @JsonGetter("firstRightKey")
+        public String getFirstRightKeyName() {
+            return getKeyName(firstRightKey, "D");
+        }
+
+        @JsonGetter("secondLeftKey")
+        public String getSecondLeftKeyName() {
+            return getKeyName(secondLeftKey, "LEFT");
+        }
+
+        @JsonGetter("secondRightKey")
+        public String getSecondRightKeyName() {
+            return getKeyName(secondRightKey, "RIGHT");
+        }
     }
+
     // file to save the volume
     private static final String CONFIG_FILE = "config.json";
     private static final Config DEFAULT_CONFIG = new Config(100, "A", "D",
@@ -228,12 +263,19 @@ public class SettingScreen extends Screen {
     }
 
     private void restoreButton(Button btn) {
-        if (btn == null) return;
+        if (btn == null) {
+            return;
+        }
 
-        if (btn == firstLeftKeyButton) btn.setText(config.getFirstLeftKeyName());
-        else if (btn == firstRightKeyButton) btn.setText(config.getFirstRightKeyName());
-        else if (btn == secondLeftKeyButton) btn.setText(config.getSecondLeftKeyName());
-        else if (btn == secondRightKeyButton) btn.setText(config.getSecondRightKeyName());
+        if (btn == firstLeftKeyButton) {
+            btn.setText(config.getFirstLeftKeyName());
+        } else if (btn == firstRightKeyButton) {
+            btn.setText(config.getFirstRightKeyName());
+        } else if (btn == secondLeftKeyButton) {
+            btn.setText(config.getSecondLeftKeyName());
+        } else if (btn == secondRightKeyButton) {
+            btn.setText(config.getSecondRightKeyName());
+        }
     }
 
     /**
@@ -286,5 +328,4 @@ public class SettingScreen extends Screen {
     public void onStart() {
         Platform.runLater(root::requestFocus);
     }
-
 }

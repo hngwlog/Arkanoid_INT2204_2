@@ -76,8 +76,7 @@ public class GameScreen extends Screen {
         this.manager = new GameManager();
         this.inputHandler = new InputHandler(manager, KeyCode.A, KeyCode.D);
         // handle game over state
-        this.manager.gameStateProperty().addListener((obs, oldState,
-                                                      newState) -> {
+        this.manager.gameStateProperty().addListener((obs, oldState, newState) -> {
             if (newState == GameManager.GameState.GAME_OVER) {
                 loop.stop();
                 inputHandler.stop();
