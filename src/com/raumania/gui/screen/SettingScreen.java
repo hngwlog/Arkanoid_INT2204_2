@@ -1,13 +1,19 @@
 package com.raumania.gui.screen;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.raumania.core.AudioManager;
 import com.raumania.gui.manager.SceneManager;
+import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -16,22 +22,110 @@ import com.raumania.utils.UIUtils;
 
 
 public class SettingScreen extends Screen {
-    private static class Config {
+    public static class Config {
         private int volume;
+        @JsonIgnore
+        private KeyCode firstLeftKey;
+        @JsonIgnore
+        private KeyCode firstRightKey;
+        @JsonIgnore
+        private KeyCode secondLeftKey;
+        @JsonIgnore
+        private KeyCode secondRightKey;
 
-        public Config(@JsonProperty("volume") int volume) {
+        private KeyCode getKey(String key, String defaultKey) {
+            return KeyCode.getKeyCode(key == null ?  defaultKey : key.toUpperCase());
+        }
+
+        private String getKeyName(KeyCode key,  String defaultKey) {
+            return key == null ?  defaultKey : key.getName();
+        }
+
+        public KeyCode getFirstLeftKey() {
+            return firstLeftKey;    
+        }
+
+        public KeyCode getFirstRightKey() {
+            return firstRightKey;
+        }
+
+        public KeyCode getSecondLeftKey() {
+            return secondLeftKey;
+        }
+
+        public KeyCode getSecondRightKey() {
+            return secondRightKey;
+        }
+
+        @JsonProperty("firstRightKey")
+        public void setFirstRightKey(String name) {
+            this.firstRightKey = getKey(name, "A");
+        }
+
+        @JsonProperty("firstLeftKey")
+        public void setFirstLeftKey(String name) {
+            this.firstLeftKey = getKey(name, "D");
+        }
+
+        @JsonProperty("secondLeftKey")
+        public void setSecondLeftKey(String name) {
+            this.secondLeftKey = getKey(name, "LEFT");
+        }
+
+        @JsonProperty("secondRightKey")
+        public void setSecondRightKey(String name) {
+            this.secondRightKey = getKey(name, "RIGHT");
+        }
+
+        public Config(@JsonProperty("volume") int volume,
+                      @JsonProperty("firstLeftKey") String firstLeftKey,
+                      @JsonProperty("firstRightKey") String firstRightKey,
+                      @JsonProperty("secondLeftKey") String secondLeftKey,
+                      @JsonProperty("secondRightKey") String secondRightKey) {
             this.volume = volume;
+            this.firstLeftKey = getKey(firstLeftKey, "A");
+            this.firstRightKey = getKey(firstRightKey, "D");
+            this.secondLeftKey = getKey(secondLeftKey, "LEFT");
+            this.secondRightKey = getKey(secondRightKey, "RIGHT");
         }
 
         @JsonGetter
         public int getVolume() {
             return volume;
         }
+
+        @JsonGetter("firstLeftKey")
+        public String getFirstLeftKeyName() {
+            return getKeyName(firstLeftKey, "A");
+        }
+
+        @JsonGetter("firstRightKey")
+        public String getFirstRightKeyName() {
+            return getKeyName(firstRightKey, "D");
+        }
+
+        @JsonGetter("secondLeftKey")
+        public String getSecondLeftKeyName() {
+            return getKeyName(secondLeftKey, "LEFT");
+        }
+
+        @JsonGetter("secondRightKey")
+        public String getSecondRightKeyName() {
+            return getKeyName(secondRightKey, "RIGHT");
+        }
     }
+
     // file to save the volume
     private static final String CONFIG_FILE = "config.json";
-    private static final Config DEFAULT_CONFIG = new Config(100);
+    private static final Config DEFAULT_CONFIG = new Config(100, "A", "D",
+            "LEFT", "RIGHT");
     private Config config;
+    public static Config sharedConfig;
+    private Button activeButton;
+    private final Button firstLeftKeyButton;
+    private final Button firstRightKeyButton;
+    private final Button secondLeftKeyButton;
+    private final Button secondRightKeyButton;
 
     public SettingScreen(SceneManager sceneManager) {
         super(sceneManager);
@@ -51,9 +145,13 @@ public class SettingScreen extends Screen {
         //Slider change value -> volume
         slider.valueProperty().addListener((obs, oldVal, newVal) -> {
             volumeText.setText("Volume: " + newVal.intValue() + "%");
+            Platform.runLater(root::requestFocus);
             config.volume = newVal.intValue();
             saveConfig();
         });
+//        HBox volumeBox = new HBox(200);
+//        volumeBox.setAlignment(Pos.CENTER_LEFT);
+//        volumeBox.getChildren().addAll(volumeText, slider);
 
         //Back to Home button
         Button back = UIUtils.centerButton("Back to Home", 500, 2.0, 2.0);
@@ -61,7 +159,123 @@ public class SettingScreen extends Screen {
             sceneManager.switchScreen(ScreenType.HOME);
         });
 
-        root.getChildren().addAll(volumeText, slider, back);
+        Text moveTitle = UIUtils.newText("Movement Keys", 100, 200, 2.0,
+                2.0);
+        Text firstLeftKeyText  = UIUtils.newText("Player 1 Left Key", 115, 250,
+                2.0, 2.0);
+        firstLeftKeyButton = UIUtils.newButton(config.getFirstLeftKeyName(),
+                450, 235, 2.0, 2.0);
+        firstLeftKeyButton.setOnMouseClicked(e -> {
+            Platform.runLater(root::requestFocus);
+            if (activeButton != null && activeButton!= firstLeftKeyButton) {
+                restoreButton(activeButton);
+            }
+            activeButton = firstLeftKeyButton;
+            firstLeftKeyButton.setText("Press any key...");
+            scene.setOnKeyPressed(ev -> {
+                config.setFirstLeftKey(ev.getCode().getName());
+                firstLeftKeyButton.setText(config.getFirstLeftKeyName());
+                saveConfig();
+                scene.setOnKeyPressed(null);
+            });
+        });
+//        HBox firstLeft = new HBox(20);
+//        firstLeft.setAlignment(Pos.CENTER_LEFT);
+//        firstLeft.getChildren().addAll(firstLeftKeyText, firstLeftKeyButton);
+
+        Text firstRightKeyText = UIUtils.newText("Player 1 Right Key", 117, 300,
+                2.0, 2.0);
+        firstRightKeyButton = UIUtils.newButton(config.getFirstRightKeyName(),
+                450, 285, 2.0, 2.0);
+        firstRightKeyButton.setOnMouseClicked(e -> {
+            Platform.runLater(root::requestFocus);
+            if (activeButton != null && activeButton!= firstRightKeyButton) {
+                restoreButton(activeButton);
+            }
+            activeButton = firstRightKeyButton;
+            firstRightKeyButton.setText("Press any key...");
+            scene.setOnKeyPressed(ev -> {
+                config.setFirstRightKey(ev.getCode().getName());
+                firstRightKeyButton.setText(config.getFirstRightKeyName());
+                saveConfig();
+                scene.setOnKeyPressed(null);
+            });
+        });
+//        HBox firstRight = new HBox(20);
+//        firstRight.setAlignment(Pos.CENTER_LEFT);
+//        firstRight.getChildren().addAll(firstRightKeyText, firstRightKeyButton);
+
+        Text secondLeftKeyText = UIUtils.newText("Player 2 Left Key", 115, 350,
+                2.0, 2.0);
+        secondLeftKeyButton = UIUtils.newButton(config.getSecondLeftKeyName(),
+                450, 335, 2.0, 2.0);
+        secondLeftKeyButton.setOnMouseClicked(e -> {
+            Platform.runLater(root::requestFocus);
+            if (activeButton != null && activeButton!= secondLeftKeyButton) {
+                restoreButton(activeButton);
+            }
+            activeButton = secondLeftKeyButton;
+            secondLeftKeyButton.setText("Press any key...");
+            scene.setOnKeyPressed(ev -> {
+                config.setSecondLeftKey(ev.getCode().getName());
+                secondLeftKeyButton.setText(config.getSecondLeftKeyName());
+                saveConfig();
+                scene.setOnKeyPressed(null);
+            });
+        });
+//        HBox secondLeft = new HBox(20);
+//        secondLeft.setAlignment(Pos.CENTER_LEFT);
+//        secondLeft.getChildren().addAll(secondLeftKeyText, secondLeftKeyButton);
+
+        Text secondRightKeyText = UIUtils.newText("Player 2 Right Key", 117, 400,
+                2.0, 2.0);
+        secondRightKeyButton = UIUtils.newButton(config.getSecondRightKeyName(),
+                450, 385, 2.0, 2.0);
+        secondRightKeyButton.setOnMouseClicked(e -> {
+            Platform.runLater(root::requestFocus);
+            if (activeButton != null && activeButton!= secondRightKeyButton) {
+                restoreButton(activeButton);
+            }
+            activeButton = secondRightKeyButton;
+            secondRightKeyButton.setText("Press any key...");
+            scene.setOnKeyPressed(ev -> {
+                config.setSecondRightKey(ev.getCode().getName());
+                secondRightKeyButton.setText(config.getSecondRightKeyName());
+                saveConfig();
+                scene.setOnKeyPressed(null);
+            });
+        });
+//        HBox secondRight = new HBox(20);
+//        secondRight.setAlignment(Pos.CENTER_LEFT);
+//        secondRight.getChildren().addAll(secondRightKeyText, secondRightKeyButton);
+
+//        VBox textBox = new VBox(50);
+//        textBox.setAlignment(Pos.TOP_LEFT);
+//        textBox.setLayoutX(100);
+//        textBox.setLayoutY(100);
+//        textBox.getChildren().addAll(volumeBox, moveTitle, firstLeft, firstRight,
+//                secondLeft, secondRight, back);
+//        root.getChildren().addAll(textBox);
+        root.getChildren().addAll(volumeText, slider, moveTitle, firstLeftKeyText,
+                firstLeftKeyButton, firstRightKeyText, firstRightKeyButton,
+                secondLeftKeyText, secondRightKeyText, secondLeftKeyButton,
+                secondRightKeyButton, back);
+    }
+
+    private void restoreButton(Button btn) {
+        if (btn == null) {
+            return;
+        }
+
+        if (btn == firstLeftKeyButton) {
+            btn.setText(config.getFirstLeftKeyName());
+        } else if (btn == firstRightKeyButton) {
+            btn.setText(config.getFirstRightKeyName());
+        } else if (btn == secondLeftKeyButton) {
+            btn.setText(config.getSecondLeftKeyName());
+        } else if (btn == secondRightKeyButton) {
+            btn.setText(config.getSecondRightKeyName());
+        }
     }
 
     /**
@@ -83,6 +297,7 @@ public class SettingScreen extends Screen {
         } catch (IOException e) {
             System.err.println("Error saving volume file!" + e);
         }
+        sharedConfig = config;
     }
 
     /**
@@ -106,6 +321,11 @@ public class SettingScreen extends Screen {
         } catch (IOException e) {
             System.err.println("Error loading config file!");
         }
+        sharedConfig = config;
     }
 
+    @Override
+    public void onStart() {
+        Platform.runLater(root::requestFocus);
+    }
 }
