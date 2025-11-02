@@ -14,27 +14,18 @@ public class HighScoreTest {
     @Test
     void testAddHighScoreOrdersDescending() {
         HighScore hs = HighScore.getInstance();
-        hs.addHighScore("A", 100);
-        hs.addHighScore("B", 200);
+        hs.addHighScore("1", "A", 100);
+        hs.addHighScore("1", "B", 200);
         assertEquals("B", hs.getEntries().getFirst().getName());
     }
 
     @Test
     void testSaveAndLoadHighScores() {
         HighScore hs = HighScore.getInstance();
-        hs.addHighScore("Test", 300);
-        hs.addHighScore("Test2", 250);
+        hs.addHighScore("1", "Test", 300);
+        hs.addHighScore("1", "Test2", 250);
         File file = new File("./highscores.json");
         assertTrue(file.exists());
         assertTrue(file.length() > 0);
-    }
-
-    @Test
-    void testSetUnsavedScore() {
-        HighScore hs = HighScore.getInstance();
-        hs.setUnsavedScore(100);
-        assertTrue(hs.hasUnsavedScore());
-        hs.addHighScore("Player");
-        assertFalse(hs.hasUnsavedScore());
     }
 }
