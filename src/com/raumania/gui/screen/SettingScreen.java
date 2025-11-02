@@ -165,7 +165,7 @@ public class SettingScreen extends Screen {
                 2.0);
         Text firstLeftKeyText  = UIUtils.newText("Player 1 Left Key", 115, 250,
                 2.0, 2.0);
-        firstLeftKeyButton = UIUtils.newButton(config.getFirstLeftKeyName(),
+        firstLeftKeyButton = UIUtils.newButton(config.getFirstLeftKey().getName(),
                 450, 235, 2.0, 2.0);
         firstLeftKeyButton.setOnMouseClicked(this::changeKeyHandler);
 //        HBox firstLeft = new HBox(20);
@@ -174,7 +174,7 @@ public class SettingScreen extends Screen {
 
         Text firstRightKeyText = UIUtils.newText("Player 1 Right Key", 117, 300,
                 2.0, 2.0);
-        firstRightKeyButton = UIUtils.newButton(config.getFirstRightKeyName(),
+        firstRightKeyButton = UIUtils.newButton(config.getFirstRightKey().getName(),
                 450, 285, 2.0, 2.0);
         firstRightKeyButton.setOnMouseClicked(this::changeKeyHandler);
 //        HBox firstRight = new HBox(20);
@@ -183,7 +183,7 @@ public class SettingScreen extends Screen {
 
         Text secondLeftKeyText = UIUtils.newText("Player 2 Left Key", 115, 350,
                 2.0, 2.0);
-        secondLeftKeyButton = UIUtils.newButton(config.getSecondLeftKeyName(),
+        secondLeftKeyButton = UIUtils.newButton(config.getSecondLeftKey().getName(),
                 450, 335, 2.0, 2.0);
         secondLeftKeyButton.setOnMouseClicked(this::changeKeyHandler);
 //        HBox secondLeft = new HBox(20);
@@ -192,7 +192,7 @@ public class SettingScreen extends Screen {
 
         Text secondRightKeyText = UIUtils.newText("Player 2 Right Key", 117, 400,
                 2.0, 2.0);
-        secondRightKeyButton = UIUtils.newButton(config.getSecondRightKeyName(),
+        secondRightKeyButton = UIUtils.newButton(config.getSecondRightKey().getName(),
                 450, 385, 2.0, 2.0);
         secondRightKeyButton.setOnMouseClicked(this::changeKeyHandler);
 //        HBox secondRight = new HBox(20);
@@ -213,17 +213,33 @@ public class SettingScreen extends Screen {
     }
 
     private void changeKeyHandler(MouseEvent event) {
-        Platform.runLater(root::requestFocus);
-        if (activeButton != null && activeButton != event.getSource()) {
+        Button button = (Button) event.getSource();
+
+        if (activeButton != null && activeButton != button) {
             restoreButton(activeButton);
         }
-        activeButton = (Button) event.getSource();
-        ((Button) event.getSource()).setText("Press any key...");
+        activeButton = button;
+        button.setText("Press any key...");
+
         scene.setOnKeyPressed(ev -> {
-            config.setFirstLeftKey(ev.getCode().name());
-            ((Button) event.getSource()).setText(config.getFirstLeftKey().getName());
+            ev.consume(); // prevent default key actions
+            if (activeButton == firstLeftKeyButton) {
+                config.firstLeftKey = ev.getCode();
+                activeButton.setText(config.firstLeftKey.getName());
+            } else if (activeButton == firstRightKeyButton) {
+                config.firstRightKey = ev.getCode();
+                activeButton.setText(config.firstRightKey.getName());
+            } else if (activeButton == secondLeftKeyButton) {
+                config.secondLeftKey = ev.getCode();
+                activeButton.setText(config.secondLeftKey.getName());
+            } else if (activeButton == secondRightKeyButton) {
+                config.secondRightKey = ev.getCode();
+                activeButton.setText(config.secondRightKey.getName());
+            }
+
             saveConfig();
             scene.setOnKeyPressed(null);
+            Platform.runLater(root::requestFocus);
         });
     }
 
@@ -233,13 +249,13 @@ public class SettingScreen extends Screen {
         }
 
         if (btn == firstLeftKeyButton) {
-            btn.setText(config.getFirstLeftKeyName());
+            btn.setText(config.firstLeftKey.getName());
         } else if (btn == firstRightKeyButton) {
-            btn.setText(config.getFirstRightKeyName());
+            btn.setText(config.firstRightKey.getName());
         } else if (btn == secondLeftKeyButton) {
-            btn.setText(config.getSecondLeftKeyName());
+            btn.setText(config.getSecondLeftKey().getName());
         } else if (btn == secondRightKeyButton) {
-            btn.setText(config.getSecondRightKeyName());
+            btn.setText(config.getSecondRightKey().getName());
         }
     }
 

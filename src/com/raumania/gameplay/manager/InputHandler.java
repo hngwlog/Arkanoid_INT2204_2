@@ -38,9 +38,9 @@ public class InputHandler {
                 if (leftPressed != rightPressed) {
                     Platform.runLater(() -> {
                         if (leftPressed) {
-                            Platform.runLater(gameManager.getPaddle()::moveLeft);
+                            gameManager.getPaddle().moveLeft();
                         } else if (rightPressed) {
-                            Platform.runLater(gameManager.getPaddle()::moveRight);
+                            gameManager.getPaddle().moveRight();
                         }
                     });
                 } else {
