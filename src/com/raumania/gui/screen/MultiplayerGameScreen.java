@@ -45,7 +45,9 @@ public class MultiplayerGameScreen extends Screen {
         super(sceneManager);
 
         this.leftManager = new GameManager();
-        this.leftInputHandler = new InputHandler(this.leftManager, KeyCode.A, KeyCode.D);
+        this.leftInputHandler = new InputHandler(this.leftManager,
+                SettingScreen.sharedConfig.getFirstLeftKey(),
+                SettingScreen.sharedConfig.getFirstRightKey());
         // handle game over state
         this.leftManager.gameStateProperty().addListener((obs, oldState, newState) -> {
             if (newState == GameManager.GameState.GAME_OVER) {
@@ -62,7 +64,9 @@ public class MultiplayerGameScreen extends Screen {
         });
 
         this.rightManager = new GameManager();
-        this.rightInputHandler = new InputHandler(this.rightManager, KeyCode.LEFT, KeyCode.RIGHT);
+        this.rightInputHandler = new InputHandler(this.rightManager,
+                SettingScreen.sharedConfig.getSecondLeftKey(),
+                SettingScreen.sharedConfig.getSecondRightKey());
         this.rightManager.gameStateProperty().addListener((obs, oldState, newState) -> {
             if (newState == GameManager.GameState.GAME_OVER) {
                 if (rightManager.isWinner()) {
