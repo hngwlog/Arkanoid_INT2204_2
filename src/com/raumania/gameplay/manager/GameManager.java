@@ -20,6 +20,7 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import com.raumania.gameplay.objects.*;
 import javafx.scene.shape.Polyline;
@@ -109,7 +110,7 @@ public class GameManager {
         effectCountDownList.clear();
         root.getChildren().clear();
         score = 0;
-        layout = new boolean[27][10];
+        layout = new boolean[27][13];
         gameState.set(GameState.RUNNING);
 
         paddle = new Paddle((GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5, GameScreen.GAME_HEIGHT - 80,
@@ -123,24 +124,35 @@ public class GameManager {
         mainBall = balls.get(0);
         root.getChildren().add(paddle.getTexture());
 
+        List<String> colorRows = currentLvl.getColors();
+        boolean hasColors = (colorRows != null && colorRows.size() == currentLvl.getLayout().size());
+
         // Create bricks based on layout
         for (int r = 0; r < currentLvl.getLayout().size(); r++) {
             String row = currentLvl.getLayout().get(r);
+            String rowColor = hasColors ? colorRows.get(r) : null;
             for (int c = 0; c < row.length(); c++) {
                 layout[r][c] = true;
                 char type = row.charAt(c);
+                int color = 0;
+                if (rowColor != null) {
+                    color = rowColor.charAt(c) - '0';
+                } else {
+                    color = new Random().nextInt(9);
+                }
                 double x = c * Brick.BRICK_WIDTH;
                 double y = r * Brick.BRICK_HEIGHT;
                 Brick brick = null;
                 switch (currentLvl.getLegend().get(String.valueOf(type))) {
                     case "normal":
-                        brick = new NormalBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
+                        brick = new NormalBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT, color);
                         break;
                     case "strong":
                         brick = new StrongBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
                         break;
                     case "invisible":
-                        brick = new InvisibleBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
+                        brick = new InvisibleBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT,
+                                color);
                         break;
                     case "empty":
                     default:

@@ -36,7 +36,7 @@ import java.util.Iterator;
  * </p>
  */
 public class GameScreen extends Screen {
-    public static final int GAME_WIDTH = 400;
+    public static final int GAME_WIDTH = 520;
     public static final int GAME_START_X = (Main.WINDOW_WIDTH - GAME_WIDTH) / 2;
     public static final int GAME_HEIGHT = 620;
     public static final int GAME_START_Y = (Main.WINDOW_HEIGHT - GAME_HEIGHT) / 2 + 10;
