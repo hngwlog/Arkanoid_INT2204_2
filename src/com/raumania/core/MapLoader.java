@@ -21,16 +21,19 @@ public class MapLoader {
         private final String name;
         private final Map<String, String> legend;
         private final List<String> layout;
+        private final List<String> colors;
         @JsonCreator
         public LevelData(
                 @JsonProperty("levelNumber") int levelNumber,
                 @JsonProperty("name") String name,
                 @JsonProperty("legend") Map<String, String> legend,
-                @JsonProperty("layout") List<String> layout) {
+                @JsonProperty("layout") List<String> layout,
+                @JsonProperty("colors") List<String> colors) {
             this.levelNumber = levelNumber;
             this.name = name;
             this.legend = legend;
             this.layout = layout;
+            this.colors = colors;
         }
 
         @JsonGetter("levelNumber")
@@ -44,6 +47,9 @@ public class MapLoader {
 
         @JsonGetter("layout")
         public List<String> getLayout() { return layout; }
+
+        @JsonGetter("colors")
+        public List<String> getColors() { return colors; }
     }
 
     private MapLoader() {

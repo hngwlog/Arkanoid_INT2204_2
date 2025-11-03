@@ -322,6 +322,7 @@ public class MultiplayerGameScreen extends Screen {
                 0,
                 "random_map",
                 legends,
+                bricks,
                 bricks
         );
     }
