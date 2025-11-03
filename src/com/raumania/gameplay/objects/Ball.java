@@ -15,7 +15,7 @@ import com.raumania.math.Vec2f;
  * </p>
  */
 public class Ball extends MovableObject {
-    public static final double BALL_RADIUS = 8;
+    public static final double BALL_RADIUS = 6.5;
     public static final int BALL_SPEED = 360;
 
     private double radius;

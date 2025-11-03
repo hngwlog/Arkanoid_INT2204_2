@@ -1,11 +1,8 @@
 package com.raumania.gameplay.manager;
 
-//import com.raumania.gui.manager.SceneManager;
 import com.raumania.core.AudioManager;
-import com.raumania.gameplay.objects.brick.Brick;
-import com.raumania.gameplay.objects.brick.InvisibleBrick;
-import com.raumania.gameplay.objects.brick.NormalBrick;
-import com.raumania.gameplay.objects.brick.StrongBrick;
+import com.raumania.gameplay.objects.boss.Pyramid;
+import com.raumania.gameplay.objects.brick.*;
 import com.raumania.gameplay.objects.powerup.*;
 import com.raumania.gui.screen.GameScreen;
 import com.raumania.utils.ResourcesLoader;
@@ -25,6 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.raumania.gameplay.objects.*;
+import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Line;
+
 import com.raumania.math.Vec2f;
 import com.raumania.core.MapLoader.LevelData;
 
@@ -51,12 +51,13 @@ public class GameManager {
     private int score = 0;
     private LevelData currentLvl;
     private List<EffectCountDown> effectCountDownList = new ArrayList<>();
+    private Pyramid pyramid;
+    private boolean[][] layout;
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
      */
     public GameManager() {
         this.root = new Pane();
-
         initGame();
 
         Background bg = new Background(new BackgroundImage(
@@ -98,7 +99,6 @@ public class GameManager {
 
     public void initGame() {
         if (currentLvl == null) {
-            System.out.println("Level is null now.");
             return;
         }
 
@@ -109,11 +109,17 @@ public class GameManager {
         effectCountDownList.clear();
         root.getChildren().clear();
         score = 0;
+        layout = new boolean[27][10];
         gameState.set(GameState.RUNNING);
 
         paddle = new Paddle((GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5, GameScreen.GAME_HEIGHT - 80,
                 Paddle.PADDLE_WIDTH, Paddle.PADDLE_HEIGHT);
         spawnBall(Color.BLACK);
+
+        pyramid = new Pyramid(200, 0, 30, 30);
+        root.getChildren().add(pyramid.getTexture());
+        root.getChildren().add(pyramid.getBossPathLine());
+
         mainBall = balls.get(0);
         root.getChildren().add(paddle.getTexture());
 
@@ -121,11 +127,11 @@ public class GameManager {
         for (int r = 0; r < currentLvl.getLayout().size(); r++) {
             String row = currentLvl.getLayout().get(r);
             for (int c = 0; c < row.length(); c++) {
+                layout[r][c] = true;
                 char type = row.charAt(c);
                 double x = c * Brick.BRICK_WIDTH;
                 double y = r * Brick.BRICK_HEIGHT;
-
-                Brick brick;
+                Brick brick = null;
                 switch (currentLvl.getLegend().get(String.valueOf(type))) {
                     case "normal":
                         brick = new NormalBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
@@ -141,8 +147,11 @@ public class GameManager {
                         continue;
                 }
 
-                bricks.add(brick);
-                root.getChildren().add(brick.getTexture());
+                if (brick != null) {
+                    bricks.add(brick);
+                    root.getChildren().add(brick.getTexture());
+                    layout[r][c] = false;
+                }
             }
         }
 
@@ -190,7 +199,7 @@ public class GameManager {
                 ballIterator.remove();
                 continue;
             }
-            if (ball.checkOverlap(paddle) /*&& ball.getDirection().y > 0*/) {
+            if (ball.checkOverlap(paddle)) {
                 AudioManager.getInstance().playSFX(AudioManager.PADDLE_HIT);
                 double sign = (ball.getDirection().y > 0) ? 1 : -1;
 
@@ -229,9 +238,10 @@ public class GameManager {
                     if (brick.isDestroyed()) {
                         score += 1;
                         root.getChildren().remove(brick.getTexture());
-                        spawnRandomPowerUp(brick.getX() + (double) Brick.BRICK_WIDTH / 2,
+                        spawnRandomPowerUp(brick.getX() + ((double) Brick.BRICK_WIDTH - 16) / 2,
                                 brick.getY() + (double) Brick.BRICK_HEIGHT / 2, 0.4);
                         it.remove();
+                        layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
                     }
                 }
             }
@@ -380,6 +390,12 @@ public class GameManager {
         paddle.update(dt);
         checkCollisions();
 
+        // Update boss path each frame to reflect paddle movement and boss position
+        if (pyramid != null) {
+            pyramid.bossUpdate(dt, paddle, layout, root, bricks);
+            if (!pyramid.isActive()) pyramid = null;
+        }
+
         if (mainBall == null
                 || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
             gameOver();
@@ -427,4 +443,5 @@ public class GameManager {
             root.getChildren().add(powerUp.getTexture());
         }
     }
+
 }
