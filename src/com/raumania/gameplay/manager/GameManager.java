@@ -38,7 +38,7 @@ import com.raumania.core.MapLoader.LevelData;
  * </p>
  */
 public class GameManager {
-    public enum GameState { RUNNING, PAUSED, GAME_OVER }
+    public enum GameState { READY, RUNNING, PAUSED, GAME_OVER }
 
     private Pane root;
     private Paddle paddle;
@@ -111,18 +111,19 @@ public class GameManager {
         root.getChildren().clear();
         score = 0;
         layout = new boolean[27][13];
-        gameState.set(GameState.RUNNING);
+        gameState.set(GameState.READY);
 
         paddle = new Paddle((GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5, GameScreen.GAME_HEIGHT - 80,
                 Paddle.PADDLE_WIDTH, Paddle.PADDLE_HEIGHT);
-        spawnBall(Color.BLACK);
+        root.getChildren().add(paddle.getTexture());
 
         pyramid = new Pyramid(200, 0, 30, 30);
         root.getChildren().add(pyramid.getTexture());
         root.getChildren().add(pyramid.getBossPathLine());
 
-        mainBall = balls.get(0);
-        root.getChildren().add(paddle.getTexture());
+        mainBall = spawnBall(Color.BLACK);
+        mainBall.setSpeed(0);
+        mainBall.setDirection(new Vec2f(0, 0));
 
         List<String> colorRows = currentLvl.getColors();
         boolean hasColors = (colorRows != null && colorRows.size() == currentLvl.getLayout().size());
@@ -379,17 +380,25 @@ public class GameManager {
     }
 
     /**
-     * Updates the logic of all active game objects.
+     * Updates the logic of all active game objects according to the current {@link GameState}.
      * <p>
-     * If the game is not in {@link GameState#RUNNING}, this method returns immediately.
-     * Otherwise, it updates the ball and paddle (including clamped movement based on
-     * current input), performs collision detection, and transitions to
-     * {@link #gameOver()} if the ball is inactive.
+     * - In {@code READY}: the paddle can move and the main ball stays centered above it.<br>
+     * - In {@code RUNNING}: updates balls, power-ups, and paddle, then checks collisions.<br>
+     * - In other states: no update is performed.<br>
+     * Ends the game if the main ball is lost or all destructible bricks are cleared.
      * </p>
      *
      * @param dt delta time in seconds since the last frame
      */
     public void update(double dt) {
+        if (gameState.get() == GameState.READY) {
+            paddle.update(dt);
+            double ballX = paddle.getX() + (paddle.getWidth() - Ball.BALL_RADIUS * 2) / 2.0;
+            double ballY = paddle.getY() - Ball.BALL_RADIUS * 2 - 1;
+            mainBall.setPosition(ballX, ballY);
+            mainBall.updateView();
+            return;
+        }
         if (gameState.get() != GameState.RUNNING) {
             return;
         }
@@ -411,6 +420,22 @@ public class GameManager {
         if (mainBall == null
                 || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
             gameOver();
+        }
+    }
+
+    /**
+     * Starts the main gameplay when the game is in {@link GameState#READY}.
+     * <p>
+     * This method is typically triggered when the player presses the <b>Space</b> key.
+     * It initializes the motion of the main ball by setting its speed and upward
+     * direction, and transitions the game state to {@link GameState#RUNNING}.
+     * </p>
+     */
+    public void startGame() {
+        if (gameState.get() == GameState.READY) {
+            mainBall.setSpeed(Ball.BALL_SPEED);
+            mainBall.setDirection(new Vec2f(0, -1));
+            gameState.set(GameState.RUNNING);
         }
     }
 

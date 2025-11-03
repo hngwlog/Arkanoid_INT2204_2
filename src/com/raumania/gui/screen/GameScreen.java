@@ -63,6 +63,7 @@ public class GameScreen extends Screen {
     private final Text pauseChooseArrowRight;
     private final Text homeChooseArrowLeft;
     private final Text homeChooseArrowRight;
+
     /**
      * Creates a new {@code GameScreen} and binds it to the given {@link SceneManager}.
      * <p>
@@ -217,7 +218,11 @@ public class GameScreen extends Screen {
 
         // key event
         scene.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
+            if (e.getCode() == KeyCode.SPACE) {
+                if (manager.getGameState() == GameManager.GameState.READY) {
+                    manager.startGame();
+                }
+            } else if (e.getCode() == KeyCode.ESCAPE) {
                 if (manager.getGameState() == GameManager.GameState.PAUSED) {
                     resume.fire();
                 } else if (manager.getGameState() == GameManager.GameState.RUNNING) {
