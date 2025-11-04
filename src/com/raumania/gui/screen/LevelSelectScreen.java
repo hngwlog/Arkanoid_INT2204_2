@@ -14,7 +14,7 @@ import static com.raumania.utils.UIUtils.newButton;
 public class LevelSelectScreen extends Screen {
 
     public int currentLevel = 0;
-    private final int maxLevels = 5;
+    private final int maxLevels = 15;
 
     public LevelSelectScreen(SceneManager sceneManager) {
         super(sceneManager);

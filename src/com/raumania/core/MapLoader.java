@@ -48,19 +48,22 @@ public class MapLoader {
         private final List<String> layout;
         private final List<BossData> bosses;
 
+        private final List<String> colors;
         @JsonCreator
         public LevelData(
                 @JsonProperty("levelNumber") int levelNumber,
                 @JsonProperty("name") String name,
                 @JsonProperty("legend") Map<String, String> legend,
                 @JsonProperty("layout") List<String> layout,
-                @JsonProperty("boss") List<BossData> bosses
+                @JsonProperty("boss") List<BossData> bosses,
+                @JsonProperty("colors") List<String> colors
         ) {
             this.levelNumber = levelNumber;
             this.name = name;
             this.legend = legend;
             this.layout = layout;
             this.bosses = bosses;
+            this.colors = colors;
         }
 
         @JsonGetter("levelNumber")
@@ -77,6 +80,8 @@ public class MapLoader {
 
         @JsonGetter("boss")
         public List<BossData> getBosses() { return bosses; }
+        @JsonGetter("colors")
+        public List<String> getColors() { return colors; }
     }
 
     private MapLoader() { }

@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import com.raumania.gameplay.objects.*;
 import javafx.scene.shape.Polyline;
@@ -39,7 +40,7 @@ import com.raumania.core.MapLoader.*;
  * </p>
  */
 public class GameManager {
-    public enum GameState { RUNNING, PAUSED, GAME_OVER }
+    public enum GameState { READY, RUNNING, PAUSED, GAME_OVER }
 
     private Pane root;
     private Paddle paddle;
@@ -113,16 +114,24 @@ public class GameManager {
         bosses.clear();
         visionEffects.clear();
         root.getChildren().clear();
-        layout = new boolean[27][10];
-        gameState.set(GameState.RUNNING);
+        score = 0;
+        layout = new boolean[27][13];
+        gameState.set(GameState.READY);
 
-        paddle = new Paddle(
-                (GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5,
-                GameScreen.GAME_HEIGHT - 80,
-                Paddle.PADDLE_WIDTH,
-                Paddle.PADDLE_HEIGHT
-        );
+        paddle = new Paddle((GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5, GameScreen.GAME_HEIGHT - 80,
+                Paddle.PADDLE_WIDTH, Paddle.PADDLE_HEIGHT);
         root.getChildren().add(paddle.getTexture());
+
+        pyramid = new Pyramid(200, 0, 30, 30);
+        root.getChildren().add(pyramid.getTexture());
+        root.getChildren().add(pyramid.getBossPathLine());
+
+        mainBall = spawnBall(Color.BLACK);
+        mainBall.setSpeed(0);
+        mainBall.setDirection(new Vec2f(0, 0));
+
+        List<String> colorRows = currentLvl.getColors();
+        boolean hasColors = (colorRows != null && colorRows.size() == currentLvl.getLayout().size());
 
         spawnBall(Color.BLACK);
         mainBall = balls.get(0);
@@ -145,9 +154,16 @@ public class GameManager {
 
         for (int r = 0; r < currentLvl.getLayout().size(); r++) {
             String row = currentLvl.getLayout().get(r);
+            String rowColor = hasColors ? colorRows.get(r) : null;
             for (int c = 0; c < row.length(); c++) {
                 layout[r][c] = true;
                 char type = row.charAt(c);
+                int color = 0;
+                if (rowColor != null) {
+                    color = rowColor.charAt(c) - '0';
+                } else {
+                    color = new Random().nextInt(9);
+                }
                 double x = c * Brick.BRICK_WIDTH;
                 double y = r * Brick.BRICK_HEIGHT;
                 Brick brick = null;
@@ -157,13 +173,14 @@ public class GameManager {
 
                 switch (brickType) {
                     case "normal":
-                        brick = new NormalBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
+                        brick = new NormalBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT, color);
                         break;
                     case "strong":
                         brick = new StrongBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
                         break;
                     case "invisible":
-                        brick = new InvisibleBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
+                        brick = new InvisibleBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT,
+                                color);
                         break;
                     default:
                         continue;
@@ -413,17 +430,25 @@ public class GameManager {
     }
 
     /**
-     * Updates the logic of all active game objects.
+     * Updates the logic of all active game objects according to the current {@link GameState}.
      * <p>
-     * If the game is not in {@link GameState#RUNNING}, this method returns immediately.
-     * Otherwise, it updates the ball and paddle (including clamped movement based on
-     * current input), performs collision detection, and transitions to
-     * {@link #gameOver()} if the ball is inactive.
+     * - In {@code READY}: the paddle can move and the main ball stays centered above it.<br>
+     * - In {@code RUNNING}: updates balls, power-ups, and paddle, then checks collisions.<br>
+     * - In other states: no update is performed.<br>
+     * Ends the game if the main ball is lost or all destructible bricks are cleared.
      * </p>
      *
      * @param dt delta time in seconds since the last frame
      */
     public void update(double dt) {
+        if (gameState.get() == GameState.READY) {
+            paddle.update(dt);
+            double ballX = paddle.getX() + (paddle.getWidth() - Ball.BALL_RADIUS * 2) / 2.0;
+            double ballY = paddle.getY() - Ball.BALL_RADIUS * 2 - 1;
+            mainBall.setPosition(ballX, ballY);
+            mainBall.updateView();
+            return;
+        }
         if (gameState.get() != GameState.RUNNING) {
             return;
         }
@@ -466,6 +491,22 @@ public class GameManager {
         if (mainBall == null
                 || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
             gameOver();
+        }
+    }
+
+    /**
+     * Starts the main gameplay when the game is in {@link GameState#READY}.
+     * <p>
+     * This method is typically triggered when the player presses the <b>Space</b> key.
+     * It initializes the motion of the main ball by setting its speed and upward
+     * direction, and transitions the game state to {@link GameState#RUNNING}.
+     * </p>
+     */
+    public void startGame() {
+        if (gameState.get() == GameState.READY) {
+            mainBall.setSpeed(Ball.BALL_SPEED);
+            mainBall.setDirection(new Vec2f(0, -1));
+            gameState.set(GameState.RUNNING);
         }
     }
 
