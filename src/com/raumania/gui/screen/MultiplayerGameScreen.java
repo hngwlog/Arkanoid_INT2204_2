@@ -22,6 +22,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
+import java.lang.Math;
 
 import java.util.*;
 
@@ -310,10 +311,10 @@ public class MultiplayerGameScreen extends Screen {
         legends.put("1", "normal");
 
         List<String> bricks = new ArrayList<>();
-        for (int i = 0; i < new Random().nextInt(3) + 4; i++) {
+        for (int i = 0; i < new Random().nextInt(7) + 4; i++) {
             StringBuilder layout = new StringBuilder();
             for (int j = 0; j < 4; j++) {
-                layout.append(new Random().nextInt(2));
+                layout.append(Math.random() > 0.25 ? 1 : 0);
             }
             bricks.add(layout.toString());
         }
