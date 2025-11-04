@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class AStarTest {
+public class AStarInstructorTest {
 
     @Test
     public void testEmptyGridDiagonalAllowed() {

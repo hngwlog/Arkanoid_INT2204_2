@@ -8,7 +8,7 @@ public class Pyramid extends Boss{
     public Pyramid(double x, double y, double width, double height) {
         super(x, y, width, height);
         SpriteSheet texture = new SpriteSheet(
-                ResourcesLoader.loadImage("boss_pyramid.png"),
+                ResourcesLoader.loadImage("boss_planet.png"),
                 16, 16, 8, 8);
         setBossTexture(texture);
     }

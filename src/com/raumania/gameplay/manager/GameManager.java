@@ -1,9 +1,12 @@
 package com.raumania.gameplay.manager;
 
 import com.raumania.core.AudioManager;
+import com.raumania.gameplay.objects.boss.Boss;
 import com.raumania.gameplay.objects.boss.Pyramid;
 import com.raumania.gameplay.objects.brick.*;
 import com.raumania.gameplay.objects.powerup.*;
+import com.raumania.gameplay.objects.visioneffect.Explosion;
+import com.raumania.gameplay.objects.visioneffect.VisionEffect;
 import com.raumania.gui.screen.GameScreen;
 import com.raumania.utils.ResourcesLoader;
 import javafx.beans.property.ObjectProperty;
@@ -26,8 +29,7 @@ import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Line;
 
 import com.raumania.math.Vec2f;
-import com.raumania.core.MapLoader.LevelData;
-
+import com.raumania.core.MapLoader.*;
 /**
  * Manages the overall game state, including all major game objects such as
  * the {@link Paddle}, {@link Ball}s, and {@link Brick}s.
@@ -51,7 +53,8 @@ public class GameManager {
     private int score = 0;
     private LevelData currentLvl;
     private List<EffectCountDown> effectCountDownList = new ArrayList<>();
-    private Pyramid pyramid;
+    private List<Boss> bosses = new ArrayList<>();
+    private List<VisionEffect> visionEffects = new ArrayList<>();
     private boolean[][] layout;
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
@@ -107,23 +110,39 @@ public class GameManager {
         balls.clear();
         powerUps.clear();
         effectCountDownList.clear();
+        bosses.clear();
+        visionEffects.clear();
         root.getChildren().clear();
-        score = 0;
         layout = new boolean[27][10];
         gameState.set(GameState.RUNNING);
 
-        paddle = new Paddle((GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5, GameScreen.GAME_HEIGHT - 80,
-                Paddle.PADDLE_WIDTH, Paddle.PADDLE_HEIGHT);
-        spawnBall(Color.BLACK);
-
-        pyramid = new Pyramid(200, 0, 30, 30);
-        root.getChildren().add(pyramid.getTexture());
-        root.getChildren().add(pyramid.getBossPathLine());
-
-        mainBall = balls.get(0);
+        paddle = new Paddle(
+                (GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5,
+                GameScreen.GAME_HEIGHT - 80,
+                Paddle.PADDLE_WIDTH,
+                Paddle.PADDLE_HEIGHT
+        );
         root.getChildren().add(paddle.getTexture());
 
-        // Create bricks based on layout
+        spawnBall(Color.BLACK);
+        mainBall = balls.get(0);
+
+        if (currentLvl.getBosses() != null) {
+            for (BossData bossData : currentLvl.getBosses()) {
+                Boss boss = null;
+                switch (bossData.getType()) {
+                    case "pyramid":
+                        boss = new Pyramid(bossData.getX(), bossData.getY(), Boss.BOSS_SIZE, Boss.BOSS_SIZE);
+                        break;
+                }
+                if (boss != null) {
+                    bosses.add(boss);
+                    root.getChildren().add(boss.getTexture());
+                    //root.getChildren().add(boss.getBossPathLine());
+                }
+            }
+        }
+
         for (int r = 0; r < currentLvl.getLayout().size(); r++) {
             String row = currentLvl.getLayout().get(r);
             for (int c = 0; c < row.length(); c++) {
@@ -132,7 +151,11 @@ public class GameManager {
                 double x = c * Brick.BRICK_WIDTH;
                 double y = r * Brick.BRICK_HEIGHT;
                 Brick brick = null;
-                switch (currentLvl.getLegend().get(String.valueOf(type))) {
+
+                String brickType = currentLvl.getLegend().get(String.valueOf(type));
+                if (brickType == null || brickType.equals("empty")) continue;
+
+                switch (brickType) {
                     case "normal":
                         brick = new NormalBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
                         break;
@@ -142,7 +165,6 @@ public class GameManager {
                     case "invisible":
                         brick = new InvisibleBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
                         break;
-                    case "empty":
                     default:
                         continue;
                 }
@@ -154,7 +176,6 @@ public class GameManager {
                 }
             }
         }
-
     }
 
     /**
@@ -243,6 +264,31 @@ public class GameManager {
                         it.remove();
                         layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
                     }
+                }
+            }
+
+            for (Iterator<Boss> it = bosses.iterator(); it.hasNext();) {
+                Boss boss = it.next();
+                if (ball.checkOverlap(boss)) {
+                    double ballCenterX = ball.getX() + ball.getWidth() / 2;
+                    double ballCenterY = ball.getY() + ball.getHeight() / 2;
+                    double bossCenterX = boss.getX() + boss.getWidth() / 2;
+                    double bossCenterY = boss.getY() + boss.getHeight() / 2;
+                    double dx = ballCenterX - bossCenterX;
+                    double dy = ballCenterY - bossCenterY;
+                    double overlapX = (boss.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
+                    double overlapY = (boss.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
+
+                    if (overlapX < overlapY) {
+                        cntHorizontally++;
+                    } else {
+                        cntVertically++;
+                    }
+                    VisionEffect ve = new Explosion(boss.getX(), boss.getY(), Boss.BOSS_SIZE*1.2, Boss.BOSS_SIZE*1.2);
+                    visionEffects.add(ve);
+                    root.getChildren().add(ve.getTexture());
+                    root.getChildren().remove(boss.getTexture());
+                    it.remove();
                 }
             }
             if (cntHorizontally > 0) {
@@ -390,10 +436,31 @@ public class GameManager {
         paddle.update(dt);
         checkCollisions();
 
+        for (Iterator<VisionEffect> it = visionEffects.iterator(); it.hasNext();) {
+            VisionEffect ve = it.next();
+            if (ve.isDone()) {
+                root.getChildren().remove(ve.getTexture());
+                it.remove();
+            }
+        }
         // Update boss path each frame to reflect paddle movement and boss position
-        if (pyramid != null) {
-            pyramid.bossUpdate(dt, paddle, layout, root, bricks);
-            if (!pyramid.isActive()) pyramid = null;
+        for (Iterator<Boss> iterator = bosses.iterator(); iterator.hasNext();) {
+            Boss boss = iterator.next();
+            boss.bossUpdate(dt, paddle, layout, root, bricks);
+            if (!boss.isActive()) {
+                // Tạo hiệu ứng nổ tại vị trí boss
+                 VisionEffect explosion = new Explosion(
+                        boss.getX(),
+                        boss.getY(),
+                        Boss.BOSS_SIZE*1.2,
+                        Boss.BOSS_SIZE*1.2
+                );
+                visionEffects.add(explosion);
+                root.getChildren().add(explosion.getTexture());
+                // Xóa boss khỏi danh sách
+                iterator.remove();
+                boss = null;
+            }
         }
 
         if (mainBall == null

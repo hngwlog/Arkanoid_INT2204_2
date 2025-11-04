@@ -318,11 +318,20 @@ public class MultiplayerGameScreen extends Screen {
             bricks.add(layout.toString());
         }
 
+        List<MapLoader.BossData> bosses = new ArrayList<>();
+        bosses.add(
+                new MapLoader.BossData(
+                        "pyramid",
+                        200,
+                        0
+                )
+        );
         return new MapLoader.LevelData(
                 0,
                 "random_map",
                 legends,
-                bricks
+                bricks,
+                bosses
         );
     }
 
