@@ -122,10 +122,6 @@ public class GameManager {
                 Paddle.PADDLE_WIDTH, Paddle.PADDLE_HEIGHT);
         root.getChildren().add(paddle.getTexture());
 
-        pyramid = new Pyramid(200, 0, 30, 30);
-        root.getChildren().add(pyramid.getTexture());
-        root.getChildren().add(pyramid.getBossPathLine());
-
         mainBall = spawnBall(Color.BLACK);
         mainBall.setSpeed(0);
         mainBall.setDirection(new Vec2f(0, 0));
@@ -133,7 +129,7 @@ public class GameManager {
         List<String> colorRows = currentLvl.getColors();
         boolean hasColors = (colorRows != null && colorRows.size() == currentLvl.getLayout().size());
 
-        spawnBall(Color.BLACK);
+        //spawnBall(Color.BLACK);
         mainBall = balls.get(0);
 
         if (currentLvl.getBosses() != null) {

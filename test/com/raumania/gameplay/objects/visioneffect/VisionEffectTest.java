@@ -8,6 +8,5 @@ class VisionEffectTest {
     @Test
     void isUpdated() {
         VisionEffect ve = new VisionEffect(1, 1, 2, 2);
-
     }
 }
