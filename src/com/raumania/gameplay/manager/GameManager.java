@@ -5,6 +5,8 @@ import com.raumania.gameplay.objects.boss.Boss;
 import com.raumania.gameplay.objects.boss.Pyramid;
 import com.raumania.gameplay.objects.brick.*;
 import com.raumania.gameplay.objects.powerup.*;
+import com.raumania.gameplay.objects.core.GameObject;
+import com.raumania.gameplay.objects.visioneffect.BrickHit;
 import com.raumania.gameplay.objects.visioneffect.Explosion;
 import com.raumania.gameplay.objects.visioneffect.VisionEffect;
 import com.raumania.gui.screen.GameScreen;
@@ -115,21 +117,20 @@ public class GameManager {
         visionEffects.clear();
         root.getChildren().clear();
         score = 0;
-        layout = new boolean[27][13];
+        layout = new boolean[28][13];
         gameState.set(GameState.READY);
 
         paddle = new Paddle((GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5, GameScreen.GAME_HEIGHT - 80,
                 Paddle.PADDLE_WIDTH, Paddle.PADDLE_HEIGHT);
         root.getChildren().add(paddle.getTexture());
 
-        mainBall = spawnBall(Color.BLACK);
+        mainBall = spawnMainBall();
         mainBall.setSpeed(0);
         mainBall.setDirection(new Vec2f(0, 0));
 
         List<String> colorRows = currentLvl.getColors();
         boolean hasColors = (colorRows != null && colorRows.size() == currentLvl.getLayout().size());
 
-        //spawnBall(Color.BLACK);
         mainBall = balls.get(0);
 
         if (currentLvl.getBosses() != null) {
@@ -143,7 +144,7 @@ public class GameManager {
                 if (boss != null) {
                     bosses.add(boss);
                     root.getChildren().add(boss.getTexture());
-                    //root.getChildren().add(boss.getBossPathLine());
+                    root.getChildren().add(boss.getBossPathLine());
                 }
             }
         }
@@ -224,6 +225,8 @@ public class GameManager {
      */
     public void checkCollisions() {
         for (Iterator<Ball> ballIterator = balls.iterator(); ballIterator.hasNext();) {
+            boolean collidedX = false;
+            boolean collidedY = false;
             Ball ball = ballIterator.next();
             if (!ball.isActive()) {
                 root.getChildren().remove(ball.getView());
@@ -233,81 +236,108 @@ public class GameManager {
                 ballIterator.remove();
                 continue;
             }
+/**
+ * Handles collision between the ball and the paddle.
+ * <p>
+ * The ball is repositioned just above (or below) the paddle to prevent overlap,
+ * and its direction is updated based on where it hits the paddle.
+ * The reflection angle depends on the horizontal contact position:
+ * hitting the paddle edges will reflect the ball at a wider angle.
+ * </p>
+ *
+ * @param ball   The ball object.
+ * @param paddle The paddle object that was hit.
+ */
             if (ball.checkOverlap(paddle)) {
                 AudioManager.getInstance().playSFX(AudioManager.PADDLE_HIT);
-                double sign = (ball.getDirection().y > 0) ? 1 : -1;
 
-                ball.setPosition(ball.getX(), paddle.getY() - sign*ball.getHeight());
+                // Determine if the ball is moving downwards or upwards
+                double sign = (ball.getDirection().y > 0) ? 1.0 : -1.0;
+
+                // Place the ball just outside the paddle to avoid sticking
+                double newY = paddle.getY() - sign * ball.getHeight();
+                ball.setPosition(ball.getX(), newY);
+
                 double paddleCenter = paddle.getX() + paddle.getWidth() * 0.5;
-                double ballCenter = ball.getX() + ball.getRadius();
+                double ballCenter = ball.getX() + ball.getWidth() * 0.5;
                 double t = (ballCenter - paddleCenter) / (paddle.getWidth() * 0.5);
-                t = Math.max(-1, Math.min(1, t));
-                double maxAngle = Math.toRadians(60);
+                t = Math.max(-1.0, Math.min(1.0, t)); // Clamp to [-1, 1]
+
+                // Limit reflection to +-60 degree from vertical
+                double maxAngle = Math.toRadians(60.0);
                 double angle = t * maxAngle;
+
+                // Calculate new direction
                 double dx = Math.sin(angle);
-                double dy = - sign*Math.cos(angle);
+                double dy = -sign * Math.cos(angle);
                 ball.setDirection(new Vec2f(dx, dy));
             }
-            int cntHorizontally = 0;
-            int cntVertically = 0;
+//  Handle collisions with bricks
             for (Iterator<Brick> it = bricks.iterator(); it.hasNext();) {
                 Brick brick = it.next();
-                if (ball.checkOverlap(brick)) {
-                    AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
+                String direction = resolveCollision(ball, brick);
 
+                if (direction != null) {
+                    AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
                     brick.takeHit();
-                    double ballCenterX = ball.getX() + ball.getWidth() / 2;
-                    double ballCenterY = ball.getY() + ball.getHeight() / 2;
-                    double brickCenterX = brick.getX() + brick.getWidth() / 2;
-                    double brickCenterY = brick.getY() + brick.getHeight() / 2;
-                    double dx = ballCenterX - brickCenterX;
-                    double dy = ballCenterY - brickCenterY;
-                    double overlapX = (brick.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
-                    double overlapY = (brick.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
-                    if (overlapX < overlapY) {
-                        cntHorizontally++;
-                    } else {
-                        cntVertically++;
-                    }
+
+                    if ("horizontal".equals(direction)) collidedX = true;
+                    else if ("vertical".equals(direction)) collidedY = true;
+
                     if (brick.isDestroyed()) {
-                        score += 1;
+                        score++;
                         root.getChildren().remove(brick.getTexture());
-                        spawnRandomPowerUp(brick.getX() + ((double) Brick.BRICK_WIDTH - 16) / 2,
-                                brick.getY() + (double) Brick.BRICK_HEIGHT / 2, 0.4);
+                        spawnRandomPowerUp(
+                                brick.getX() + ((double) Brick.BRICK_WIDTH - 16) / 2,
+                                brick.getY() + (double) Brick.BRICK_HEIGHT / 2,
+                                0.3
+                        );
+
+                        VisionEffect brickHit = new BrickHit(
+                                brick.getX(), brick.getY(),
+                                Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT,
+                                brick.color
+                        );
+                        visionEffects.add(brickHit);
+                        root.getChildren().add(brickHit.getTexture());
                         it.remove();
-                        layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
+                        layout[(int)(brick.getY() / Brick.BRICK_HEIGHT)]
+                                [(int)(brick.getX() / Brick.BRICK_WIDTH)] = true;
                     }
                 }
             }
 
+// Handle collisions with bosses
             for (Iterator<Boss> it = bosses.iterator(); it.hasNext();) {
                 Boss boss = it.next();
-                if (ball.checkOverlap(boss)) {
-                    double ballCenterX = ball.getX() + ball.getWidth() / 2;
-                    double ballCenterY = ball.getY() + ball.getHeight() / 2;
-                    double bossCenterX = boss.getX() + boss.getWidth() / 2;
-                    double bossCenterY = boss.getY() + boss.getHeight() / 2;
-                    double dx = ballCenterX - bossCenterX;
-                    double dy = ballCenterY - bossCenterY;
-                    double overlapX = (boss.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
-                    double overlapY = (boss.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
+                String direction = resolveCollision(ball, boss);
 
-                    if (overlapX < overlapY) {
-                        cntHorizontally++;
-                    } else {
-                        cntVertically++;
-                    }
-                    VisionEffect ve = new Explosion(boss.getX(), boss.getY(), Boss.BOSS_SIZE*1.2, Boss.BOSS_SIZE*1.2);
-                    visionEffects.add(ve);
-                    root.getChildren().add(ve.getTexture());
+                if (direction != null) {
+                    if ("horizontal".equals(direction)) collidedX = true;
+                    else if ("vertical".equals(direction)) collidedY = true;
+
+                    VisionEffect explosion = new Explosion(
+                            boss.getX(),
+                            boss.getY(),
+                            Boss.BOSS_SIZE * 1.2,
+                            Boss.BOSS_SIZE * 1.2
+                    );
+                    visionEffects.add(explosion);
+                    root.getChildren().add(explosion.getTexture());
                     root.getChildren().remove(boss.getTexture());
                     it.remove();
                 }
             }
-            if (cntHorizontally > 0) {
+
+// Apply bounce
+            if (collidedX && !collidedY) {
                 ball.bounceHorizontally();
-            } else if (cntVertically > 0) {
+            } else if (collidedY && !collidedX) {
                 ball.bounceVertically();
+            } else if (collidedX && collidedY) {
+                // Corner case: bounce randomly to avoid sticking
+                if (Math.random() < 0.5) ball.bounceHorizontally();
+                else ball.bounceVertically();
             }
         }
 
@@ -324,15 +354,17 @@ public class GameManager {
                 double curTime = System.currentTimeMillis() / 1000.0;
                 PowerUpType type = powerUp.getType();
 
-                if (type != PowerUpType.ADD_BALL
-                        && effectCountDownList.stream().anyMatch(x -> x.getEffectType() == type)) {
-                    effectCountDownList.forEach(e -> {
-                        if (e.getEffectType() == type) {
-                            e.setStartTime(curTime);
-                        }
-                    });
-                } else {
-                    effectCountDownList.add(new EffectCountDown(curTime, powerUp.getDuration(), type));
+                if (type != PowerUpType.ADD_BALL) {
+                    if (effectCountDownList.stream().anyMatch(x -> x.getEffectType() == type)) {
+                        //reset countdown if this effect is extincted
+                        effectCountDownList.forEach(e -> {
+                            if (e.getEffectType() == type) {
+                                e.setStartTime(curTime);
+                            }
+                        });
+                    } else {
+                        effectCountDownList.add(new EffectCountDown(curTime, powerUp.getDuration(), type));
+                    }
                 }
 
                 root.getChildren().remove(powerUp.getTexture());
@@ -469,7 +501,7 @@ public class GameManager {
             Boss boss = iterator.next();
             boss.bossUpdate(dt, paddle, layout, root, bricks);
             if (!boss.isActive()) {
-                // Tạo hiệu ứng nổ tại vị trí boss
+                // boss explosion
                  VisionEffect explosion = new Explosion(
                         boss.getX(),
                         boss.getY(),
@@ -513,15 +545,29 @@ public class GameManager {
      * representation is added to the scene graph.
      * </p>
      */
-    public Ball spawnBall(Color color) {
+    public Ball spawnMainBall() {
         // Create ball at paddle center
         double ballX = paddle.getX() + (paddle.getWidth() - Ball.BALL_RADIUS * 2) / 2.0;
         double ballY = paddle.getY() - Ball.BALL_RADIUS * 2 - 1;
-        Ball newBall = new Ball(ballX, ballY, color);
+        Ball newBall = new Ball(ballX, ballY, Color.BLACK);
         balls.add(newBall);
         root.getChildren().add(newBall.getView());
         return newBall;
     }
+
+    public void spawnAdditionalBall() {
+        // Create additional ball\
+        if (mainBall == null) return;
+        Ball newBall = null;
+        for (int i = 0; i < 2; i++) {
+            newBall = new Ball(mainBall.getX(), mainBall.getY(), Color.WHITESMOKE);
+            newBall.setDirection(mainBall.getDirection().rotate(30 - 60*i));
+            balls.add(newBall);
+            root.getChildren().add(newBall.getView());
+        }
+    }
+
+
 
     /**
      * Spawns a random power-up at the specified (x, y) position.
@@ -548,4 +594,46 @@ public class GameManager {
         }
     }
 
+    /**
+     * Resolves the collision between the ball and a target object (e.g., Brick or Boss).
+     * Adjusts the ball's position to prevent overlap and determines the bounce direction.
+     *
+     * @param ball   The moving ball object.
+     * @param target The target game object (Brick or Boss) to check for overlap.
+     * @return "horizontal" if collision occurred horizontally,
+     *         "vertical" if collision occurred vertically,
+     *         or {@code null} if no collision occurred.
+     */
+    private String resolveCollision(Ball ball, GameObject target) {
+        if (!ball.checkOverlap(target)) {
+            return null;
+        }
+
+        double ballCenterX = ball.getX() + ball.getWidth() / 2;
+        double ballCenterY = ball.getY() + ball.getHeight() / 2;
+        double targetCenterX = target.getX() + target.getWidth() / 2;
+        double targetCenterY = target.getY() + target.getHeight() / 2;
+
+        double dx = ballCenterX - targetCenterX;
+        double dy = ballCenterY - targetCenterY;
+        double overlapX = (target.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
+        double overlapY = (target.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
+
+        if (overlapX >= 0 && overlapY >= 0) {
+            double newX = ball.getX();
+            double newY = ball.getY();
+
+            // Push the ball out of the target along the smallest overlap axis
+            if (overlapX < overlapY) {
+                newX += (dx > 0 ? overlapX : -overlapX);
+                ball.setPosition(newX, ball.getY());
+                return "horizontal";
+            } else {
+                newY += (dy > 0 ? overlapY : -overlapY);
+                ball.setPosition(ball.getX(), newY);
+                return "vertical";
+            }
+        }
+        return null;
+    }
 }

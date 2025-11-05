@@ -28,20 +28,20 @@ public class Boss extends MovableObject {
     public static final double BOSS_SIZE = 32.0;
     private double timeAccumulator = 0;
 
-//    private Polyline bossPathLine;
+    private Polyline bossPathLine;
     private List<Vec2f> pathPoints;
     private int currentTargetIndex;
     private boolean followingPath = true;
-    private static final double ARRIVAL_THRESHOLD = 10; // if the distance is less than arrival_threshold, consider that collision is happened
+    private static final double ARRIVAL_THRESHOLD = 40; // if the distance is less than arrival_threshold, consider that collision is happened
 
     public Boss(double x, double y, double width, double height) {
         super(x, y, width, height);
         this.speed = BOSS_SPEED;
         this.setDirection(new Vec2f(0, 1));
-//        this.bossPathLine = new Polyline();
-//        this.bossPathLine.setStroke(Color.RED);
-//        this.bossPathLine.setStrokeWidth(2.0);
-//        this.bossPathLine.getStrokeDashArray().addAll(6.0, 6.0);
+        this.bossPathLine = new Polyline();
+        this.bossPathLine.setStroke(Color.RED);
+        this.bossPathLine.setStrokeWidth(2.0);
+        this.bossPathLine.getStrokeDashArray().addAll(6.0, 6.0);
     }
 
     public void setBossTexture(SpriteSheet bossTexture) {
@@ -58,9 +58,9 @@ public class Boss extends MovableObject {
         return bossTexture.getView();
     }
 
-//    public Polyline getBossPathLine() {
-//        return bossPathLine;
-//    }
+    public Polyline getBossPathLine() {
+        return bossPathLine;
+    }
 
     public boolean isActive() {
         return active;
@@ -86,17 +86,17 @@ public class Boss extends MovableObject {
         active = false;
         bossTexture.stop();
         root.getChildren().remove(bossTexture.getView());
-        //root.getChildren().remove(this.bossPathLine);
+//        root.getChildren().remove(this.bossPathLine);
     }
 
     /**
-     * Compute boss path on the brick grid (cells = bricks) and draw it as a polyline.
+     * Compute boss path on the brick grid (cells = bricks) and draw it as a line.
      * Uses the AStar implementation on a grid where cells containing a brick are blocked.
      * The path goes from the boss current cell to the bottom row near the paddle.
      */
     private void drawBossPath(Paddle paddle, boolean[][] passable) {
-        int rows = 27;
-        int cols = 10;
+        int rows = 28;
+        int cols = 13;
 
         int sr = (int) ((this.getY() + BOSS_SIZE/2)/ Brick.BRICK_HEIGHT);
         int sc = (int) ((this.getX() + BOSS_SIZE/2)/ Brick.BRICK_WIDTH);
@@ -127,7 +127,7 @@ public class Boss extends MovableObject {
         }
 
         // boss đã đi được ít nhất 1 điểm -> cập nhật path mới
-        //bossPathLine.getPoints().clear();
+        bossPathLine.getPoints().clear();
         pathPoints = new ArrayList<>();
 
         for (int[] p : newPath) {
@@ -135,7 +135,7 @@ public class Boss extends MovableObject {
             int c = p[1];
             double x = c * Brick.BRICK_WIDTH + Brick.BRICK_WIDTH * 0.5;
             double y = r * Brick.BRICK_HEIGHT + Brick.BRICK_HEIGHT * 0.5;
-            //bossPathLine.getPoints().addAll(x, y);
+            bossPathLine.getPoints().addAll(x, y);
             pathPoints.add(new Vec2f(x, y));
         }
         // reset về điểm đầu của path mới
@@ -208,16 +208,15 @@ public class Boss extends MovableObject {
                 }
 
                 // Nếu boss va chạm tường → khóa hướng theo chiều đó
-                if (collidedX || collidedY) {
+                //if (collidedX || collidedY) {
                     if (collidedX) toTarget = new Vec2f(0, toTarget.y);
-                    if (collidedY) toTarget = new Vec2f(toTarget.x, 0);
-                }
+                    else if (collidedY) toTarget = new Vec2f(toTarget.x, 0);
+                //}
             }
         }
         // neu gan paddle, dash
         dash(paddle);
-
-        toTarget.normalize();
+        System.out.printf("%f %f\n", toTarget.x, toTarget.y);
         setDirection(toTarget);
         applyMovement(dt);
         updateView();

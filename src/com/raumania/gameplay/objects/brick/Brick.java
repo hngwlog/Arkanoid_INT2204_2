@@ -15,7 +15,7 @@ import javafx.scene.shape.Rectangle;
 public abstract class Brick extends GameObject {
     public static final int BRICK_WIDTH = 40;
     public static final int BRICK_HEIGHT = 20;
-    public int colorIndex = 0;
+    public int color = 0;
     private ImageView brickTexture;
     private int hitPoints;
 

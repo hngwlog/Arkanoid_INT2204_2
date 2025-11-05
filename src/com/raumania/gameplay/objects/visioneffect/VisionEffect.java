@@ -18,7 +18,7 @@ public abstract class VisionEffect extends GameObject {
 
     public void setVisionEffectTexture(SpriteSheet visionEffectTexture) {
         this.visionEffectTexture = visionEffectTexture;
-        this.visionEffectTexture.setFps(15.0);
+        this.visionEffectTexture.setFps(10.0);
         this.visionEffectTexture.getView().setX(getX());
         this.visionEffectTexture.getView().setY(getY());
         this.visionEffectTexture.getView().setFitWidth(getWidth());

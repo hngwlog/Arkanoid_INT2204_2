@@ -79,4 +79,21 @@ public class Vec2f {
     public Vec2f add(Vec2f other) {
         return new Vec2f(x + other.x, y + other.y);
     }
+
+    /**
+     * Rotates this vector by the given angle (in degrees).
+     * Positive angles rotate counter-clockwise, negative angles clockwise.
+     *
+     * @param degree the rotation angle in degrees
+     * @return a new Vec2f representing the rotated vector
+     */
+    public Vec2f rotate(double degree) {
+        double rad = Math.toRadians(degree);
+        double cos = Math.cos(rad);
+        double sin = Math.sin(rad);
+        double newX = x * cos - y * sin;
+        double newY = x * sin + y * cos;
+
+        return (new Vec2f(newX, newY)).normalize();
+    }
 }

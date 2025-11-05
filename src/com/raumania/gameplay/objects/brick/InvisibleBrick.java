@@ -12,6 +12,7 @@ public class InvisibleBrick extends Brick{
         ImageView texture = new ImageView(ResourcesLoader.loadImage("brick" + color + ".png"));
         texture.setOpacity(0.0);
         setBrickTexture(texture);
+        this.color = color;
     }
 
     @Override
