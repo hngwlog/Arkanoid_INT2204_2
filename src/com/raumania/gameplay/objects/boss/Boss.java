@@ -28,7 +28,7 @@ public class Boss extends MovableObject {
     public static final double BOSS_SIZE = 32.0;
     private double timeAccumulator = 0;
 
-    private Polyline bossPathLine;
+//    private Polyline bossPathLine;
     private List<Vec2f> pathPoints;
     private int currentTargetIndex;
     private boolean followingPath = true;
@@ -38,10 +38,10 @@ public class Boss extends MovableObject {
         super(x, y, width, height);
         this.speed = BOSS_SPEED;
         this.setDirection(new Vec2f(0, 1));
-        this.bossPathLine = new Polyline();
-        this.bossPathLine.setStroke(Color.RED);
-        this.bossPathLine.setStrokeWidth(2.0);
-        this.bossPathLine.getStrokeDashArray().addAll(6.0, 6.0);
+//        this.bossPathLine = new Polyline();
+//        this.bossPathLine.setStroke(Color.RED);
+//        this.bossPathLine.setStrokeWidth(2.0);
+//        this.bossPathLine.getStrokeDashArray().addAll(6.0, 6.0);
     }
 
     public void setBossTexture(SpriteSheet bossTexture) {
@@ -58,9 +58,9 @@ public class Boss extends MovableObject {
         return bossTexture.getView();
     }
 
-    public Polyline getBossPathLine() {
-        return bossPathLine;
-    }
+//    public Polyline getBossPathLine() {
+//        return bossPathLine;
+//    }
 
     public boolean isActive() {
         return active;
@@ -127,7 +127,7 @@ public class Boss extends MovableObject {
         }
 
         // boss đã đi được ít nhất 1 điểm -> cập nhật path mới
-        bossPathLine.getPoints().clear();
+//        bossPathLine.getPoints().clear();
         pathPoints = new ArrayList<>();
 
         for (int[] p : newPath) {
@@ -135,7 +135,7 @@ public class Boss extends MovableObject {
             int c = p[1];
             double x = c * Brick.BRICK_WIDTH + Brick.BRICK_WIDTH * 0.5;
             double y = r * Brick.BRICK_HEIGHT + Brick.BRICK_HEIGHT * 0.5;
-            bossPathLine.getPoints().addAll(x, y);
+//            bossPathLine.getPoints().addAll(x, y);
             pathPoints.add(new Vec2f(x, y));
         }
         // reset về điểm đầu của path mới
@@ -216,7 +216,6 @@ public class Boss extends MovableObject {
         }
         // neu gan paddle, dash
         dash(paddle);
-        System.out.printf("%f %f\n", toTarget.x, toTarget.y);
         setDirection(toTarget);
         applyMovement(dt);
         updateView();

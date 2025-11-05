@@ -144,7 +144,7 @@ public class GameManager {
                 if (boss != null) {
                     bosses.add(boss);
                     root.getChildren().add(boss.getTexture());
-                    root.getChildren().add(boss.getBossPathLine());
+//                    root.getChildren().add(boss.getBossPathLine());
                 }
             }
         }
