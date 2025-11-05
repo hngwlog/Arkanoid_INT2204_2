@@ -42,15 +42,21 @@ public class HomeScreen extends Screen {
         });
 
         //Level select button
-        Button levelSelect =  UIUtils.centerButton("Single player", 300, 2.0, 2.0);
+        Button levelSelect =  UIUtils.centerButton("Single player", 275, 2.0, 2.0);
         levelSelect.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.LEVEL_SELECT);
         });
 
         //Setting button
-        Button setting = UIUtils.centerButton("Setting", 400, 2.0, 2.0);
+        Button setting = UIUtils.centerButton("Setting", 350, 2.0, 2.0);
         setting.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.SETTINGS);
+        });
+
+        //Option button
+        Button option = UIUtils.centerButton("Options", 425, 2.0, 2.0);
+        option.setOnAction(e -> {
+            sceneManager.switchScreen(ScreenType.OPTION);
         });
 
         //Quit button
@@ -60,10 +66,10 @@ public class HomeScreen extends Screen {
         });
 
         buttonY = new ArrayList<>();
-        Collections.addAll(buttonY, 200.0, 300.0, 400.0, 500.0);
+        Collections.addAll(buttonY, 200.0, 275.0, 350.0, 425.0, 500.0);
 
         buttons = new ArrayList<>();
-        Collections.addAll(buttons, play, levelSelect, setting, quit);
+        Collections.addAll(buttons, play, levelSelect, setting, option, quit);
         for (Button button : buttons) {
             button.setOnMouseEntered(e -> {
                 cnt = getIndex(button);

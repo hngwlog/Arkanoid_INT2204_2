@@ -10,4 +10,5 @@ public enum ScreenType {
     GAME,
     MULTIPLAYER,
     GAME_OVER,
+    OPTION,
 }
