@@ -73,12 +73,14 @@ public class Boss extends MovableObject {
 
     @Override
     public void update(double dt){}
-    public void bossUpdate(double dt, Paddle paddle, boolean[][] layout, Pane root, List<Brick> bricks) {
+    public int bossUpdate(double dt, Paddle paddle, boolean[][] layout, Pane root,
+                        List<Brick> bricks, int score) {
         drawBossPath(paddle, layout);
         if (pathPoints == null || pathPoints.isEmpty()) {
             randomMove(dt, bricks);
+            return score;
         } else {
-            followPath(dt, paddle, root, bricks);
+            return followPath(dt, paddle, root, bricks, score);
         }
     }
 
@@ -142,16 +144,21 @@ public class Boss extends MovableObject {
         currentTargetIndex = 0;
     }
 
-    private void followPath(double dt, Paddle paddle, Pane root, List<Brick> bricks) {
+    private int followPath(double dt, Paddle paddle, Pane root, List<Brick> bricks, int score) {
         // Boss rơi ra khỏi màn hình hoặc chạm paddle → hủy
         boolean iscollidedWithPaddle = checkOverlap(paddle);
         if (getY() > GameScreen.GAME_HEIGHT || iscollidedWithPaddle) {
             deactivate(root);
-            return;
+            if (iscollidedWithPaddle) {
+                return score - 1;
+            }
+            return score;
         }
 
         // Nếu chưa có đường đi hoặc không đang theo path thì thôi
-        if (pathPoints == null || pathPoints.isEmpty()) return;
+        if (pathPoints == null || pathPoints.isEmpty()) {
+            return score;
+        }
 
         // Lấy điểm mục tiêu hiện tại (điểm đầu của path)
         Vec2f target = pathPoints.get(0);
@@ -167,7 +174,7 @@ public class Boss extends MovableObject {
 
             if (pathPoints.isEmpty()) {
                 followingPath = false;
-                return;
+                return score;
             }
 
             // Cập nhật target mới
@@ -221,6 +228,7 @@ public class Boss extends MovableObject {
         setDirection(toTarget);
         applyMovement(dt);
         updateView();
+        return score;
     }
 
     private void dash(Paddle paddle) {
