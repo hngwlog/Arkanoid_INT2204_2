@@ -311,20 +311,34 @@ public class MultiplayerGameScreen extends Screen {
         legends.put("1", "normal");
 
         List<String> bricks = new ArrayList<>();
+        List<String> colors = new ArrayList<>();
         for (int i = 0; i < new Random().nextInt(7) + 4; i++) {
             StringBuilder layout = new StringBuilder();
+            StringBuilder color = new StringBuilder();
             for (int j = 0; j < 4; j++) {
-                layout.append(Math.random() > 0.25 ? 1 : 0);
+                double rand = Math.random();
+                layout.append( rand > 0.25 ? 1 : 0);
+                color.append(1);
             }
             bricks.add(layout.toString());
+            colors.add(color.toString());
         }
 
+        List<MapLoader.BossData> bosses = new ArrayList<>();
+        bosses.add(
+                new MapLoader.BossData(
+                        "pyramid",
+                        200,
+                        0
+                )
+        );
         return new MapLoader.LevelData(
                 0,
                 "random_map",
                 legends,
                 bricks,
-                bricks
+                bosses,
+                colors
         );
     }
 

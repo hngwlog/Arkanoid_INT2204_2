@@ -7,6 +7,10 @@
     "2": "strong",
     "3": "invisible"
   },
+  "boss": [
+    {"type":  "pyramid", "x": 200, "y":  0},
+    {"type":  "pyramid", "x": 100, "y":  0}
+  ],
   "layout": [
     "0200000000000",
     "0000000000000",
