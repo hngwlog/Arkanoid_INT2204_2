@@ -115,22 +115,19 @@ public class GameManager {
         visionEffects.clear();
         root.getChildren().clear();
         score = 0;
-        layout = new boolean[27][13];
+        layout = new boolean[28][13];
         gameState.set(GameState.READY);
 
         paddle = new Paddle((GameScreen.GAME_WIDTH - Paddle.PADDLE_WIDTH) * 0.5, GameScreen.GAME_HEIGHT - 80,
                 Paddle.PADDLE_WIDTH, Paddle.PADDLE_HEIGHT);
         root.getChildren().add(paddle.getTexture());
 
-        mainBall = spawnBall(Color.BLACK);
+        mainBall = spawnMainBall();
         mainBall.setSpeed(0);
         mainBall.setDirection(new Vec2f(0, 0));
 
         List<String> colorRows = currentLvl.getColors();
         boolean hasColors = (colorRows != null && colorRows.size() == currentLvl.getLayout().size());
-
-        //spawnBall(Color.BLACK);
-        mainBall = balls.get(0);
 
         if (currentLvl.getBosses() != null) {
             for (BossData bossData : currentLvl.getBosses()) {
@@ -362,16 +359,18 @@ public class GameManager {
                 double curTime = System.currentTimeMillis() / 1000.0;
                 PowerUpType type = powerUp.getType();
 
-                if (type != PowerUpType.ADD_BALL
-                        && effectCountDownList.stream().anyMatch(x -> x.getEffectType() == type)) {
-                    effectCountDownList.forEach(e -> {
-                        if (e.getEffectType() == type) {
-                            e.setStartTime(curTime);
-                        }
-                    });
-                } else {
-                    effectCountDownList.add(new EffectCountDown(curTime, powerUp.getDuration(), type));
+                if (type != PowerUpType.ADD_BALL) {
+                    if (effectCountDownList.stream().anyMatch(x -> x.getEffectType() == type)) {
+                        effectCountDownList.forEach(e -> {
+                            if (e.getEffectType() == type) {
+                                e.setStartTime(curTime);
+                            }
+                        });
+                    } else {
+                        effectCountDownList.add(new EffectCountDown(curTime, powerUp.getDuration(), type));
+                    }
                 }
+
 
                 root.getChildren().remove(powerUp.getTexture());
                 powerUp.deactivate();
@@ -551,14 +550,23 @@ public class GameManager {
      * representation is added to the scene graph.
      * </p>
      */
-    public Ball spawnBall(Color color) {
+    public Ball spawnMainBall() {
         // Create ball at paddle center
         double ballX = paddle.getX() + (paddle.getWidth() - Ball.BALL_RADIUS * 2) / 2.0;
         double ballY = paddle.getY() - Ball.BALL_RADIUS * 2 - 1;
-        Ball newBall = new Ball(ballX, ballY, color);
+        Ball newBall = new Ball(ballX, ballY, Color.BLACK);
         balls.add(newBall);
         root.getChildren().add(newBall.getView());
         return newBall;
+    }
+
+    public void spawnAdditionalBall() {
+        for (int i = 0; i < 2; i++) {
+            Ball ball = new Ball(mainBall.getX(), mainBall.getY(), Color.WHITESMOKE);
+            ball.setDirection(mainBall.getDirection().rotate(-30 + 60*i));
+            balls.add(ball);
+            root.getChildren().add(ball.getView());
+        }
     }
 
     /**

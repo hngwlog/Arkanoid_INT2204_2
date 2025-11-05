@@ -24,14 +24,7 @@ public class AddBallPowerUp extends PowerUp {
 
     @Override
     public void applyEffect(GameManager gameManager) {
-        Ball spawned = gameManager.spawnBall(Color.WHITESMOKE);
-        PauseTransition timer = new PauseTransition(Duration.seconds(getDuration()));
-        timer.setOnFinished(e -> {
-            if (spawned != null && spawned.isActive()) {
-                spawned.deactivate();
-            }
-        });
-        timer.play();
+        gameManager.spawnAdditionalBall();
     }
 
     @Override

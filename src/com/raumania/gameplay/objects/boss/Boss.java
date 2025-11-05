@@ -97,8 +97,8 @@ public class Boss extends MovableObject {
      * The path goes from the boss current cell to the bottom row near the paddle.
      */
     private void drawBossPath(Paddle paddle, boolean[][] passable) {
-        int rows = 27;
-        int cols = 10;
+        int rows = 28;
+        int cols = 13;
 
         int sr = (int) ((this.getY() + BOSS_SIZE/2)/ Brick.BRICK_HEIGHT);
         int sc = (int) ((this.getX() + BOSS_SIZE/2)/ Brick.BRICK_WIDTH);
