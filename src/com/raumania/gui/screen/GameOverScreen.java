@@ -5,6 +5,7 @@ import com.raumania.core.HighScore.HighScoreEntry;
 import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gui.manager.SceneManager;
 import com.raumania.utils.UIUtils;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -100,6 +101,7 @@ public class GameOverScreen extends Screen {
 
     @Override
     public void onStart() {
+        Platform.runLater(root::requestFocus);
         List<HighScoreEntry> highScoreOfLevel = HighScore.getInstance().getEntries().stream()
                 .filter(e -> e.getLevel().equals(singlePlayerGameManager.getCurrentLvl().getName()))
                 .toList();

@@ -213,6 +213,7 @@ public class SettingScreen extends Screen {
     }
 
     private void changeKeyHandler(MouseEvent event) {
+        Platform.runLater(root::requestFocus);
         Button button = (Button) event.getSource();
 
         if (activeButton != null && activeButton != button) {
@@ -239,7 +240,6 @@ public class SettingScreen extends Screen {
 
             saveConfig();
             scene.setOnKeyPressed(null);
-            Platform.runLater(root::requestFocus);
         });
     }
 

@@ -198,7 +198,9 @@ public class GameScreen extends Screen {
         });
         //choose arrow
         homeChooseArrowLeft = UIUtils.newText(">" , 383.75, 212.5, 2.0, 2.0);
+        homeChooseArrowLeft.setFill(Color.GREEN);
         homeChooseArrowRight = UIUtils.newText("<" , 610.76, 212.5, 2.0, 2.0);
+        homeChooseArrowRight.setFill(Color.GREEN);
         //buttons list
         homeButtons = new ArrayList<>();
         Collections.addAll(homeButtons, yes, no);
