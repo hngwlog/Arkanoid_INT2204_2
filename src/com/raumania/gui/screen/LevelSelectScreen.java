@@ -58,6 +58,7 @@ public class LevelSelectScreen extends Screen {
 
         //press left button -> level--
         left.setOnAction(e -> {
+            Platform.runLater(root::requestFocus);
             if (currentLevel > 0) {
                 currentLevel--;
             }
@@ -69,6 +70,7 @@ public class LevelSelectScreen extends Screen {
 
         //press right button -> level++
         right.setOnAction(e -> {
+            Platform.runLater(root::requestFocus);
             if (currentLevel < maxLevels) {
                 currentLevel++;
                 currentLevel %= maxLevels;
@@ -83,7 +85,6 @@ public class LevelSelectScreen extends Screen {
         });
 
         //arrow key -> left, right , enter -> chose level
-        Platform.runLater(root::requestFocus);
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
                 case RIGHT:

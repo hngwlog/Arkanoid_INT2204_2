@@ -93,6 +93,7 @@ public class MultiplayerGameScreen extends Screen {
         //Pause button
         pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
         pause.setOnAction(e -> {
+            Platform.runLater(root::requestFocus);
             this.pause();
         });
 
@@ -135,6 +136,7 @@ public class MultiplayerGameScreen extends Screen {
         //Home button
         Button home = UIUtils.centerButton("Back to Home", 300, 2.0, 2.0);
         home.setOnAction(e -> {
+            Platform.runLater(root::requestFocus);
             mainPause.setVisible(false);
             backChoice.setVisible(true);
         });
@@ -162,6 +164,7 @@ public class MultiplayerGameScreen extends Screen {
         //No button
         Button no = UIUtils.centerButton("No", 300, 2.0, 2.0);
         no.setOnAction(e -> {
+            Platform.runLater(root::requestFocus);
             mainPause.setVisible(true);
             backChoice.setVisible(false);
         });
