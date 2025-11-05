@@ -48,13 +48,13 @@ public class HomeScreen extends Screen {
         });
 
         //Setting button
-        Button setting = UIUtils.centerButton("Setting", 350, 2.0, 2.0);
+        Button setting = UIUtils.centerButton("Settings", 350, 2.0, 2.0);
         setting.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.SETTINGS);
         });
 
         //Option button
-        Button option = UIUtils.centerButton("Options", 425, 2.0, 2.0);
+        Button option = UIUtils.centerButton("Skins", 425, 2.0, 2.0);
         option.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.OPTION);
         });
