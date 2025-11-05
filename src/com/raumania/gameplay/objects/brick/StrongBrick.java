@@ -8,6 +8,7 @@ public class StrongBrick extends Brick{
    public StrongBrick(double x, double y, double width, double height) {
        super(x, y, width, height);
        setHitPoints(1);
+       colorIndex = 9;
        setBrickTexture(new ImageView(ResourcesLoader.loadImage("strongbrick.png")));
    }
 

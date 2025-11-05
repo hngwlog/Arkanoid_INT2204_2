@@ -322,20 +322,21 @@ public class GameScreen extends Screen {
 
         past = -1;
         loop = new AnimationTimer() {
-            double lastFPSUpdate = 0;
+            private static final double FPS = 60.0;
+            private static final double FRAME_TIME = 1_000_000_000.0 / FPS;
+            private double lastUpdate = 0;
             @Override
             public void handle(long now) {
-                if (past < 0) {
-                    past = now;
+                if (lastUpdate == 0) {
+                    lastUpdate = now;
                     return;
                 }
-                double dt = (now - past) / 1_000_000_000.0;
-                past = now;
-                manager.update(dt);
-                score.setText("Score: " + manager.getScore());
-                if (now - lastFPSUpdate > 1_000_000_000.0) {
-                    fps.setText("FPS: "+(int)(1.0/dt));
-                    lastFPSUpdate = now;
+                if (now - lastUpdate >= FRAME_TIME) {
+                    double dt = (now - lastUpdate) / 1_000_000_000.0;
+                    manager.update(dt);
+                    score.setText("Score: " + manager.getScore());
+                    fps.setText("FPS: "+(int)(FPS));
+                    lastUpdate = now;
                 }
                 showTime();
             }
