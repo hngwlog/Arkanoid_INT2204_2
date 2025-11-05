@@ -222,7 +222,8 @@ public class GameManager {
      * For paddle-power-up collisions, the power-up is activated and removed from the scene.
      * </p>
      */
-    public void checkCollisions() {
+    public void checkCollisions(double dt) {
+        List<Brick> allCollidedBricks = new ArrayList<>();
         for (Iterator<Ball> ballIterator = balls.iterator(); ballIterator.hasNext();) {
             Ball ball = ballIterator.next();
             if (!ball.isActive()) {
@@ -248,55 +249,83 @@ public class GameManager {
                 double dy = - sign*Math.cos(angle);
                 ball.setDirection(new Vec2f(dx, dy));
             }
-            int cntHorizontally = 0;
-            int cntVertically = 0;
+            List<Brick> collidedBricks = new ArrayList<>();
             for (Iterator<Brick> it = bricks.iterator(); it.hasNext();) {
                 Brick brick = it.next();
                 if (ball.checkOverlap(brick)) {
-                    AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
-
-                    brick.takeHit();
-                    double ballCenterX = ball.getX() + ball.getWidth() / 2;
-                    double ballCenterY = ball.getY() + ball.getHeight() / 2;
-                    double brickCenterX = brick.getX() + brick.getWidth() / 2;
-                    double brickCenterY = brick.getY() + brick.getHeight() / 2;
-                    double dx = ballCenterX - brickCenterX;
-                    double dy = ballCenterY - brickCenterY;
-                    double overlapX = (brick.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
-                    double overlapY = (brick.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
-                    if (overlapX < overlapY) {
-                        cntHorizontally++;
-                    } else {
-                        cntVertically++;
+                    collidedBricks.add(brick);
+                }
+            }
+            if (collidedBricks.size() == 3) {
+                Brick chosenBrick = collidedBricks.get(0);
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (j == i) {
+                            continue;
+                        }
+                        for (int k = 0; k < 3; k++) {
+                            if (k == i || k == j) {
+                                continue;
+                            }
+                            Brick brick1 = collidedBricks.get(i);
+                            Brick brick2 = collidedBricks.get(j);
+                            Brick brick3 = collidedBricks.get(k);
+                            if (brick1.getX() == brick2.getX() && brick1.getY() == brick3.getY()) {
+                                chosenBrick = brick1;
+                            }
+                        }
                     }
-                    if (brick.isDestroyed()) {
-                        score += 1;
-                        root.getChildren().remove(brick.getTexture());
-                        spawnRandomPowerUp(brick.getX() + ((double) Brick.BRICK_WIDTH - 16) / 2,
-                                brick.getY() + (double) Brick.BRICK_HEIGHT / 2, 0.4);
-                        it.remove();
-                        layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
-                    }
+                }
+                collidedBricks.remove(chosenBrick);
+            }
+            if (collidedBricks.size() == 1) {
+                ball.update(- dt);
+                Brick brick = collidedBricks.get(0);
+                allCollidedBricks.add(brick);
+                Vec2f direction = ball.getDirection();
+                double velocityX = ball.getSpeed() * direction.x;
+                double timeEntryX;
+                if (velocityX > 0) {
+                    timeEntryX = (brick.getX() - ball.getWidth() - ball.getX()) / velocityX;
+                } else if (velocityX < 0) {
+                    timeEntryX = (brick.getX() + brick.getWidth() - ball.getX()) / velocityX;
+                } else {
+                    timeEntryX = Double.NEGATIVE_INFINITY;
+                }
+                double velocityY = ball.getSpeed() * direction.y;
+                double timeEntryY;
+                if (velocityY > 0) {
+                    timeEntryY = (brick.getY() - ball.getHeight() - ball.getY()) / velocityY;
+                } else if (velocityY < 0) {
+                    timeEntryY = (brick.getY() + brick.getHeight() - ball.getY()) / velocityY;
+                } else {
+                    timeEntryY = Double.NEGATIVE_INFINITY;
+                }
+                if (timeEntryX > timeEntryY) {
+                    ball.bounceHorizontally();
+                } else {
+                    ball.bounceVertically();
+                }
+            } else if (collidedBricks.size() == 2) {
+                ball.update(- dt);
+                Brick brick1 = collidedBricks.get(0);
+                Brick brick2 = collidedBricks.get(1);
+                allCollidedBricks.add(brick1);
+                allCollidedBricks.add(brick2);
+                if (brick1.getX() == brick2.getX()) {
+                    ball.bounceHorizontally();
+                } else if (brick1.getY() == brick2.getY()) {
+                    ball.bounceVertically();
+                } else {
+                    ball.bounceHorizontally();
+                    ball.bounceVertically();
                 }
             }
 
             for (Iterator<Boss> it = bosses.iterator(); it.hasNext();) {
                 Boss boss = it.next();
                 if (ball.checkOverlap(boss)) {
-                    double ballCenterX = ball.getX() + ball.getWidth() / 2;
-                    double ballCenterY = ball.getY() + ball.getHeight() / 2;
-                    double bossCenterX = boss.getX() + boss.getWidth() / 2;
-                    double bossCenterY = boss.getY() + boss.getHeight() / 2;
-                    double dx = ballCenterX - bossCenterX;
-                    double dy = ballCenterY - bossCenterY;
-                    double overlapX = (boss.getWidth() / 2 + ball.getWidth() / 2) - Math.abs(dx);
-                    double overlapY = (boss.getHeight() / 2 + ball.getHeight() / 2) - Math.abs(dy);
-
-                    if (overlapX < overlapY) {
-                        cntHorizontally++;
-                    } else {
-                        cntVertically++;
-                    }
+                    score += 1;
                     VisionEffect ve = new Explosion(boss.getX(), boss.getY(), Boss.BOSS_SIZE*1.2, Boss.BOSS_SIZE*1.2);
                     visionEffects.add(ve);
                     root.getChildren().add(ve.getTexture());
@@ -304,10 +333,19 @@ public class GameManager {
                     it.remove();
                 }
             }
-            if (cntHorizontally > 0) {
-                ball.bounceHorizontally();
-            } else if (cntVertically > 0) {
-                ball.bounceVertically();
+        }
+//        allCollidedBricks = allCollidedBricks.stream().distinct().toList();
+        for (Iterator<Brick> it = allCollidedBricks.iterator(); it.hasNext();) {
+            Brick brick = it.next();
+            AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
+            brick.takeHit();
+            if (brick.isDestroyed()) {
+                score += 1;
+                root.getChildren().remove(brick.getTexture());
+                spawnRandomPowerUp(brick.getX() + ((double) Brick.BRICK_WIDTH - 16) / 2,
+                        brick.getY() + (double) Brick.BRICK_HEIGHT / 2, 0.4);
+                bricks.remove(brick);
+                layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
             }
         }
 
@@ -455,7 +493,7 @@ public class GameManager {
             powerUp.update(dt);
         }
         paddle.update(dt);
-        checkCollisions();
+        checkCollisions(dt);
 
         for (Iterator<VisionEffect> it = visionEffects.iterator(); it.hasNext();) {
             VisionEffect ve = it.next();
@@ -467,7 +505,8 @@ public class GameManager {
         // Update boss path each frame to reflect paddle movement and boss position
         for (Iterator<Boss> iterator = bosses.iterator(); iterator.hasNext();) {
             Boss boss = iterator.next();
-            boss.bossUpdate(dt, paddle, layout, root, bricks);
+            int newScore = boss.bossUpdate(dt, paddle, layout, root, bricks, getScore());
+            setScore(newScore);
             if (!boss.isActive()) {
                 // Tạo hiệu ứng nổ tại vị trí boss
                  VisionEffect explosion = new Explosion(
@@ -483,8 +522,7 @@ public class GameManager {
                 boss = null;
             }
         }
-
-        if (mainBall == null
+            if (mainBall == null
                 || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
             gameOver();
         }
