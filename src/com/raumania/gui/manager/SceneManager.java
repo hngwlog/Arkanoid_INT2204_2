@@ -29,6 +29,7 @@ public class SceneManager {
         screens.put(ScreenType.GAME, new GameScreen(this));
         screens.put(ScreenType.MULTIPLAYER, new MultiplayerGameScreen(this));
         screens.put(ScreenType.GAME_OVER, new GameOverScreen(this));
+        screens.put(ScreenType.OPTION, new OptionScreen(this));
 
         // apply font for all screens
         screens.forEach((type, screen) -> {
