@@ -1,17 +1,16 @@
 package com.raumania.gui.screen;
 
 import com.raumania.core.AudioManager;
-import com.raumania.core.SpriteSheet;
 import com.raumania.gui.manager.SceneManager;
-import com.raumania.utils.UIUtils;
-import javafx.application.Platform;
-import javafx.geometry.Pos;
-import javafx.scene.input.KeyEvent;
 import com.raumania.utils.ResourcesLoader;
+import com.raumania.utils.UIUtils;
+
+import javafx.application.Platform;
+import javafx.scene.control.Button;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,10 +18,10 @@ import java.util.List;
 
 public class HomeScreen extends Screen {
     int cnt = 0;
-    Text chooseArrowLeft;
-    Text chooseArrowRight;
-    List<Button> buttons;
-    List<Double> buttonY;
+    private Text chooseArrowLeft;
+    private Text chooseArrowRight;
+    private List<Button> buttons;
+    private List<Double> buttonY;
     public HomeScreen(SceneManager sceneManager) {
         super(sceneManager);
 
@@ -42,15 +41,21 @@ public class HomeScreen extends Screen {
         });
 
         //Level select button
-        Button levelSelect =  UIUtils.centerButton("Single player", 300, 2.0, 2.0);
+        Button levelSelect =  UIUtils.centerButton("Single player", 275, 2.0, 2.0);
         levelSelect.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.LEVEL_SELECT);
         });
 
         //Setting button
-        Button setting = UIUtils.centerButton("Setting", 400, 2.0, 2.0);
+        Button setting = UIUtils.centerButton("Settings", 350, 2.0, 2.0);
         setting.setOnAction(e -> {
             sceneManager.switchScreen(ScreenType.SETTINGS);
+        });
+
+        //Option button
+        Button option = UIUtils.centerButton("Skins", 425, 2.0, 2.0);
+        option.setOnAction(e -> {
+            sceneManager.switchScreen(ScreenType.OPTION);
         });
 
         //Quit button
@@ -60,10 +65,10 @@ public class HomeScreen extends Screen {
         });
 
         buttonY = new ArrayList<>();
-        Collections.addAll(buttonY, 200.0, 300.0, 400.0, 500.0);
+        Collections.addAll(buttonY, 200.0, 275.0, 350.0, 425.0, 500.0);
 
         buttons = new ArrayList<>();
-        Collections.addAll(buttons, play, levelSelect, setting, quit);
+        Collections.addAll(buttons, play, levelSelect, setting, option, quit);
         for (Button button : buttons) {
             button.setOnMouseEntered(e -> {
                 cnt = getIndex(button);
