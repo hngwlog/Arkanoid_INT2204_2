@@ -159,6 +159,68 @@ public class GameManager {
     }
 
     /**
+     * Triggers an explosion effect that destroys all adjacent bricks
+     * (up, down, left, right) around the specified {@code brick}.
+     * <p>
+     * This method is invoked when an {@link ExplosiveBrick} is destroyed.
+     * It scans the current {@code bricks} list and removes any neighboring
+     * non-strong bricks in the four cardinal directions, updating both
+     * the {@code layout} occupancy grid and the game score.
+     * <br>
+     * For each affected brick, an {@link Explosion} visual effect and
+     * explosion sound effect are played before the brick is removed
+     * from the scene graph.
+     * </p>
+     * @param brick the {@link Brick} whose destruction triggers the detonation;
+     *              must already exist in the current {@code bricks} list.
+     */
+    private void detonateNeighbors(Brick brick) {
+        int r = (int)(brick.getY() / Brick.BRICK_HEIGHT);
+        int c = (int)(brick.getX() / Brick.BRICK_WIDTH);
+        for (int dr = -1; dr <= 1; dr++) {
+            for (int dc = -1; dc <= 1; dc++) {
+                if (dr * dc != 0) {
+                    continue;
+                }
+                int newR = r + dr;
+                int newC = c + dc;
+                if (newR < 0 || newR >= 28 || newC < 0 || newC >= 13) {
+                    continue;
+                }
+                Brick victim = null;
+                for (Brick otherBrick: bricks) {
+                    if ((int)(otherBrick.getY() / Brick.BRICK_HEIGHT) != newR) {
+                        continue;
+                    }
+                    if ((int)(otherBrick.getX() / Brick.BRICK_WIDTH) != newC) {
+                        continue;
+                    }
+                    victim = otherBrick;
+                    break;
+                }
+                if (victim == null) {
+                    continue;
+                }
+                if (victim instanceof StrongBrick) {
+                    continue;
+                }
+                VisualEffect ve = new Explosion(victim.getX(), victim.getY(), Brick.BRICK_WIDTH,
+                        Brick.BRICK_HEIGHT);
+                visualEffects.add(ve);
+                ve.play();
+                AudioManager.getInstance().playSFX(AudioManager.EXPLOSION);
+                root.getChildren().add(ve.getTexture());
+                if (layout[newR][newC] == false) {
+                    root.getChildren().remove(victim.getTexture());
+                    bricks.remove(victim);
+                    layout[newR][newC] = true;
+                    score += 1;
+                }
+            }
+        }
+    }
+
+    /**
      * Detects and resolves collisions between game objects such as the ball and the paddle.
      * <p>
      * When the ball collides with the paddle from above (i.e., the ball is moving downward),
@@ -311,14 +373,29 @@ public class GameManager {
             }
         }
 //        allCollidedBricks = allCollidedBricks.stream().distinct().toList();
-        for (Iterator<Brick> it = allCollidedBricks.iterator(); it.hasNext();) {
-            Brick brick = it.next();
+        for (Brick brick: allCollidedBricks) {
             brick.takeHit();
             if (brick.isDestroyed()) {
-                score += 1;
-                root.getChildren().remove(brick.getTexture());
-                bricks.remove(brick);
-                layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
+                if (brick instanceof ExplosiveBrick) {
+                    VisualEffect ve = new Explosion(brick.getX(), brick.getY(), Brick.BRICK_WIDTH,
+                            Brick.BRICK_HEIGHT);
+                    visualEffects.add(ve);
+                    ve.play();
+                    AudioManager.getInstance().playSFX(AudioManager.EXPLOSION);
+                    root.getChildren().add(ve.getTexture());
+                    detonateNeighbors(brick);
+                }
+            }
+        }
+        for (Iterator<Brick> it = allCollidedBricks.iterator(); it.hasNext();) {
+            Brick brick = it.next();
+            if (brick.isDestroyed()) {
+                if (layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] == false) {
+                    root.getChildren().remove(brick.getTexture());
+                    bricks.remove(brick);
+                    layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
+                    score += 1;
+                };
                 // 40% to spawn powerup
                 PowerUp powerUp = PowerUpFactory.createRandomPowerUp(brick.getX(), brick.getY(), 30, 30, 0.4);
                 if (powerUp != null) {

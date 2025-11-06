@@ -7,6 +7,8 @@ public class BrickFactory {
             case "strong" -> new StrongBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
             case "invisible" ->
                     new InvisibleBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT, color);
+            case "explosive" ->
+                    new ExplosiveBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT, color);
             case "empty" -> null;
             default -> throw new IllegalArgumentException("Brick type not exist");
         };
