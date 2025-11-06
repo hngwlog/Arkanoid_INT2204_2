@@ -395,13 +395,13 @@ public class GameManager {
                     bricks.remove(brick);
                     layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
                     score += 1;
+                    // 40% to spawn powerup
+                    PowerUp powerUp = PowerUpFactory.createRandomPowerUp(brick.getX(), brick.getY(), 30, 30, 0.4);
+                    if (powerUp != null) {
+                        root.getChildren().add(powerUp.getTexture());
+                        powerUps.add(powerUp);
+                    }
                 };
-                // 40% to spawn powerup
-                PowerUp powerUp = PowerUpFactory.createRandomPowerUp(brick.getX(), brick.getY(), 30, 30, 0.4);
-                if (powerUp != null) {
-                    root.getChildren().add(powerUp.getTexture());
-                    powerUps.add(powerUp);
-                }
             }
         }
 
@@ -429,8 +429,6 @@ public class GameManager {
                         effectCountDownList.add(new EffectCountDown(curTime, powerUp.getDuration(), type));
                     }
                 }
-
-
                 root.getChildren().remove(powerUp.getTexture());
                 powerUp.deactivate();
                 it.remove();
