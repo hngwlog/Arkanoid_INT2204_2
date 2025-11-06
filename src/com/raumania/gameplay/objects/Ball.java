@@ -5,7 +5,10 @@ import com.raumania.gui.screen.GameScreen;
 import com.raumania.math.Vec2f;
 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+
+import java.util.List;
 
 /**
  * Represents the ball in the game.
@@ -17,9 +20,17 @@ import javafx.scene.shape.Circle;
 public class Ball extends MovableObject {
     public static final double BALL_RADIUS = 6.5;
     public static final int BALL_SPEED = 360;
+    private static final List<Paint> BALL_COLORS = List.of(
+            Color.WHITE,
+            Color.RED,
+            Color.BLUEVIOLET,
+            Color.GREEN,
+            Color.YELLOW
+    );
 
-    private double radius;
+    private static int textureIndex = 0;
     private final Circle view;
+    private double radius;
     private boolean activeStatus;
     private boolean isImmortal;
 
@@ -29,14 +40,18 @@ public class Ball extends MovableObject {
      * @param x the x-coordinate of the ball's center
      * @param y the y-coordinate of the ball's center
      */
-    public Ball(double x, double y, Color color) {
+    public Ball(double x, double y) {
         super(x, y, BALL_RADIUS * 2.0, BALL_RADIUS * 2.0);
         this.radius = BALL_RADIUS;
         this.setDirection(new Vec2f(1, -1));
         this.setSpeed(BALL_SPEED);
-        this.view = new Circle(radius, color);
+        this.view = new Circle(radius, BALL_COLORS.get(textureIndex));
         this.activeStatus = true;
         this.isImmortal = false;
+    }
+
+    public static void setTextureIndex(int ballColorIdx) {
+        textureIndex = ballColorIdx;
     }
 
     /**
@@ -75,6 +90,7 @@ public class Ball extends MovableObject {
     public void setImmortal (boolean currentState) {
         isImmortal = currentState;
     }
+
     /**
      * Updates the position of the {@link Circle} view to match the ball's current coordinates.
      * <p>
@@ -170,5 +186,4 @@ public class Ball extends MovableObject {
         checkCollisionWithBoundary();
         updateView();
     }
-
 }

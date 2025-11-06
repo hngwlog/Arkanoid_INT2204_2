@@ -1,11 +1,12 @@
 package com.raumania.gui.screen;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raumania.gameplay.objects.Ball;
+import com.raumania.gameplay.objects.Paddle;
 import com.raumania.gui.manager.SceneManager;
 import com.raumania.utils.ResourcesLoader;
 import com.raumania.utils.UIUtils;
@@ -22,15 +23,12 @@ import java.io.IOException;
 public class SkinSelectScreen extends Screen {
 
     private static final String CONFIG_FILE = "skins.json";
-    private static final Config DEFAULT_CONFIG = new Config(0, 0, 0);
-    public static Config sharedConfig;
-    int maxPaddleNumber = 5;
-    int maxBallNumber = 5;
-    int maxBackgroundNumber = 5;
-    Text currentPaddle;
-    Text currentBall;
-    Text currentBackground;
-    private Config config;
+    private static final Config DEFAULT_CONFIG = new Config(0, 0);
+    private static final int MAX_PADDLE_SKIN = 4;
+    private static final int MAX_BALL_COLOR = 5;
+    private static Config sharedConfig = DEFAULT_CONFIG;
+    private final Text currentPaddle;
+    private final Text currentBall;
 
     public SkinSelectScreen(SceneManager sceneManager) {
         super(sceneManager);
@@ -42,52 +40,40 @@ public class SkinSelectScreen extends Screen {
         paddleText.setFill(Color.WHITE);
         Button paddleLeft = UIUtils.newButton("<", 315, 185, 2.0, 2.0);
         Button paddleRight = UIUtils.newButton(">", 815, 185, 2.0, 2.0);
-        currentPaddle = UIUtils.newText("Paddle " + (config.paddle + 1), 550, 200, 2.0, 2.0);
+        currentPaddle = UIUtils.newText("Paddle " + (sharedConfig.paddle + 1), 550, 200, 2.0, 2.0);
         currentPaddle.setFill(Color.WHITE);
         paddleLeft.setOnAction(
                 e -> {
-                    changeCnt("Paddle", -1);
+                    changeCount("Paddle", -1);
                 });
         paddleRight.setOnAction(
                 e -> {
-                    changeCnt("Paddle", 1);
+                    changeCount("Paddle", 1);
                 });
+
         // ball
         Text ballText = UIUtils.newText("Ball: ", 100, 300, 2.0, 2.0);
         ballText.setFill(Color.WHITE);
         Button ballLeft = UIUtils.newButton("<", 315, 285, 2.0, 2.0);
         Button ballRight = UIUtils.newButton(">", 815, 285, 2.0, 2.0);
-        currentBall = UIUtils.newText("Ball " + (config.ball + 1), 550, 300, 2.0, 2.0);
+        currentBall = UIUtils.newText("Ball " + (sharedConfig.ball + 1), 550, 300, 2.0, 2.0);
         currentBall.setFill(Color.WHITE);
         ballLeft.setOnAction(
                 e -> {
-                    changeCnt("Ball", -1);
+                    changeCount("Ball", -1);
                 });
         ballRight.setOnAction(
                 e -> {
-                    changeCnt("Ball", 1);
-                });
-        // background
-        Text backgroundText = UIUtils.newText("Background: ", 100, 400, 2.0, 2.0);
-        backgroundText.setFill(Color.WHITE);
-        Button backgroundLeft = UIUtils.newButton("<", 315, 385, 2.0, 2.0);
-        Button backgroundRight = UIUtils.newButton(">", 815, 385, 2.0, 2.0);
-        currentBackground =
-                UIUtils.newText("Background " + (config.background + 1), 550, 400, 2.0, 2.0);
-        currentBackground.setFill(Color.WHITE);
-        backgroundLeft.setOnAction(
-                e -> {
-                    changeCnt("Background", -1);
-                });
-        backgroundRight.setOnAction(
-                e -> {
-                    changeCnt("Background", 1);
+                    changeCount("Ball", 1);
                 });
 
-        // Back to Home button
-        Button back = UIUtils.centerButton("Back to Home", 500, 2.0, 2.0);
-        back.setOnAction(
+        // Confirm changes button
+        Button submit = UIUtils.centerButton("Confirm", 500, 2.0, 2.0);
+        submit.setOnAction(
                 e -> {
+                    Paddle.setTextureIndex(sharedConfig.paddle);
+                    Ball.setTextureIndex(sharedConfig.ball);
+
                     sceneManager.switchScreen(ScreenType.HOME);
                 });
 
@@ -101,11 +87,7 @@ public class SkinSelectScreen extends Screen {
                         ballLeft,
                         ballRight,
                         currentBall,
-                        backgroundText,
-                        backgroundLeft,
-                        backgroundRight,
-                        currentBackground,
-                        back);
+                        submit);
 
         Background bg =
                 new Background(
@@ -124,48 +106,45 @@ public class SkinSelectScreen extends Screen {
     }
 
     private Text cntCurrentText(String cntType) {
-        return switch (cntType) {
-            case "Ball" -> this.currentBall;
-            case "Background" -> this.currentBackground;
-            default -> this.currentPaddle;
-        };
+        if (cntType.equals("Paddle")) {
+            return currentPaddle;
+        } else if (cntType.equals("Ball")) {
+            return currentBall;
+        }
+        return null;
     }
 
     private void applyChange(String cntType, int cnt) {
         switch (cntType) {
             case "Paddle":
-                config.paddle = cnt;
+                sharedConfig.paddle = cnt;
+
                 break;
             case "Ball":
-                config.ball = cnt;
-                break;
-            case "Background":
-                config.background = cnt;
+                sharedConfig.ball = cnt;
                 break;
         }
     }
 
-    private int getCnt(String cntType) {
+    private int getCount(String cntType) {
         return switch (cntType) {
-            case "Paddle" -> config.paddle;
-            case "Ball" -> config.ball;
-            case "Background" -> config.background;
+            case "Paddle" -> sharedConfig.paddle;
+            case "Ball" -> sharedConfig.ball;
             default -> 0;
         };
     }
 
     private int getMaxNumber(String cntType) {
         return switch (cntType) {
-            case "Paddle" -> this.maxPaddleNumber;
-            case "Ball" -> this.maxBallNumber;
-            case "Background" -> this.maxBackgroundNumber;
+            case "Paddle" -> MAX_PADDLE_SKIN;
+            case "Ball" -> MAX_BALL_COLOR;
             default -> 5;
         };
     }
 
-    private void changeCnt(String cntType, int changeType) {
+    private void changeCount(String cntType, int changeType) {
         Platform.runLater(root::requestFocus);
-        int cnt = getCnt(cntType);
+        int cnt = getCount(cntType);
         int maxCnt = getMaxNumber(cntType);
         cnt += changeType;
         if (cnt < 0) cnt = maxCnt - 1;
@@ -187,23 +166,24 @@ public class SkinSelectScreen extends Screen {
         }
         ObjectMapper mapper = new ObjectMapper();
         try {
-            mapper.writeValue(file, config);
+            mapper.writeValue(file, sharedConfig);
         } catch (IOException e) {
             System.err.println("Error saving skins file!" + e);
         }
-        sharedConfig = config;
     }
 
     private void loadConfig() {
         File file = new File(CONFIG_FILE);
         if (!file.exists() || file.length() == 0) {
-            config = DEFAULT_CONFIG;
+            sharedConfig = DEFAULT_CONFIG;
             return;
         }
 
         ObjectMapper mapper = new ObjectMapper();
         try {
-            config = mapper.readValue(file, SkinSelectScreen.Config.class);
+            sharedConfig = mapper.readValue(file, SkinSelectScreen.Config.class);
+            Ball.setTextureIndex(sharedConfig.ball);
+            Paddle.setTextureIndex(sharedConfig.paddle);
         } catch (DatabindException e) {
             System.err.println("Skins file has corrupted structure!");
         } catch (StreamReadException e) {
@@ -211,21 +191,17 @@ public class SkinSelectScreen extends Screen {
         } catch (IOException e) {
             System.err.println("Error loading skins file!");
         }
-        sharedConfig = config;
     }
 
     public static class Config {
-        @JsonIgnore private int paddle;
-        @JsonIgnore private int ball;
-        @JsonIgnore private int background;
+        private int paddle;
+        private int ball;
 
         public Config(
                 @JsonProperty("paddle") int paddle,
-                @JsonProperty("ball") int ball,
-                @JsonProperty("background") int background) {
+                @JsonProperty("ball") int ball) {
             this.paddle = paddle;
             this.ball = ball;
-            this.background = background;
         }
 
         @JsonGetter
@@ -246,16 +222,6 @@ public class SkinSelectScreen extends Screen {
         @JsonProperty("ball")
         public void setBall(int ball) {
             this.ball = ball;
-        }
-
-        @JsonGetter
-        public int getBackground() {
-            return background;
-        }
-
-        @JsonProperty("background")
-        public void setBackground(int background) {
-            this.background = background;
         }
     }
 }

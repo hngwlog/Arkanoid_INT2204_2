@@ -27,19 +27,18 @@ public class SettingScreen extends Screen {
     // file to save the volume
     private static final String CONFIG_FILE = "config.json";
     private static final Config DEFAULT_CONFIG = new Config(100, "A", "D", "LEFT", "RIGHT");
-    public static Config sharedConfig;
+    public static Config sharedConfig = DEFAULT_CONFIG;
     private final Button firstLeftKeyButton;
     private final Button firstRightKeyButton;
     private final Button secondLeftKeyButton;
     private final Button secondRightKeyButton;
-    private Config config;
     private Button activeButton;
 
     public SettingScreen(SceneManager sceneManager) {
         super(sceneManager);
 
         this.loadConfig();
-        AudioManager.getInstance().setVolume(config.getVolume());
+        AudioManager.getInstance().setVolume(sharedConfig.getVolume());
 
         // put components here
         // Volume Text
@@ -70,7 +69,7 @@ public class SettingScreen extends Screen {
                         (obs, oldVal, newVal) -> {
                             volumeText.setText("Volume: " + newVal.intValue() + "%");
                             Platform.runLater(root::requestFocus);
-                            config.volume = newVal.intValue();
+                            sharedConfig.volume = newVal.intValue();
                             saveConfig();
                         });
         //        HBox volumeBox = new HBox(200);
@@ -89,7 +88,7 @@ public class SettingScreen extends Screen {
         Text firstLeftKeyText = UIUtils.newText("Player 1 Left Key", 115, 250, 2.0, 2.0);
         firstLeftKeyText.setFill(Color.WHITE);
         firstLeftKeyButton =
-                UIUtils.newButton(config.getFirstLeftKey().getName(), 450, 235, 2.0, 2.0);
+                UIUtils.newButton(sharedConfig.getFirstLeftKey().getName(), 450, 235, 2.0, 2.0);
         firstLeftKeyButton.setOnMouseClicked(this::changeKeyHandler);
         //        HBox firstLeft = new HBox(20);
         //        firstLeft.setAlignment(Pos.CENTER_LEFT);
@@ -98,7 +97,7 @@ public class SettingScreen extends Screen {
         Text firstRightKeyText = UIUtils.newText("Player 1 Right Key", 117, 300, 2.0, 2.0);
         firstRightKeyText.setFill(Color.WHITE);
         firstRightKeyButton =
-                UIUtils.newButton(config.getFirstRightKey().getName(), 450, 285, 2.0, 2.0);
+                UIUtils.newButton(sharedConfig.getFirstRightKey().getName(), 450, 285, 2.0, 2.0);
         firstRightKeyButton.setOnMouseClicked(this::changeKeyHandler);
         //        HBox firstRight = new HBox(20);
         //        firstRight.setAlignment(Pos.CENTER_LEFT);
@@ -107,7 +106,7 @@ public class SettingScreen extends Screen {
         Text secondLeftKeyText = UIUtils.newText("Player 2 Left Key", 115, 350, 2.0, 2.0);
         secondLeftKeyText.setFill(Color.WHITE);
         secondLeftKeyButton =
-                UIUtils.newButton(config.getSecondLeftKey().getName(), 450, 335, 2.0, 2.0);
+                UIUtils.newButton(sharedConfig.getSecondLeftKey().getName(), 450, 335, 2.0, 2.0);
         secondLeftKeyButton.setOnMouseClicked(this::changeKeyHandler);
         //        HBox secondLeft = new HBox(20);
         //        secondLeft.setAlignment(Pos.CENTER_LEFT);
@@ -116,7 +115,7 @@ public class SettingScreen extends Screen {
         Text secondRightKeyText = UIUtils.newText("Player 2 Right Key", 117, 400, 2.0, 2.0);
         secondRightKeyText.setFill(Color.WHITE);
         secondRightKeyButton =
-                UIUtils.newButton(config.getSecondRightKey().getName(), 450, 385, 2.0, 2.0);
+                UIUtils.newButton(sharedConfig.getSecondRightKey().getName(), 450, 385, 2.0, 2.0);
         secondRightKeyButton.setOnMouseClicked(this::changeKeyHandler);
         //        HBox secondRight = new HBox(20);
         //        secondRight.setAlignment(Pos.CENTER_LEFT);
@@ -169,17 +168,17 @@ public class SettingScreen extends Screen {
                 ev -> {
                     ev.consume(); // prevent default key actions
                     if (activeButton == firstLeftKeyButton) {
-                        config.firstLeftKey = ev.getCode();
-                        activeButton.setText(config.firstLeftKey.getName());
+                        sharedConfig.firstLeftKey = ev.getCode();
+                        activeButton.setText(sharedConfig.firstLeftKey.getName());
                     } else if (activeButton == firstRightKeyButton) {
-                        config.firstRightKey = ev.getCode();
-                        activeButton.setText(config.firstRightKey.getName());
+                        sharedConfig.firstRightKey = ev.getCode();
+                        activeButton.setText(sharedConfig.firstRightKey.getName());
                     } else if (activeButton == secondLeftKeyButton) {
-                        config.secondLeftKey = ev.getCode();
-                        activeButton.setText(config.secondLeftKey.getName());
+                        sharedConfig.secondLeftKey = ev.getCode();
+                        activeButton.setText(sharedConfig.secondLeftKey.getName());
                     } else if (activeButton == secondRightKeyButton) {
-                        config.secondRightKey = ev.getCode();
-                        activeButton.setText(config.secondRightKey.getName());
+                        sharedConfig.secondRightKey = ev.getCode();
+                        activeButton.setText(sharedConfig.secondRightKey.getName());
                     }
 
                     saveConfig();
@@ -193,13 +192,13 @@ public class SettingScreen extends Screen {
         }
 
         if (btn == firstLeftKeyButton) {
-            btn.setText(config.firstLeftKey.getName());
+            btn.setText(sharedConfig.firstLeftKey.getName());
         } else if (btn == firstRightKeyButton) {
-            btn.setText(config.firstRightKey.getName());
+            btn.setText(sharedConfig.firstRightKey.getName());
         } else if (btn == secondLeftKeyButton) {
-            btn.setText(config.getSecondLeftKey().getName());
+            btn.setText(sharedConfig.getSecondLeftKey().getName());
         } else if (btn == secondRightKeyButton) {
-            btn.setText(config.getSecondRightKey().getName());
+            btn.setText(sharedConfig.getSecondRightKey().getName());
         }
     }
 
@@ -216,24 +215,23 @@ public class SettingScreen extends Screen {
         }
         ObjectMapper mapper = new ObjectMapper();
         try {
-            mapper.writeValue(file, config);
+            mapper.writeValue(file, sharedConfig);
         } catch (IOException e) {
             System.err.println("Error saving config file!" + e);
         }
-        sharedConfig = config;
     }
 
     /** Get the config from {@value CONFIG_FILE}. If not exists then use default. */
     private void loadConfig() {
         File file = new File(CONFIG_FILE);
         if (!file.exists() || file.length() == 0) {
-            config = DEFAULT_CONFIG;
+            sharedConfig = DEFAULT_CONFIG;
             return;
         }
 
         ObjectMapper mapper = new ObjectMapper();
         try {
-            config = mapper.readValue(file, Config.class);
+            sharedConfig = mapper.readValue(file, Config.class);
         } catch (DatabindException e) {
             System.err.println("Config file has corrupted structure!");
         } catch (StreamReadException e) {
@@ -241,7 +239,6 @@ public class SettingScreen extends Screen {
         } catch (IOException e) {
             System.err.println("Error loading config file!");
         }
-        sharedConfig = config;
     }
 
     @Override

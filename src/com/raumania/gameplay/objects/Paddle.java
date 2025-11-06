@@ -20,7 +20,7 @@ public class Paddle extends MovableObject {
     public static final int PADDLE_WIDTH = 100;
     public static final int PADDLE_HEIGHT = 15;
     public static final int PADDLE_SPEED = 350;
-
+    private static int textureIndex = 0;
     private final ImageView paddleTexture;
 
     /**
@@ -34,9 +34,18 @@ public class Paddle extends MovableObject {
     public Paddle(double x, double y, double width, double height) {
         super(x, y, width, height);
         this.speed = PADDLE_SPEED;
-        this.paddleTexture = new ImageView(ResourcesLoader.loadImage("paddle.png"));
+        this.paddleTexture = new ImageView(ResourcesLoader.loadImage("paddle" + textureIndex + ".png"));
         this.paddleTexture.setFitWidth(width);
         this.paddleTexture.setFitHeight(height);
+    }
+
+    /**
+     * Set the graphical representation of the paddle.
+     *
+     * @param paddleTextureIndex index of img used to render this paddle
+     */
+    public static void setTextureIndex(int paddleTextureIndex) {
+        textureIndex = paddleTextureIndex;
     }
 
     /**
