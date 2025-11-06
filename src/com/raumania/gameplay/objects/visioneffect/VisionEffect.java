@@ -13,7 +13,6 @@ public abstract class VisionEffect extends GameObject {
 
     public VisionEffect(double x, double y, double width, double height) {
         super(x, y, width, height);
-        AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
     }
 
     public void setVisionEffectTexture(SpriteSheet visionEffectTexture) {

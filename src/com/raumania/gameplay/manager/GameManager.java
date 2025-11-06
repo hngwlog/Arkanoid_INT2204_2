@@ -122,9 +122,10 @@ public class GameManager {
                 Paddle.PADDLE_WIDTH, Paddle.PADDLE_HEIGHT);
         root.getChildren().add(paddle.getTexture());
 
-        mainBall = spawnMainBall();
-        mainBall.setSpeed(0);
-        mainBall.setDirection(new Vec2f(0, 0));
+        spawnAdditionalBall(paddle.getX() + Paddle.PADDLE_WIDTH*0.5, paddle.getY(), new Vec2f(0,0));
+        Ball firstBall = balls.get(0);
+        firstBall.setSpeed(0);
+        firstBall.setDirection(new Vec2f(0, 0));
 
         List<String> colorRows = currentLvl.getColors();
         boolean hasColors = (colorRows != null && colorRows.size() == currentLvl.getLayout().size());
@@ -340,7 +341,7 @@ public class GameManager {
                 score += 1;
                 root.getChildren().remove(brick.getTexture());
                 spawnRandomPowerUp(brick.getX() + ((double) Brick.BRICK_WIDTH - 16) / 2,
-                        brick.getY() + (double) Brick.BRICK_HEIGHT / 2, 0.4);
+                        brick.getY() + (double) Brick.BRICK_HEIGHT / 2, 0.2);
                 bricks.remove(brick);
                 layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
             }
@@ -478,8 +479,8 @@ public class GameManager {
             paddle.update(dt);
             double ballX = paddle.getX() + (paddle.getWidth() - Ball.BALL_RADIUS * 2) / 2.0;
             double ballY = paddle.getY() - Ball.BALL_RADIUS * 2 - 1;
-            mainBall.setPosition(ballX, ballY);
-            mainBall.updateView();
+            balls.get(0).setPosition(ballX, ballY);
+            balls.get(0).updateView();
             return;
         }
         if (gameState.get() != GameState.RUNNING) {
@@ -521,7 +522,7 @@ public class GameManager {
                 boss = null;
             }
         }
-            if (mainBall == null
+            if (balls.size() == 0
                 || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
             gameOver();
         }
@@ -537,8 +538,8 @@ public class GameManager {
      */
     public void startGame() {
         if (gameState.get() == GameState.READY) {
-            mainBall.setSpeed(Ball.BALL_SPEED);
-            mainBall.setDirection(new Vec2f(0, -1));
+            balls.get(0).setSpeed(Ball.BALL_SPEED);
+            balls.get(0).setDirection(new Vec2f(0, -1));
             gameState.set(GameState.RUNNING);
         }
     }
@@ -550,23 +551,14 @@ public class GameManager {
      * representation is added to the scene graph.
      * </p>
      */
-    public Ball spawnMainBall() {
-        // Create ball at paddle center
-        double ballX = paddle.getX() + (paddle.getWidth() - Ball.BALL_RADIUS * 2) / 2.0;
-        double ballY = paddle.getY() - Ball.BALL_RADIUS * 2 - 1;
-        Ball newBall = new Ball(ballX, ballY, Color.BLACK);
-        balls.add(newBall);
-        root.getChildren().add(newBall.getView());
-        return newBall;
-    }
-
-    public void spawnAdditionalBall() {
-        for (int i = 0; i < 2; i++) {
-            Ball ball = new Ball(mainBall.getX(), mainBall.getY(), Color.WHITESMOKE);
-            ball.setDirection(mainBall.getDirection().rotate(-30 + 60*i));
-            balls.add(ball);
-            root.getChildren().add(ball.getView());
-        }
+    public void spawnAdditionalBall(double x, double y, Vec2f dir) {
+        Ball ball = new Ball(x, y, Color.BLACK);
+        Vec2f newDir;
+        newDir = dir.rotate( (Math.random() > 0.5 ? 1 : -1) * (Math.random()*55 + 45) );
+        if (newDir.y == 0) newDir.y = newDir.x;
+        ball.setDirection(newDir);
+        balls.add(ball);
+        root.getChildren().add(ball.getView());
     }
 
     /**

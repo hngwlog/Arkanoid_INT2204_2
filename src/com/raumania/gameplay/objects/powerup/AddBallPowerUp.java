@@ -24,7 +24,12 @@ public class AddBallPowerUp extends PowerUp {
 
     @Override
     public void applyEffect(GameManager gameManager) {
-        gameManager.spawnAdditionalBall();
+        List<Ball> balls = gameManager.getBallsList();
+        int currentSize = balls.size();
+        for (int i = 0; i < currentSize; i++ ) {
+            if (currentSize + i >= 8) return;
+            gameManager.spawnAdditionalBall(balls.get(i).getX(), balls.get(i).getY(), balls.get(i).getDirection());
+        }
     }
 
     @Override
