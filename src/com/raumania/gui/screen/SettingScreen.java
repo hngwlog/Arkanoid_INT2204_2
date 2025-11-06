@@ -5,130 +5,33 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raumania.core.AudioManager;
 import com.raumania.gui.manager.SceneManager;
+import com.raumania.utils.UIUtils;
+
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
 import java.io.IOException;
-import com.raumania.utils.UIUtils;
-
 
 public class SettingScreen extends Screen {
-    public static class Config {
-        private int volume;
-        @JsonIgnore
-        private KeyCode firstLeftKey;
-        @JsonIgnore
-        private KeyCode firstRightKey;
-        @JsonIgnore
-        private KeyCode secondLeftKey;
-        @JsonIgnore
-        private KeyCode secondRightKey;
-
-        private KeyCode getKey(String key, KeyCode defaultKey) {
-            if (key == null) {
-                return defaultKey;
-            }
-            try {
-                return KeyCode.valueOf(key.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return defaultKey;
-            }
-        }
-
-        public KeyCode getFirstLeftKey() {
-            return firstLeftKey;    
-        }
-
-        public KeyCode getFirstRightKey() {
-            return firstRightKey;
-        }
-
-        public KeyCode getSecondLeftKey() {
-            return secondLeftKey;
-        }
-
-        public KeyCode getSecondRightKey() {
-            return secondRightKey;
-        }
-
-        @JsonProperty("firstRightKey")
-        public void setFirstRightKey(String name) {
-            this.firstRightKey = getKey(name, KeyCode.D);
-        }
-
-        @JsonProperty("firstLeftKey")
-        public void setFirstLeftKey(String name) {
-            this.firstLeftKey = getKey(name, KeyCode.A);
-        }
-
-        @JsonProperty("secondLeftKey")
-        public void setSecondLeftKey(String name) {
-            this.secondLeftKey = getKey(name, KeyCode.LEFT);
-        }
-
-        @JsonProperty("secondRightKey")
-        public void setSecondRightKey(String name) {
-            this.secondRightKey = getKey(name, KeyCode.RIGHT);
-        }
-
-        public Config(@JsonProperty("volume") int volume,
-                      @JsonProperty("firstLeftKey") String firstLeftKey,
-                      @JsonProperty("firstRightKey") String firstRightKey,
-                      @JsonProperty("secondLeftKey") String secondLeftKey,
-                      @JsonProperty("secondRightKey") String secondRightKey) {
-            this.volume = volume;
-
-            this.firstLeftKey  = getKey(firstLeftKey,  KeyCode.A);
-            this.firstRightKey = getKey(firstRightKey, KeyCode.D);
-            this.secondLeftKey = getKey(secondLeftKey, KeyCode.LEFT);
-            this.secondRightKey = getKey(secondRightKey, KeyCode.RIGHT);
-        }
-
-        @JsonGetter
-        public int getVolume() {
-            return volume;
-        }
-
-        @JsonGetter("firstLeftKey")
-        public String getFirstLeftKeyName() {
-            return firstLeftKey.name();
-        }
-
-        @JsonGetter("firstRightKey")
-        public String getFirstRightKeyName() {
-            return firstRightKey.name();
-        }
-
-        @JsonGetter("secondLeftKey")
-        public String getSecondLeftKeyName() {
-            return secondLeftKey.name();
-        }
-
-        @JsonGetter("secondRightKey")
-        public String getSecondRightKeyName() {
-            return secondRightKey.name();
-        }
-    }
-
     // file to save the volume
     private static final String CONFIG_FILE = "config.json";
     private static final Config DEFAULT_CONFIG = new Config(100, "A", "D",
             "LEFT", "RIGHT");
-    private Config config;
     public static Config sharedConfig;
-    private Button activeButton;
     private final Button firstLeftKeyButton;
     private final Button firstRightKeyButton;
     private final Button secondLeftKeyButton;
     private final Button secondRightKeyButton;
-
+    private Config config;
+    private Button activeButton;
     public SettingScreen(SceneManager sceneManager) {
         super(sceneManager);
 
@@ -268,7 +171,7 @@ public class SettingScreen extends Screen {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                System.err.println("Error creating volume file!");
+                System.err.println("Error creating config file!");
                 return;
             }
         }
@@ -276,7 +179,7 @@ public class SettingScreen extends Screen {
         try {
             mapper.writeValue(file, config);
         } catch (IOException e) {
-            System.err.println("Error saving volume file!" + e);
+            System.err.println("Error saving config file!" + e);
         }
         sharedConfig = config;
     }
@@ -308,5 +211,102 @@ public class SettingScreen extends Screen {
     @Override
     public void onStart() {
         Platform.runLater(root::requestFocus);
+    }
+
+    public static class Config {
+        private int volume;
+        @JsonIgnore
+        private KeyCode firstLeftKey;
+        @JsonIgnore
+        private KeyCode firstRightKey;
+        @JsonIgnore
+        private KeyCode secondLeftKey;
+        @JsonIgnore
+        private KeyCode secondRightKey;
+
+        public Config(@JsonProperty("volume") int volume,
+                      @JsonProperty("firstLeftKey") String firstLeftKey,
+                      @JsonProperty("firstRightKey") String firstRightKey,
+                      @JsonProperty("secondLeftKey") String secondLeftKey,
+                      @JsonProperty("secondRightKey") String secondRightKey) {
+            this.volume = volume;
+
+            this.firstLeftKey  = getKey(firstLeftKey,  KeyCode.A);
+            this.firstRightKey = getKey(firstRightKey, KeyCode.D);
+            this.secondLeftKey = getKey(secondLeftKey, KeyCode.LEFT);
+            this.secondRightKey = getKey(secondRightKey, KeyCode.RIGHT);
+        }
+
+        private KeyCode getKey(String key, KeyCode defaultKey) {
+            if (key == null) {
+                return defaultKey;
+            }
+            try {
+                return KeyCode.valueOf(key.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return defaultKey;
+            }
+        }
+
+        public KeyCode getFirstLeftKey() {
+            return firstLeftKey;
+        }
+
+        @JsonProperty("firstLeftKey")
+        public void setFirstLeftKey(String name) {
+            this.firstLeftKey = getKey(name, KeyCode.A);
+        }
+
+        public KeyCode getFirstRightKey() {
+            return firstRightKey;
+        }
+
+        @JsonProperty("firstRightKey")
+        public void setFirstRightKey(String name) {
+            this.firstRightKey = getKey(name, KeyCode.D);
+        }
+
+        public KeyCode getSecondLeftKey() {
+            return secondLeftKey;
+        }
+
+        @JsonProperty("secondLeftKey")
+        public void setSecondLeftKey(String name) {
+            this.secondLeftKey = getKey(name, KeyCode.LEFT);
+        }
+
+        public KeyCode getSecondRightKey() {
+            return secondRightKey;
+        }
+
+        @JsonProperty("secondRightKey")
+        public void setSecondRightKey(String name) {
+            this.secondRightKey = getKey(name, KeyCode.RIGHT);
+        }
+
+        @JsonGetter
+        public int getVolume() {
+            return volume;
+        }
+
+        @JsonGetter("firstLeftKey")
+        public String getFirstLeftKeyName() {
+            return firstLeftKey.name();
+        }
+
+        @JsonGetter("firstRightKey")
+        public String getFirstRightKeyName() {
+            return firstRightKey.name();
+        }
+
+        @JsonGetter("secondLeftKey")
+        public String getSecondLeftKeyName() {
+            return secondLeftKey.name();
+        }
+
+        @JsonGetter("secondRightKey")
+        public String getSecondRightKeyName() {
+            return secondRightKey.name();
+        }
     }
 }
