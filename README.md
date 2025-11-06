@@ -36,6 +36,7 @@ Group 8:
 - AddBallPowerUp: spawns an extra ball.
 - ExtendPaddlePowerUp: increases paddle size for a limited duration.
 - ImmortalPowerUp: makes all balls unbreakable for a short time.
+- SlowPowerUp: makes all balls slower.
 
 ### Game Modes
 - Single Player Mode: progress through multiple levels.
