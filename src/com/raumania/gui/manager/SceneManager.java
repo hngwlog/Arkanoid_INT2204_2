@@ -11,14 +11,12 @@ import javafx.stage.Stage;
 
 import java.util.EnumMap;
 
-/**
- * Manages switching screens in the application.
- */
+/** Manages switching screens in the application. */
 public class SceneManager {
 
     private final Stage primaryStage;
     // Constructor requires key type
-    private EnumMap<ScreenType, Screen> screens = new EnumMap<>(ScreenType.class);
+    private final EnumMap<ScreenType, Screen> screens = new EnumMap<>(ScreenType.class);
     private Screen currentScreen;
 
     public SceneManager(Stage primaryStage) {
@@ -32,10 +30,11 @@ public class SceneManager {
         screens.put(ScreenType.OPTION, new OptionScreen(this));
 
         // apply font for all screens
-        screens.forEach((type, screen) -> {
-            Font font = ResourcesLoader.loadFont("CyberpunkCraftpixPixel.otf", 14);
-            applyFont(screen.getRoot(), font);
-        });
+        screens.forEach(
+                (type, screen) -> {
+                    Font font = ResourcesLoader.loadFont("CyberpunkCraftpixPixel.otf", 14);
+                    applyFont(screen.getRoot(), font);
+                });
     }
 
     public Screen getScreen(ScreenType screenType) {
@@ -47,8 +46,8 @@ public class SceneManager {
     }
 
     /**
-     * Switch to the specified screen.
-     * Handle the screens by calling onStop and onStart methods (if implemented).
+     * Switch to the specified screen. Handle the screens by calling onStop and onStart methods (if
+     * implemented).
      *
      * @param screenType The type of screen to switch to.
      */
