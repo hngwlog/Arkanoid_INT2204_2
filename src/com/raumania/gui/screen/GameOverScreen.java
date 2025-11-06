@@ -6,7 +6,6 @@ import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gui.manager.SceneManager;
 import com.raumania.utils.UIUtils;
 
-import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -23,6 +22,9 @@ public class GameOverScreen extends Screen {
     private final Pane highScoreInputPane;
     private final Pane gameOverPane;
     private final Text level;
+    private final Text title;
+    private final Text congrats;
+    private final Text prompt;
 
     public GameOverScreen(SceneManager sceneManager) {
         super(sceneManager);
@@ -38,7 +40,7 @@ public class GameOverScreen extends Screen {
             currentTexts.add(text);
             gameOverPane.getChildren().add(text);
         }
-        Text title = UIUtils.centerText("HighScore", 100, 3.0, 3.0);
+        title = UIUtils.centerText("HighScore", 100, 3.0, 3.0);
         level = UIUtils.centerText("Level 0", 150, 1.5, 1.5);
         Button backToMenu = UIUtils.centerButton("Back to Home", 500, 2.0, 2.0);
         backToMenu.setOnAction(e -> {
@@ -54,11 +56,11 @@ public class GameOverScreen extends Screen {
 
         // if there is an unsaved score, show input pane
         highScoreInputPane = new Pane();
-        Text congrats = UIUtils.centerText("New High Score!", 100, 3.0, 3.0);
-        Text prompt = UIUtils.centerText("Enter your name:", 200, 2.0, 2.0);
+        congrats = UIUtils.centerText("New High Score!", 100, 3.0, 3.0);
+        prompt = UIUtils.centerText("Enter your name:", 200, 2.0, 2.0);
         // center the input field
         TextField nameInput = new TextField();
-        nameInput.setLayoutX(425);
+        nameInput.setLayoutX(485);
         nameInput.setLayoutY(300);
         Button submit = UIUtils.centerButton("Submit", 500, 2.0, 2.0);
         submit.setOnAction(e -> {
@@ -101,7 +103,15 @@ public class GameOverScreen extends Screen {
 
     @Override
     public void onStart() {
-        Platform.runLater(root::requestFocus);
+
+        UIUtils.setCenterText(title);
+        UIUtils.setCenterText(congrats);
+        UIUtils.setCenterText(prompt);
+        UIUtils.setCenterText(level);
+        for (Text text : currentTexts) {
+            UIUtils.setCenterText(text);
+        }
+
         List<HighScoreEntry> highScoreOfLevel = HighScore.getInstance().getEntries().stream()
                 .filter(e -> e.getLevel().equals(singlePlayerGameManager.getCurrentLvl().name()))
                 .toList();

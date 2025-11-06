@@ -27,23 +27,36 @@ import javafx.util.Duration;
 import java.util.*;
 
 public class MultiplayerGameScreen extends Screen {
-    Button pause;
-    Pane gamePlayScreen;
-    Pane mainPause;
-    Pane backChoice;
-    StackPane gamePane;
-    Pane winPane;
-    Text rightScore;
-    Text leftScore;
+    private final Button pause;
+    private final Pane mainPause;
+    private final Pane backChoice;
+    private final Pane winPane;
+    private final Text rightScore;
+    private final Text leftScore;
+    private final List<Button> pauseButtons;
+    private final List<Button> homeButtons;
+    private final List<Double> pauseButtonYs;
+    private final List<Double> homeButtonYs;
+    private final Text pauseChooseArrowLeft;
+    private final Text pauseChooseArrowRight;
+    private final Text homeChooseArrowLeft;
+    private final Text homeChooseArrowRight;
     private final GameManager leftManager;
-    private InputHandler leftInputHandler;
     private final GameManager rightManager;
+    private final Text title;
+    private final Text title1;
+    private InputHandler leftInputHandler;
     private InputHandler rightInputHandler;
     private AnimationTimer loop;
     private long past = - 1;
+    private int pauseState = 0;
+    private int pauseCnt = 0;
+    private int homeCnt = 0;
 
     public MultiplayerGameScreen(SceneManager sceneManager) {
         super(sceneManager);
+        backChoice = new Pane();
+        mainPause = new Pane();
 
         this.leftManager = new GameManager();
         // handle game over state
@@ -89,9 +102,9 @@ public class MultiplayerGameScreen extends Screen {
         winPane.setVisible(false);
 
         //Game play screen
-        gamePlayScreen = new Pane();
+        Pane gamePlayScreen = new Pane();
         //Pause button
-        pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
+        pause = UIUtils.newButton("||", 1060, 20, 2.0, 2.0);
         pause.setOnAction(e -> {
             Platform.runLater(root::requestFocus);
             this.pause();
@@ -119,14 +132,13 @@ public class MultiplayerGameScreen extends Screen {
         gamePlayScreen.setVisible(true);
 
         //Pause screen
-        mainPause = new Pane();
         // mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
         mainPause.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
         mainPause.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         //Pause Title
-        Text title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
+        title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
         title.setFill(Color.GREEN);
         //Resume button
         Button resume = UIUtils.centerButton("Resume", 200, 2.0, 2.0);
@@ -139,19 +151,40 @@ public class MultiplayerGameScreen extends Screen {
             Platform.runLater(root::requestFocus);
             mainPause.setVisible(false);
             backChoice.setVisible(true);
+            pauseState = 2;
+            pauseCnt = 0;
+            updateCnt();
         });
-        mainPause.getChildren().addAll(title, resume, home);
+        //choose arrows
+        pauseChooseArrowLeft = UIUtils.newText(">" , 383.75, 212.5, 2.0, 2.0);
+        pauseChooseArrowLeft.setFill(Color.GREEN);
+        pauseChooseArrowRight = UIUtils.newText("<" , 610.76, 212.5, 2.0, 2.0);
+        pauseChooseArrowRight.setFill(Color.GREEN);
+        //buttons list
+        pauseButtons = new ArrayList<>();
+        Collections.addAll(pauseButtons, resume, home);
+        for (Button button : pauseButtons) {
+            button.setOnMouseEntered(e -> {
+                pauseCnt = getIndex(button);
+                updateCnt();
+            });
+        }
+        //button's Y list
+        pauseButtonYs = new ArrayList<>();
+        Collections.addAll(pauseButtonYs, 200.0, 300.0);
+        //add to mainPause pane
+        mainPause.getChildren().addAll(pauseButtons);
+        mainPause.getChildren().addAll(title, pauseChooseArrowLeft, pauseChooseArrowRight);
         mainPause.setVisible(false);
 
         // Confirmation Screen
-        backChoice = new Pane();
         // backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
         backChoice.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
         backChoice.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         // Title
-        Text title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
+        title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
         title1.setFill(Color.GREEN);
         //Yes button
         //BUG : game over when play again (but still init)
@@ -167,27 +200,75 @@ public class MultiplayerGameScreen extends Screen {
             Platform.runLater(root::requestFocus);
             mainPause.setVisible(true);
             backChoice.setVisible(false);
+            pauseState = 1;
+            homeCnt = 0;
+            updateCnt();
         });
-        backChoice.getChildren().addAll(title1, yes, no);
+        //choose arrow
+        homeChooseArrowLeft = UIUtils.newText(">" , 383.75, 212.5, 2.0, 2.0);
+        homeChooseArrowLeft.setFill(Color.GREEN);
+        homeChooseArrowRight = UIUtils.newText("<" , 610.76, 212.5, 2.0, 2.0);
+        homeChooseArrowRight.setFill(Color.GREEN);
+        //buttons list
+        homeButtons = new ArrayList<>();
+        Collections.addAll(homeButtons, yes, no);
+        for (Button button : homeButtons) {
+            button.setOnMouseEntered(e -> {
+                homeCnt = getIndex(button);
+                updateCnt();
+            });
+        }
+        //button's Y list
+        homeButtonYs = new ArrayList<>();
+        Collections.addAll(homeButtonYs, 200.0, 300.0);
+        //add to backChoice pane
+        backChoice.getChildren().addAll(homeButtons);
+        backChoice.getChildren().addAll(title1, homeChooseArrowLeft, homeChooseArrowRight);
         backChoice.setVisible(false);
 
         // key event
         scene.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                if (leftManager.getGameState() == GameManager.GameState.PAUSED) {
+            if (e.getCode() == KeyCode.SPACE) {
+                if (rightManager.getGameState() == GameManager.GameState.READY) {
+                    rightManager.startGame();
+                    leftManager.startGame();
+                }
+            } else if (e.getCode() == KeyCode.ESCAPE) {
+                if (rightManager.getGameState() == GameManager.GameState.PAUSED) {
                     resume.fire();
-                } else if (leftManager.getGameState() == GameManager.GameState.RUNNING) {
+                } else if (rightManager.getGameState() == GameManager.GameState.RUNNING) {
                     pause.fire();
                 }
-            } else if (e.getCode() == KeyCode.SPACE) {
-                if (leftManager.getGameState() == GameManager.GameState.PAUSED) {
-                    if (backChoice.isVisible()) {
-                        // If in back choice screen, treat SPACE as "No" button
-                        no.fire();
-                    } else {
-                        // If in main pause screen, resume the game
-                        resume.fire();
-                    }
+            } else if (e.getCode() == KeyCode.UP) {
+                // if on mainPause pane
+                if (pauseState == 1) {
+                    pauseCnt = 1 - pauseCnt;
+                    updateCnt();
+                }
+                // if on backChoice pane
+                else if (pauseState == 2) {
+                    homeCnt = 1 - homeCnt;
+                    updateCnt();
+                }
+            } else if (e.getCode() == KeyCode.DOWN) {
+                // if on mainPause pane
+                if (pauseState == 1) {
+                    pauseCnt = 1 - pauseCnt;
+                    updateCnt();
+                }
+                // if on backChoice pane
+                else if (pauseState == 2) {
+                    homeCnt = 1 - homeCnt;
+                    updateCnt();
+                }
+            } else if (e.getCode() == KeyCode.ENTER) {
+                // if on mainPause pane
+                if (pauseState == 1) {
+                    pauseButtons.get(pauseCnt).fire();
+                }
+                // if on backChoice pane
+                else if (pauseState == 2) {
+                    homeButtons.get(homeCnt).fire();
                 }
             } else {
                 leftInputHandler.onKeyPressed(e.getCode());
@@ -208,7 +289,7 @@ public class MultiplayerGameScreen extends Screen {
         rightGame.setClip(new Rectangle(GameScreen.GAME_WIDTH, GameScreen.GAME_HEIGHT));
         rightGame.getTransforms().add(new Translate(Main.WINDOW_WIDTH - GameScreen.GAME_WIDTH - 30, GameScreen.GAME_START_Y));
 
-        gamePane = new StackPane();
+        StackPane gamePane = new StackPane();
         gamePane.getChildren().addAll(leftGame, rightGame, gamePlayScreen);
         root.getChildren().addAll(gamePane, mainPause, backChoice, winPane);
 
@@ -226,6 +307,10 @@ public class MultiplayerGameScreen extends Screen {
     public void onStart() {
         // stop any playing music
         AudioManager.getInstance().stop();
+
+        Platform.runLater(this::updateCnt);
+        UIUtils.setCenterText(title);
+        UIUtils.setCenterText(title1);
 
         MapLoader.LevelData lv = generateRandomLevel();
         leftManager.setCurrentLvl(lv);
@@ -353,6 +438,7 @@ public class MultiplayerGameScreen extends Screen {
         rightManager.setGameState(GameManager.GameState.RUNNING);
         mainPause.setVisible(false);
         backChoice.setVisible(false);
+        pauseState = 0;
     }
 
     public void pause() {
@@ -361,5 +447,53 @@ public class MultiplayerGameScreen extends Screen {
         rightManager.setGameState(GameManager.GameState.PAUSED);
         mainPause.setVisible(true);
         backChoice.setVisible(false);
+        pauseState = 1;
     }
+
+    /**
+     * update arrow buttons when change cnt.
+     */
+    private void updateCnt() {
+        System.out.println(pauseCnt + " " + homeCnt);
+        double gap = 60 + Math.max(pauseButtons.get(pauseCnt).getWidth() - 60, 0) / 2;
+        double arrowY = pauseButtonYs.get(pauseCnt) + pauseButtons.get(pauseCnt).getHeight() / 2;
+        double arrowLeftX = pauseButtons.get(pauseCnt).getLayoutX() - gap
+                - pauseChooseArrowLeft.getLayoutBounds().getWidth();
+        double arrowRightX = pauseButtons.get(pauseCnt).getLayoutX() + gap
+                + pauseButtons.get(pauseCnt).getWidth();
+        pauseChooseArrowLeft.setY(arrowY);
+        pauseChooseArrowLeft.setX(arrowLeftX);
+        pauseChooseArrowRight.setY(arrowY);
+        pauseChooseArrowRight.setX(arrowRightX);
+        gap = 60 + Math.max(homeButtons.get(homeCnt).getWidth() - 60, 0) / 2;
+        arrowY = homeButtonYs.get(homeCnt) + homeButtons.get(homeCnt).getHeight() / 2;
+        arrowLeftX = homeButtons.get(homeCnt).getLayoutX() - gap
+                - homeChooseArrowLeft.getLayoutBounds().getWidth();
+        arrowRightX = homeButtons.get(homeCnt).getLayoutX() + gap
+                + homeButtons.get(homeCnt).getWidth();
+        homeChooseArrowLeft.setY(arrowY);
+        homeChooseArrowLeft.setX(arrowLeftX);
+        homeChooseArrowRight.setY(arrowY);
+        homeChooseArrowRight.setX(arrowRightX);
+    }
+
+    /**
+     * get button index of buttonList.
+     * @param button Button
+     * @return button's index
+     */
+    private int getIndex(Button button) {
+        int i = 0;
+        for (Button b : pauseButtons) {
+            if (b.equals(button)) return i;
+            i++;
+        }
+        i = 0;
+        for (Button b : homeButtons) {
+            if (b.equals(button)) return i;
+            i++;
+        }
+        return -1;
+    }
+
 }
