@@ -34,6 +34,8 @@ import java.util.*;
  * </p>
  */
 public class GameManager {
+    private static final int INITIAL_LIVES = 3;
+
     private final Pane root;
     private final List<Ball> balls = new ArrayList<>();
     private final List<Brick> bricks = new ArrayList<>();
@@ -45,6 +47,12 @@ public class GameManager {
     private Paddle paddle;
     private Ball mainBall = null;
     private int score = 0;
+
+    public int getLives() {
+        return lives;
+    }
+
+    private int lives = INITIAL_LIVES;
     private LevelData currentLvl;
     private boolean[][] layout;
     /**
@@ -542,8 +550,8 @@ public class GameManager {
             paddle.update(dt);
             double ballX = paddle.getX() + (paddle.getWidth() - Ball.BALL_RADIUS * 2) / 2.0;
             double ballY = paddle.getY() - Ball.BALL_RADIUS * 2 - 1;
-            balls.get(0).setPosition(ballX, ballY);
-            balls.get(0).updateView();
+            balls.getFirst().setPosition(ballX, ballY);
+            balls.getFirst().updateView();
             return;
         }
         if (gameState.get() != GameState.RUNNING) {
@@ -585,8 +593,17 @@ public class GameManager {
                 boss = null;
             }
         }
-            if (balls.size() == 0
-                || bricks.stream().allMatch((b) -> b instanceof StrongBrick)) { // all bricks destroyed
+
+        if (balls.isEmpty()) {
+            // No balls left - lose condition
+            lives--;
+            if (lives <= 0) {
+                gameOver();
+            } else {
+                respawnBall();
+            }
+        } else if (bricks.stream().allMatch((b) -> b instanceof StrongBrick)) {
+            // All bricks destroyed - win condition
             gameOver();
         }
     }
@@ -622,6 +639,30 @@ public class GameManager {
         ball.setDirection(newDir);
         balls.add(ball);
         root.getChildren().add(ball.getView());
+    }
+
+    /**
+     * Respawns the main ball at the paddle position after a life is lost.
+     * <p>
+     * This method clears any active power-ups, resets the paddle size,
+     * and creates a new ball positioned above the paddle. The game state
+     * is set back to {@link GameState#READY} to allow the player to
+     * start again.
+     * </p>
+     */
+    private void respawnBall() {
+        // Create new ball at paddle position
+        spawnAdditionalBall(
+                paddle.getX() + Paddle.PADDLE_WIDTH * 0.5,
+                paddle.getY(),
+                new Vec2f(0, 0)
+        );
+        Ball firstBall = balls.get(0);
+        firstBall.setSpeed(0);
+        firstBall.setDirection(new Vec2f(0, 0));
+
+        // Set game state back to READY
+        gameState.set(GameState.READY);
     }
 
     public enum GameState { READY, RUNNING, PAUSED, GAME_OVER }
