@@ -8,7 +8,7 @@ public class BallTest {
 
     @Test
     void testBounceHorizontallyVertically() {
-        Ball b = new Ball(100, 100, Color.BLACK);
+        Ball b = new Ball(100, 100);
         double dx = b.getDirection().x;
         double dy = b.getDirection().y;
         b.bounceHorizontally();
@@ -19,7 +19,7 @@ public class BallTest {
 
     @Test
     void testDeactivateAndIsActive() {
-        Ball b = new Ball(100, 100, Color.BLACK);
+        Ball b = new Ball(100, 100);
         assertTrue(b.isActive());
         b.deactivate();
         assertFalse(b.isActive());
