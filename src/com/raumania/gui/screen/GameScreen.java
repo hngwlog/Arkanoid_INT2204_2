@@ -55,6 +55,9 @@ public class GameScreen extends Screen {
     private final Text pauseChooseArrowRight;
     private final Text homeChooseArrowLeft;
     private final Text homeChooseArrowRight;
+    private InputHandler inputHandler;
+    private AnimationTimer loop;
+    private long lastUpdate = 0;
     private final Pane mainPause;
     private final Pane backChoice;
     private final Pane timeRemainings;
@@ -301,10 +304,10 @@ public class GameScreen extends Screen {
      * <ol>
      *   <li>Captures the current monotonic time in nanoseconds.</li>
      *   <li>Computes the frame delta time in seconds as
-     *   {@code dt = (now - past) / 1_000_000_000.0}.</li>
+     *   {@code dt = (now - lastUpdate) / 1_000_000_000.0}.</li>
      *   <li>Calls {@link GameManager#update(double)} with that {@code dt}.</li>
      * </ol>
-     * On the very first tick, the loop only initializes {@link #past} and skips update
+     * On the very first tick, the loop only initializes {@link #lastUpdate} and skips update
      * to avoid a large or undefined delta time.
      * </p>
      */
@@ -329,11 +332,10 @@ public class GameScreen extends Screen {
         gamePane.setVisible(true);
         pauseState = 0;
 
-        past = -1;
+        lastUpdate = 0;
         loop = new AnimationTimer() {
             private static final double FPS = 60.0;
             private static final double FRAME_TIME = 1_000_000_000.0 / FPS;
-            private double lastUpdate = 0;
             @Override
             public void handle(long now) {
                 if (lastUpdate == 0) {
@@ -382,7 +384,7 @@ public class GameScreen extends Screen {
      * set gameState, unfocus, start loop,set visible
      */
     public void resume() {
-        past = -1;
+        lastUpdate = 0;
         Platform.runLater(root::requestFocus);
         loop.start();
         manager.setGameState(GameManager.GameState.RUNNING);
