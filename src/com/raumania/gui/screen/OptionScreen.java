@@ -31,7 +31,32 @@ public class OptionScreen extends Screen {
         paddleRight.setOnAction(e -> {
             changeCnt("Paddle", 1);
         });
-        root.getChildren().addAll(paddleText, paddleLeft, paddleRight, currentPaddle);
+        //ball
+        Text ballText =  UIUtils.newText("Ball: ", 100, 300, 2.0, 2.0);
+        Button ballLeft = UIUtils.newButton("<" , 315, 285, 2.0, 2.0);
+        Button ballRight =  UIUtils.newButton(">" , 815, 285, 2.0, 2.0);
+        currentBall =  UIUtils.newText("Ball 1" , 550, 300, 2.0, 2.0);
+        ballLeft.setOnAction(e -> {
+            changeCnt("Ball", -1);
+        });
+        ballRight.setOnAction(e -> {
+            changeCnt("Ball", 1);
+        });
+        //background
+        Text backgroundText = UIUtils.newText("Background: ", 100, 400, 2.0, 2.0);
+        Button backgroundLeft = UIUtils.newButton("<" , 315, 385, 2.0, 2.0);
+        Button backgroundRight = UIUtils.newButton(">" , 815, 385, 2.0, 2.0);
+        currentBackground =  UIUtils.newText("Background 1" , 550, 400, 2.0, 2.0);
+        backgroundLeft.setOnAction(e -> {
+            changeCnt("Background", -1);
+        });
+        backgroundRight.setOnAction(e -> {
+            changeCnt("Background", 1);
+        });
+
+        root.getChildren().addAll(paddleText, paddleLeft, paddleRight, currentPaddle,
+                ballText, ballLeft, ballRight, currentBall,
+                backgroundText, backgroundLeft, backgroundRight, currentBackground);
 
     }
 
@@ -42,7 +67,6 @@ public class OptionScreen extends Screen {
 
     private Text cntCurrentText(String cntType) {
         return switch (cntType) {
-            case "Paddle" -> this.currentPaddle;
             case "Ball" -> this.currentBall;
             case "Background" -> this.currentBackground;
             default -> this.currentPaddle;
