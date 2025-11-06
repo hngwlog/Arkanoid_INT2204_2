@@ -636,6 +636,7 @@ public class GameManager {
         Vec2f newDir;
         newDir = dir.rotate( (Math.random() > 0.5 ? 1 : -1) * (Math.random()*55 + 45) );
         if (newDir.y == 0) newDir.y = newDir.x;
+        else if ( Math.abs(newDir.x/newDir.y) >= 3.73) newDir.y = newDir.x;
         ball.setDirection(newDir);
         balls.add(ball);
         root.getChildren().add(ball.getView());
