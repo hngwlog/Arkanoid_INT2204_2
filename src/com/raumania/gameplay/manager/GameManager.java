@@ -163,64 +163,87 @@ public class GameManager {
     }
 
     /**
-     * Triggers an explosion effect that destroys all adjacent bricks
-     * (up, down, left, right) around the specified {@code brick}.
+     * Triggers a chain explosion effect that destroys all adjacent bricks
+     * (up, down, left, right) around the specified {@code start} brick,
+     * including subsequent {@link ExplosiveBrick}s connected in these directions.
      * <p>
      * This method is invoked when an {@link ExplosiveBrick} is destroyed.
-     * It scans the current {@code bricks} list and removes any neighboring
-     * non-strong bricks in the four cardinal directions, updating both
-     * the {@code layout} occupancy grid and the game score.
+     * It performs a breadth-first search (BFS) starting from {@code start},
+     * propagating explosions through all neighboring explosive bricks.
      * <br>
-     * For each affected brick, an {@link Explosion} visual effect and
-     * explosion sound effect are played before the brick is removed
-     * from the scene graph.
+     * During propagation, each affected non-strong brick in the four cardinal
+     * directions is destroyed, the {@code layout} occupancy grid and game
+     * {@code score} are updated, and an {@link Explosion} visual effect and
+     * explosion sound are played.
      * </p>
-     * @param brick the {@link Brick} whose destruction triggers the detonation;
+     * @param start the {@link Brick} whose destruction triggers the detonation;
      *              must already exist in the current {@code bricks} list.
      */
-    private void detonateNeighbors(Brick brick) {
-        int r = (int)(brick.getY() / Brick.BRICK_HEIGHT);
-        int c = (int)(brick.getX() / Brick.BRICK_WIDTH);
-        for (int dr = -1; dr <= 1; dr++) {
-            for (int dc = -1; dc <= 1; dc++) {
-                if (dr * dc != 0) {
-                    continue;
-                }
-                int newR = r + dr;
-                int newC = c + dc;
-                if (newR < 0 || newR >= 28 || newC < 0 || newC >= 13) {
-                    continue;
-                }
-                Brick victim = null;
-                for (Brick otherBrick: bricks) {
-                    if ((int)(otherBrick.getY() / Brick.BRICK_HEIGHT) != newR) {
+    private void detonateNeighbors(Brick start) {
+        ArrayDeque<Brick> q = new ArrayDeque<>();
+        q.add(start);
+        boolean[][] visited = new boolean[28][13];
+        int startR = (int)(start.getY() / Brick.BRICK_HEIGHT);
+        int startC = (int)(start.getX() / Brick.BRICK_WIDTH);
+        visited[startR][startC] = true;
+        ArrayList<Brick> removeBricks = new ArrayList<>();
+        while (!q.isEmpty()) {
+            Brick brick = q.poll();
+            int r = (int)(brick.getY() / Brick.BRICK_HEIGHT);
+            int c = (int)(brick.getX() / Brick.BRICK_WIDTH);
+            for (int dr = -1; dr <= 1; dr++) {
+                for (int dc = -1; dc <= 1; dc++) {
+                    if (dr * dc != 0) {
                         continue;
                     }
-                    if ((int)(otherBrick.getX() / Brick.BRICK_WIDTH) != newC) {
+                    int newR = r + dr;
+                    int newC = c + dc;
+                    if (newR < 0 || newR >= 28 || newC < 0 || newC >= 13) {
                         continue;
                     }
-                    victim = otherBrick;
-                    break;
-                }
-                if (victim == null) {
-                    continue;
-                }
-                if (victim instanceof StrongBrick) {
-                    continue;
-                }
-                VisualEffect ve = new Explosion(victim.getX(), victim.getY(), Brick.BRICK_WIDTH,
-                        Brick.BRICK_HEIGHT);
-                visualEffects.add(ve);
-                ve.play();
-                AudioManager.getInstance().playSFX(AudioManager.EXPLOSION);
-                root.getChildren().add(ve.getTexture());
-                if (!layout[newR][newC]) {
-                    root.getChildren().remove(victim.getTexture());
-                    bricks.remove(victim);
-                    layout[newR][newC] = true;
-                    score += 1;
+                    if (visited[newR][newC]) {
+                        continue;
+                    }
+                    Brick victim = null;
+                    for (Brick otherBrick: bricks) {
+                        if ((int)(otherBrick.getY() / Brick.BRICK_HEIGHT) != newR) {
+                            continue;
+                        }
+                        if ((int)(otherBrick.getX() / Brick.BRICK_WIDTH) != newC) {
+                            continue;
+                        }
+                        victim = otherBrick;
+                        break;
+                    }
+                    visited[newR][newC] = true;
+                    if (victim == null) {
+                        continue;
+                    }
+                    if (victim instanceof StrongBrick) {
+                        continue;
+                    }
+                    VisualEffect ve = new Explosion(victim.getX(), victim.getY(), Brick.BRICK_WIDTH,
+                            Brick.BRICK_HEIGHT);
+                    visualEffects.add(ve);
+                    ve.play();
+                    AudioManager.getInstance().playSFX(AudioManager.EXPLOSION);
+                    root.getChildren().add(ve.getTexture());
+                    if (!layout[newR][newC]) {
+                        removeBricks.add(victim);
+                    }
+                    if (victim instanceof ExplosiveBrick) {
+                        q.add(victim);
+                    }
                 }
             }
+        }
+        for (Brick brick: removeBricks) {
+            int r = (int)(brick.getY() / Brick.BRICK_HEIGHT);
+            int c = (int)(brick.getX() / Brick.BRICK_WIDTH);
+            root.getChildren().remove(brick.getTexture());
+            bricks.remove(brick);
+            layout[r][c] = true;
+            score += 1;
         }
     }
 
@@ -383,12 +406,12 @@ public class GameManager {
                     bricks.remove(brick);
                     layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
                     score += 1;
-                }
-                // 40% to spawn powerup
-                PowerUp powerUp = PowerUpFactory.createRandomPowerUp(brick.getX(), brick.getY(), 30, 30, 0.4);
-                if (powerUp != null) {
-                    root.getChildren().add(powerUp.getTexture());
-                    powerUps.add(powerUp);
+                    // 40% to spawn powerup
+                    PowerUp powerUp = PowerUpFactory.createRandomPowerUp(brick.getX(), brick.getY(), 30, 30, 0.4);
+                    if (powerUp != null) {
+                        root.getChildren().add(powerUp.getTexture());
+                        powerUps.add(powerUp);
+                    }
                 }
             }
         }
