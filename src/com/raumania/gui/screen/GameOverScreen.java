@@ -6,7 +6,6 @@ import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gui.manager.SceneManager;
 import com.raumania.utils.UIUtils;
 
-import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;

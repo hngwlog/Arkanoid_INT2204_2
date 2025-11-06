@@ -55,13 +55,13 @@ public class GameScreen extends Screen {
     private final Text pauseChooseArrowRight;
     private final Text homeChooseArrowLeft;
     private final Text homeChooseArrowRight;
-    private InputHandler inputHandler;
-    private AnimationTimer loop;
-    private long past = - 1;
     private final Pane mainPause;
     private final Pane backChoice;
     private final Pane timeRemainings;
     private final StackPane gamePane;
+    private InputHandler inputHandler;
+    private AnimationTimer loop;
+    private long past = - 1;
     private int pauseState = 0;
     private int pauseCnt = 0;
     private int homeCnt = 0;

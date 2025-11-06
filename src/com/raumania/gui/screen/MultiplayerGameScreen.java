@@ -42,12 +42,12 @@ public class MultiplayerGameScreen extends Screen {
     private final Text homeChooseArrowLeft;
     private final Text homeChooseArrowRight;
     private final GameManager leftManager;
-    private InputHandler leftInputHandler;
     private final GameManager rightManager;
-    private InputHandler rightInputHandler;
-    private AnimationTimer loop;
     private final Text title;
     private final Text title1;
+    private InputHandler leftInputHandler;
+    private InputHandler rightInputHandler;
+    private AnimationTimer loop;
     private long past = - 1;
     private int pauseState = 0;
     private int pauseCnt = 0;

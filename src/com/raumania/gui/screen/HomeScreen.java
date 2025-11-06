@@ -17,53 +17,59 @@ import java.util.Collections;
 import java.util.List;
 
 public class HomeScreen extends Screen {
-    int cnt = 0;
     private final Text chooseArrowLeft;
     private final Text chooseArrowRight;
     private final Text title;
     private final List<Button> buttons;
     private final List<Double> buttonY;
+    int cnt = 0;
+
     public HomeScreen(SceneManager sceneManager) {
         super(sceneManager);
 
-        //Game title
+        // Game title
         title = UIUtils.centerText("Welcome to Arkanoid!", 100, 3.0, 3.0);
         // style components
         title.setFill(Color.GREEN);
 
-        //Choosing arrow
-        chooseArrowLeft = UIUtils.newText(">" , 423.0, 212.5, 2.0, 2.0);
-        chooseArrowRight = UIUtils.newText("<" , 568.769, 212.5, 2.0, 2.0);
+        // Choosing arrow
+        chooseArrowLeft = UIUtils.newText(">", 423.0, 212.5, 2.0, 2.0);
+        chooseArrowRight = UIUtils.newText("<", 568.769, 212.5, 2.0, 2.0);
 
-        //Play button
-        Button play =  UIUtils.centerButton("Play Multiplayer", 200, 2.0, 2.0);
-        play.setOnAction(e -> {
-            sceneManager.switchScreen(ScreenType.MULTIPLAYER);
-        });
+        // Play button
+        Button play = UIUtils.centerButton("Play Multiplayer", 200, 2.0, 2.0);
+        play.setOnAction(
+                e -> {
+                    sceneManager.switchScreen(ScreenType.MULTIPLAYER);
+                });
 
-        //Level select button
-        Button levelSelect =  UIUtils.centerButton("Single player", 275, 2.0, 2.0);
-        levelSelect.setOnAction(e -> {
-            sceneManager.switchScreen(ScreenType.LEVEL_SELECT);
-        });
+        // Level select button
+        Button levelSelect = UIUtils.centerButton("Single player", 275, 2.0, 2.0);
+        levelSelect.setOnAction(
+                e -> {
+                    sceneManager.switchScreen(ScreenType.LEVEL_SELECT);
+                });
 
-        //Setting button
+        // Setting button
         Button setting = UIUtils.centerButton("Settings", 350, 2.0, 2.0);
-        setting.setOnAction(e -> {
-            sceneManager.switchScreen(ScreenType.SETTINGS);
-        });
+        setting.setOnAction(
+                e -> {
+                    sceneManager.switchScreen(ScreenType.SETTINGS);
+                });
 
-        //Option button
+        // Option button
         Button option = UIUtils.centerButton("Skins", 425, 2.0, 2.0);
-        option.setOnAction(e -> {
-            sceneManager.switchScreen(ScreenType.OPTION);
-        });
+        option.setOnAction(
+                e -> {
+                    sceneManager.switchScreen(ScreenType.OPTION);
+                });
 
-        //Quit button
+        // Quit button
         Button quit = UIUtils.centerButton("Quit", 500, 2.0, 2.0);
-        quit.setOnAction(e -> {
-            Platform.exit();
-        });
+        quit.setOnAction(
+                e -> {
+                    Platform.exit();
+                });
 
         buttonY = new ArrayList<>();
         Collections.addAll(buttonY, 200.0, 275.0, 350.0, 425.0, 500.0);
@@ -71,40 +77,44 @@ public class HomeScreen extends Screen {
         buttons = new ArrayList<>();
         Collections.addAll(buttons, play, levelSelect, setting, option, quit);
         for (Button button : buttons) {
-            button.setOnMouseEntered(e -> {
-                cnt = getIndex(button);
-                updateCnt();
-            });
+            button.setOnMouseEntered(
+                    e -> {
+                        cnt = getIndex(button);
+                        updateCnt();
+                    });
         }
 
         int n = buttons.size();
-        root.getChildren().addAll(title, chooseArrowLeft ,chooseArrowRight);
+        root.getChildren().addAll(title, chooseArrowLeft, chooseArrowRight);
         root.getChildren().addAll(buttons);
         Platform.runLater(root::requestFocus);
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            switch (event.getCode()) {
-                case DOWN:
-                    cnt = (cnt + 1) % n;
-                    updateCnt();
-                    break;
-                case UP:
-                    if (cnt == 0) cnt = n - 1;
-                    else cnt--;
-                    updateCnt();
-                    break;
-                case ENTER:
-                    buttons.get(cnt).fire();
-                    break;
-            }
-        });
+        scene.addEventFilter(
+                KeyEvent.KEY_PRESSED,
+                event -> {
+                    switch (event.getCode()) {
+                        case DOWN:
+                            cnt = (cnt + 1) % n;
+                            updateCnt();
+                            break;
+                        case UP:
+                            if (cnt == 0) cnt = n - 1;
+                            else cnt--;
+                            updateCnt();
+                            break;
+                        case ENTER:
+                            buttons.get(cnt).fire();
+                            break;
+                    }
+                });
 
-        Background bg = new Background(new BackgroundImage(
-            ResourcesLoader.loadImage("homescreen_bg.png"),
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.CENTER,
-            new BackgroundSize(1.0, 1.0, true, true, false, true)
-        ));
+        Background bg =
+                new Background(
+                        new BackgroundImage(
+                                ResourcesLoader.loadImage("homescreen_bg.png"),
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundPosition.CENTER,
+                                new BackgroundSize(1.0, 1.0, true, true, false, true)));
         root.setBackground(bg);
     }
 
@@ -118,12 +128,11 @@ public class HomeScreen extends Screen {
     }
 
     private void updateCnt() {
-        double gap = 60 + Math.max(buttons.get(cnt).getWidth()-60, 0) / 2;
-        double arrowY = buttonY.get(cnt) + buttons.get(cnt).getHeight()/2;
-        double arrowLeftX = buttons.get(cnt).getLayoutX() - gap
-                - chooseArrowLeft.getLayoutBounds().getWidth();
-        double arrowRightX = buttons.get(cnt).getLayoutX() + gap
-                + buttons.get(cnt).getWidth();
+        double gap = 60 + Math.max(buttons.get(cnt).getWidth() - 60, 0) / 2;
+        double arrowY = buttonY.get(cnt) + buttons.get(cnt).getHeight() / 2;
+        double arrowLeftX =
+                buttons.get(cnt).getLayoutX() - gap - chooseArrowLeft.getLayoutBounds().getWidth();
+        double arrowRightX = buttons.get(cnt).getLayoutX() + gap + buttons.get(cnt).getWidth();
         chooseArrowLeft.setY(arrowY);
         chooseArrowLeft.setX(arrowLeftX);
         chooseArrowRight.setY(arrowY);
