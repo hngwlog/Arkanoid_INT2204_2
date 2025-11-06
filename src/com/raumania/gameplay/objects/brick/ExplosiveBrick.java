@@ -7,7 +7,7 @@ public class ExplosiveBrick extends Brick {
     public ExplosiveBrick(double x, double y, double width, double height, int color) {
         super(x, y, width, height);
         setHitPoints(1);
-        setBrickTexture(new ImageView(ResourcesLoader.loadImage("brick9.png")));
+        setBrickTexture(new ImageView(ResourcesLoader.loadImage("explosive_brick.png")));
         this.setColorIndex(8);
     }
 }

@@ -28,7 +28,8 @@ public class GameOverScreen extends Screen {
 
     public GameOverScreen(SceneManager sceneManager) {
         super(sceneManager);
-        this.singlePlayerGameManager = ((GameScreen) sceneManager.getScreen(ScreenType.GAME)).getGameManager();
+        this.singlePlayerGameManager =
+                ((GameScreen) sceneManager.getScreen(ScreenType.GAME)).getGameManager();
 
         // put components here
         // initialize text placeholders
@@ -43,14 +44,17 @@ public class GameOverScreen extends Screen {
         title = UIUtils.centerText("HighScore", 100, 3.0, 3.0);
         level = UIUtils.centerText("Level 0", 150, 1.5, 1.5);
         Button backToMenu = UIUtils.centerButton("Back to Home", 500, 2.0, 2.0);
-        backToMenu.setOnAction(e -> {
-            sceneManager.switchScreen(ScreenType.HOME);
-        });
-        gameOverPane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                backToMenu.fire();
-            }
-        });
+        backToMenu.setOnAction(
+                e -> {
+                    sceneManager.switchScreen(ScreenType.HOME);
+                });
+        gameOverPane.addEventFilter(
+                KeyEvent.KEY_PRESSED,
+                event -> {
+                    if (event.getCode() == KeyCode.ENTER) {
+                        backToMenu.fire();
+                    }
+                });
 
         gameOverPane.getChildren().addAll(title, level, backToMenu);
 
@@ -63,23 +67,28 @@ public class GameOverScreen extends Screen {
         nameInput.setLayoutX(485);
         nameInput.setLayoutY(300);
         Button submit = UIUtils.centerButton("Submit", 500, 2.0, 2.0);
-        submit.setOnAction(e -> {
-            String name = nameInput.getText().trim();
-            if (name.isEmpty()) {
-                name = "Unknown"; // default name if none provided
-            }
-            HighScore.getInstance().addHighScore(singlePlayerGameManager.getCurrentLvl().name(),
-                    name,
-                    singlePlayerGameManager.getScore());
-            updateHighScoreList(singlePlayerGameManager.getCurrentLvl().name());
-            highScoreInputPane.setVisible(false);
-            gameOverPane.setVisible(true);
-        });
-        highScoreInputPane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                submit.fire();
-            }
-        });
+        submit.setOnAction(
+                e -> {
+                    String name = nameInput.getText().trim();
+                    if (name.isEmpty()) {
+                        name = "Unknown"; // default name if none provided
+                    }
+                    HighScore.getInstance()
+                            .addHighScore(
+                                    singlePlayerGameManager.getCurrentLvl().name(),
+                                    name,
+                                    singlePlayerGameManager.getScore());
+                    updateHighScoreList(singlePlayerGameManager.getCurrentLvl().name());
+                    highScoreInputPane.setVisible(false);
+                    gameOverPane.setVisible(true);
+                });
+        highScoreInputPane.addEventFilter(
+                KeyEvent.KEY_PRESSED,
+                event -> {
+                    if (event.getCode() == KeyCode.ENTER) {
+                        submit.fire();
+                    }
+                });
 
         highScoreInputPane.getChildren().addAll(congrats, prompt, nameInput, submit);
 
@@ -87,9 +96,10 @@ public class GameOverScreen extends Screen {
     }
 
     public void updateHighScoreList(String levelName) {
-        List<HighScoreEntry> highScores = HighScore.getInstance().getEntries().stream()
-            .filter(e -> e.getLevel().equals(levelName))
-            .toList();
+        List<HighScoreEntry> highScores =
+                HighScore.getInstance().getEntries().stream()
+                        .filter(e -> e.getLevel().equals(levelName))
+                        .toList();
         for (int i = 0; i < HighScore.MAX_ENTRIES; i++) {
             if (i < highScores.size()) {
                 HighScoreEntry e = highScores.get(i);
@@ -112,12 +122,21 @@ public class GameOverScreen extends Screen {
             UIUtils.setCenterText(text);
         }
 
-        List<HighScoreEntry> highScoreOfLevel = HighScore.getInstance().getEntries().stream()
-                .filter(e -> e.getLevel().equals(singlePlayerGameManager.getCurrentLvl().name()))
-                .toList();
-        int minScoreOfLevel = highScoreOfLevel.stream().mapToInt(HighScoreEntry::getScore).min().orElse(0);
+        List<HighScoreEntry> highScoreOfLevel =
+                HighScore.getInstance().getEntries().stream()
+                        .filter(
+                                e ->
+                                        e.getLevel()
+                                                .equals(
+                                                        singlePlayerGameManager
+                                                                .getCurrentLvl()
+                                                                .name()))
+                        .toList();
+        int minScoreOfLevel =
+                highScoreOfLevel.stream().mapToInt(HighScoreEntry::getScore).min().orElse(0);
 
-        if (singlePlayerGameManager.getScore() > minScoreOfLevel || highScoreOfLevel.size() < HighScore.MAX_ENTRIES) {
+        if (singlePlayerGameManager.getScore() > minScoreOfLevel
+                || highScoreOfLevel.size() < HighScore.MAX_ENTRIES) {
             highScoreInputPane.setVisible(true);
             gameOverPane.setVisible(false);
         } else {
