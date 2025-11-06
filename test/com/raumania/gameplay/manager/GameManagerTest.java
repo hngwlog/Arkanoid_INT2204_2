@@ -16,7 +16,7 @@ public class GameManagerTest extends InitializeJavaFx {
 
     @Test
     void testInitialGameState() {
-        assertEquals(GameManager.GameState.RUNNING, manager.getGameState());
+        assertEquals(GameManager.GameState.READY, manager.getGameState());
         assertEquals(0, manager.getScore());
     }
 
