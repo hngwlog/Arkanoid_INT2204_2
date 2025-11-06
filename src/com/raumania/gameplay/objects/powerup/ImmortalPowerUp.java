@@ -4,8 +4,10 @@ import com.raumania.core.SpriteSheet;
 import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gameplay.objects.Ball;
 import com.raumania.utils.ResourcesLoader;
+
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
+
 import java.util.List;
 
 public class ImmortalPowerUp extends PowerUp {
@@ -13,9 +15,8 @@ public class ImmortalPowerUp extends PowerUp {
 
     public ImmortalPowerUp(double x, double y, double width, double height) {
         super(x, y, width, height, PowerUpType.IMMORTAL);
-        SpriteSheet texture = new SpriteSheet(
-                ResourcesLoader.loadImage("immortalpowerup.png"),
-                16, 16, 6, 6);
+        SpriteSheet texture =
+                new SpriteSheet(ResourcesLoader.loadImage("immortalpowerup.png"), 16, 16, 6, 6);
         setPowerUpTexture(texture);
     }
 
@@ -28,14 +29,15 @@ public class ImmortalPowerUp extends PowerUp {
         }
 
         PauseTransition timer = new PauseTransition(Duration.seconds(getDuration()));
-        timer.setOnFinished(e -> {
-            powerUpCounter--;
-            if (powerUpCounter == 0) {
-                for (Ball ball : balls) {
-                    ball.setImmortal(false);
-                }
-            }
-        });
+        timer.setOnFinished(
+                e -> {
+                    powerUpCounter--;
+                    if (powerUpCounter == 0) {
+                        for (Ball ball : balls) {
+                            ball.setImmortal(false);
+                        }
+                    }
+                });
         timer.play();
     }
 

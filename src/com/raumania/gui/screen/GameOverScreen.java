@@ -66,10 +66,10 @@ public class GameOverScreen extends Screen {
             if (name.isEmpty()) {
                 name = "Unknown"; // default name if none provided
             }
-            HighScore.getInstance().addHighScore(singlePlayerGameManager.getCurrentLvl().getName(),
+            HighScore.getInstance().addHighScore(singlePlayerGameManager.getCurrentLvl().name(),
                     name,
                     singlePlayerGameManager.getScore());
-            updateHighScoreList(singlePlayerGameManager.getCurrentLvl().getName());
+            updateHighScoreList(singlePlayerGameManager.getCurrentLvl().name());
             highScoreInputPane.setVisible(false);
             gameOverPane.setVisible(true);
         });
@@ -103,7 +103,7 @@ public class GameOverScreen extends Screen {
     public void onStart() {
         Platform.runLater(root::requestFocus);
         List<HighScoreEntry> highScoreOfLevel = HighScore.getInstance().getEntries().stream()
-                .filter(e -> e.getLevel().equals(singlePlayerGameManager.getCurrentLvl().getName()))
+                .filter(e -> e.getLevel().equals(singlePlayerGameManager.getCurrentLvl().name()))
                 .toList();
         int minScoreOfLevel = highScoreOfLevel.stream().mapToInt(HighScoreEntry::getScore).min().orElse(0);
 
@@ -111,11 +111,11 @@ public class GameOverScreen extends Screen {
             highScoreInputPane.setVisible(true);
             gameOverPane.setVisible(false);
         } else {
-            updateHighScoreList(singlePlayerGameManager.getCurrentLvl().getName());
+            updateHighScoreList(singlePlayerGameManager.getCurrentLvl().name());
             highScoreInputPane.setVisible(false);
             gameOverPane.setVisible(true);
         }
 
-        level.setText(singlePlayerGameManager.getCurrentLvl().getName());
+        level.setText(singlePlayerGameManager.getCurrentLvl().name());
     }
 }

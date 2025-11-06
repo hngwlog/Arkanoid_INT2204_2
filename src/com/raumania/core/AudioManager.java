@@ -1,6 +1,7 @@
 package com.raumania.core;
 
 import com.raumania.utils.ResourcesLoader;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.media.AudioClip;
@@ -8,11 +9,6 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class AudioManager {
-    private static final AudioManager instance = new AudioManager();
-    // use DoubleProperty for easy binding with UI components
-    private final DoubleProperty volume;
-    private MediaPlayer currentMusic = null;
-
     // All audio assets get preloaded here
     public static final Media HOME_MUSIC = ResourcesLoader.loadMusic("home_bgm.mp3");
 //    public static final Media GAME_MUSIC = ResourcesLoader.loadMusic("game_bgm.mp3");
@@ -22,6 +18,10 @@ public class AudioManager {
     public static final AudioClip BRICK_HIT = ResourcesLoader.loadSFX("brick_hit.wav");
     public static final AudioClip PADDLE_HIT = ResourcesLoader.loadSFX("paddle_hit.wav");
     public static final AudioClip EXPLOSION = ResourcesLoader.loadSFX("explosion.mp3");
+    private static final AudioManager instance = new AudioManager();
+    // use DoubleProperty for easy binding with UI components
+    private final DoubleProperty volume;
+    private MediaPlayer currentMusic = null;
     private AudioManager() {
         this.volume = new SimpleDoubleProperty(100); // Default volume level
     }
@@ -35,6 +35,10 @@ public class AudioManager {
         return instance;
     }
 
+    public int getVolume() {
+        return this.volume.intValue();
+    }
+
     public void setVolume(int volume) {
         if (volume < 0) {
             this.volume.set(0);
@@ -43,10 +47,6 @@ public class AudioManager {
         } else {
             this.volume.set(volume);
         }
-    }
-
-    public int getVolume() {
-        return this.volume.intValue();
     }
 
     public DoubleProperty getVolumeProperty() {

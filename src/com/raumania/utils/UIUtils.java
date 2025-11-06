@@ -1,10 +1,11 @@
 package com.raumania.utils;
 
 import com.raumania.main.Main;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
-import javafx.scene.text.Text;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 public class UIUtils {
 

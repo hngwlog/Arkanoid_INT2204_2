@@ -1,12 +1,12 @@
 package com.raumania.gameplay.objects;
 
-import com.raumania.gameplay.objects.core.MovableObject;
-import com.raumania.utils.ResourcesLoader;
-import javafx.scene.image.ImageView;
-
 import static com.raumania.gui.screen.GameScreen.GAME_WIDTH;
 
+import com.raumania.gameplay.objects.core.MovableObject;
 import com.raumania.math.Vec2f;
+import com.raumania.utils.ResourcesLoader;
+
+import javafx.scene.image.ImageView;
 
 /**
  * Represents the player's paddle in the game.
@@ -21,7 +21,7 @@ public class Paddle extends MovableObject {
     public static final int PADDLE_HEIGHT = 15;
     public static final int PADDLE_SPEED = 350;
 
-    private ImageView paddleTexture;
+    private final ImageView paddleTexture;
 
     /**
      * Constructs a new {@code Paddle} object with the specified position and size.

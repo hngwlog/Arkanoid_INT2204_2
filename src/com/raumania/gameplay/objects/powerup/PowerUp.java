@@ -5,13 +5,14 @@ import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gameplay.objects.core.MovableObject;
 import com.raumania.gui.screen.GameScreen;
 import com.raumania.math.Vec2f;
+
 import javafx.scene.image.ImageView;
 
 public abstract class PowerUp extends MovableObject {
-    private SpriteSheet powerUpTexture;
-    private boolean active = true;
     public static final double POWERUP_SPEED = 100.0;
     protected final PowerUpType type;
+    private SpriteSheet powerUpTexture;
+    private boolean active = true;
 
     public PowerUp(double x, double y, double width, double height, PowerUpType type) {
         super(x, y, width, height);

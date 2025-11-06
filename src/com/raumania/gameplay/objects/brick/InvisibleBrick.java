@@ -1,9 +1,8 @@
 package com.raumania.gameplay.objects.brick;
 
 import com.raumania.utils.ResourcesLoader;
-import javafx.scene.image.ImageView;
 
-import java.util.Random;
+import javafx.scene.image.ImageView;
 
 public class InvisibleBrick extends Brick{
     public InvisibleBrick(double x, double y, double width, double height, int color) {
@@ -12,6 +11,7 @@ public class InvisibleBrick extends Brick{
         ImageView texture = new ImageView(ResourcesLoader.loadImage("brick" + color + ".png"));
         texture.setOpacity(0.0);
         setBrickTexture(texture);
+        this.setColorIndex(color);
     }
 
     @Override

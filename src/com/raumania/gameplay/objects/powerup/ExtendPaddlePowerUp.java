@@ -4,13 +4,14 @@ import com.raumania.core.SpriteSheet;
 import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gameplay.objects.Paddle;
 import com.raumania.utils.ResourcesLoader;
+
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
 public class ExtendPaddlePowerUp extends PowerUp {
     private static final double SCALE = 1.5;
-    private PauseTransition timer;
     protected static int powerUpCounter = 0;
+    private PauseTransition timer;
 
     public ExtendPaddlePowerUp(double x, double y, double width, double height) {
         super(x, y, width, height, PowerUpType.EXTEND_PADDLE);
