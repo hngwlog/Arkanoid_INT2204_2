@@ -137,10 +137,10 @@ public class MultiplayerGameScreen extends Screen {
         rightBorder.setStroke(Color.BLACK);
         rightBorder.setStrokeWidth(2);
         // Score
-        rightScore = UIUtils.newText("Score:", 600, 30, 2.0, 2.0);
+        rightScore = UIUtils.newText("Score:", 720, 30, 2.0, 2.0);
         rightScore.setFont(Font.font("System", FontWeight.BOLD, 14));
         rightScore.setFill(Color.WHITE);
-        leftScore = UIUtils.newText("Score:", 320, 30, 2.0, 2.0);
+        leftScore = UIUtils.newText("Score:", 330, 30, 2.0, 2.0);
         leftScore.setFont(Font.font("System", FontWeight.BOLD, 14));
         leftScore.setFill(Color.WHITE);
         gamePlayScreen.getChildren().addAll(pause, rightScore, leftScore, leftBorder, rightBorder);
