@@ -94,7 +94,7 @@ public class GameScreen extends Screen {
         //Game play screen
         Pane gamePlayScreen = new Pane();
         //Pause button
-        pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
+        pause = UIUtils.newButton("||", 1060, 20, 2.0, 2.0);
         pause.setOnAction(e -> {
             this.pause();
         });
@@ -308,6 +308,9 @@ public class GameScreen extends Screen {
      */
     @Override
     public void onStart() {
+
+        Platform.runLater(this::updateCnt);
+
         // stop any playing music
         AudioManager.getInstance().stop();
 

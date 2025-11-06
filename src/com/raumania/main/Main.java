@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-    public static final int WINDOW_WIDTH = 1000;
+    public static final int WINDOW_WIDTH = 1120;
     public static final int WINDOW_HEIGHT = 720;
     public static final String WINDOW_TITLE = "Arkanoid";
 

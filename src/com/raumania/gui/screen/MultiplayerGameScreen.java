@@ -91,7 +91,7 @@ public class MultiplayerGameScreen extends Screen {
         //Game play screen
         gamePlayScreen = new Pane();
         //Pause button
-        pause = UIUtils.newButton("||", 940, 20, 2.0, 2.0);
+        pause = UIUtils.newButton("||", 1060, 20, 2.0, 2.0);
         pause.setOnAction(e -> {
             Platform.runLater(root::requestFocus);
             this.pause();
