@@ -37,48 +37,52 @@ public class OptionScreen extends Screen {
 
         this.loadConfig();
 
-        //paddle
+        // paddle
         Text paddleText = UIUtils.newText("Paddle: ", 100, 200, 2.0, 2.0);
         paddleText.setFill(Color.WHITE);
-        Button paddleLeft = UIUtils.newButton("<" , 315, 185, 2.0, 2.0);
-        Button paddleRight = UIUtils.newButton(">" , 815, 185, 2.0, 2.0);
-        currentPaddle =  UIUtils.newText("Paddle " + (config.paddle + 1) ,
-                550, 200, 2.0, 2.0);
+        Button paddleLeft = UIUtils.newButton("<", 315, 185, 2.0, 2.0);
+        Button paddleRight = UIUtils.newButton(">", 815, 185, 2.0, 2.0);
+        currentPaddle = UIUtils.newText("Paddle " + (config.paddle + 1), 550, 200, 2.0, 2.0);
         currentPaddle.setFill(Color.WHITE);
-        paddleLeft.setOnAction(e -> {
-            changeCnt("Paddle", -1);
-        });
-        paddleRight.setOnAction(e -> {
-            changeCnt("Paddle", 1);
-        });
-        //ball
-        Text ballText =  UIUtils.newText("Ball: ", 100, 300, 2.0, 2.0);
+        paddleLeft.setOnAction(
+                e -> {
+                    changeCnt("Paddle", -1);
+                });
+        paddleRight.setOnAction(
+                e -> {
+                    changeCnt("Paddle", 1);
+                });
+        // ball
+        Text ballText = UIUtils.newText("Ball: ", 100, 300, 2.0, 2.0);
         ballText.setFill(Color.WHITE);
-        Button ballLeft = UIUtils.newButton("<" , 315, 285, 2.0, 2.0);
-        Button ballRight =  UIUtils.newButton(">" , 815, 285, 2.0, 2.0);
-        currentBall =  UIUtils.newText("Ball " + (config.ball + 1),
-                550, 300, 2.0, 2.0);
+        Button ballLeft = UIUtils.newButton("<", 315, 285, 2.0, 2.0);
+        Button ballRight = UIUtils.newButton(">", 815, 285, 2.0, 2.0);
+        currentBall = UIUtils.newText("Ball " + (config.ball + 1), 550, 300, 2.0, 2.0);
         currentBall.setFill(Color.WHITE);
-        ballLeft.setOnAction(e -> {
-            changeCnt("Ball", -1);
-        });
-        ballRight.setOnAction(e -> {
-            changeCnt("Ball", 1);
-        });
-        //background
+        ballLeft.setOnAction(
+                e -> {
+                    changeCnt("Ball", -1);
+                });
+        ballRight.setOnAction(
+                e -> {
+                    changeCnt("Ball", 1);
+                });
+        // background
         Text backgroundText = UIUtils.newText("Background: ", 100, 400, 2.0, 2.0);
         backgroundText.setFill(Color.WHITE);
-        Button backgroundLeft = UIUtils.newButton("<" , 315, 385, 2.0, 2.0);
-        Button backgroundRight = UIUtils.newButton(">" , 815, 385, 2.0, 2.0);
-        currentBackground =  UIUtils.newText("Background " + (config.background + 1),
-                550, 400, 2.0, 2.0);
+        Button backgroundLeft = UIUtils.newButton("<", 315, 385, 2.0, 2.0);
+        Button backgroundRight = UIUtils.newButton(">", 815, 385, 2.0, 2.0);
+        currentBackground =
+                UIUtils.newText("Background " + (config.background + 1), 550, 400, 2.0, 2.0);
         currentBackground.setFill(Color.WHITE);
-        backgroundLeft.setOnAction(e -> {
-            changeCnt("Background", -1);
-        });
-        backgroundRight.setOnAction(e -> {
-            changeCnt("Background", 1);
-        });
+        backgroundLeft.setOnAction(
+                e -> {
+                    changeCnt("Background", -1);
+                });
+        backgroundRight.setOnAction(
+                e -> {
+                    changeCnt("Background", 1);
+                });
 
         // Back to Home button
         Button back = UIUtils.centerButton("Back to Home", 500, 2.0, 2.0);
@@ -87,20 +91,31 @@ public class OptionScreen extends Screen {
                     sceneManager.switchScreen(ScreenType.HOME);
                 });
 
-        root.getChildren().addAll(paddleText, paddleLeft, paddleRight, currentPaddle,
-                ballText, ballLeft, ballRight, currentBall,
-                backgroundText, backgroundLeft, backgroundRight, currentBackground,
-                back);
+        root.getChildren()
+                .addAll(
+                        paddleText,
+                        paddleLeft,
+                        paddleRight,
+                        currentPaddle,
+                        ballText,
+                        ballLeft,
+                        ballRight,
+                        currentBall,
+                        backgroundText,
+                        backgroundLeft,
+                        backgroundRight,
+                        currentBackground,
+                        back);
 
-        Background bg = new Background(new BackgroundImage(
-                ResourcesLoader.loadImage("homescreen_bg.png"),
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER,
-                new BackgroundSize(1.0, 1.0, true, true, false, true)
-        ));
+        Background bg =
+                new Background(
+                        new BackgroundImage(
+                                ResourcesLoader.loadImage("homescreen_bg.png"),
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundPosition.CENTER,
+                                new BackgroundSize(1.0, 1.0, true, true, false, true)));
         root.setBackground(bg);
-
     }
 
     @Override
@@ -153,7 +168,7 @@ public class OptionScreen extends Screen {
         int cnt = getCnt(cntType);
         int maxCnt = getMaxNumber(cntType);
         cnt += changeType;
-        if (cnt < 0) cnt = maxCnt-1;
+        if (cnt < 0) cnt = maxCnt - 1;
         cnt %= maxCnt;
         applyChange(cntType, cnt);
         cntCurrentText(cntType).setText(cntType + " " + (cnt + 1));
@@ -200,16 +215,14 @@ public class OptionScreen extends Screen {
     }
 
     public static class Config {
-        @JsonIgnore
-        private int paddle;
-        @JsonIgnore
-        private int ball;
-        @JsonIgnore
-        private int background;
+        @JsonIgnore private int paddle;
+        @JsonIgnore private int ball;
+        @JsonIgnore private int background;
 
-        public Config(@JsonProperty("paddle") int paddle,
-                      @JsonProperty("ball") int ball,
-                      @JsonProperty("background") int background) {
+        public Config(
+                @JsonProperty("paddle") int paddle,
+                @JsonProperty("ball") int ball,
+                @JsonProperty("background") int background) {
             this.paddle = paddle;
             this.ball = ball;
             this.background = background;
@@ -244,7 +257,5 @@ public class OptionScreen extends Screen {
         public void setBackground(int background) {
             this.background = background;
         }
-
     }
-
 }

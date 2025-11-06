@@ -144,13 +144,14 @@ public class SettingScreen extends Screen {
                         secondRightKeyButton,
                         back);
 
-        Background bg = new Background(new BackgroundImage(
-                ResourcesLoader.loadImage("homescreen_bg.png"),
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER,
-                new BackgroundSize(1.0, 1.0, true, true, false, true)
-        ));
+        Background bg =
+                new Background(
+                        new BackgroundImage(
+                                ResourcesLoader.loadImage("homescreen_bg.png"),
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundPosition.CENTER,
+                                new BackgroundSize(1.0, 1.0, true, true, false, true)));
         root.setBackground(bg);
     }
 

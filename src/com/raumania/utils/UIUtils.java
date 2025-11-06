@@ -82,6 +82,15 @@ public class UIUtils {
     }
 
     /**
+     * recenter text after set font.
+     * @param text - center text
+     */
+    public static void setCenterText(Text text) {
+        double textX = (Main.WINDOW_WIDTH - text.getLayoutBounds().getWidth())/2;
+        text.setX(textX);
+    }
+
+    /**
      * Create a new Slider.
      * @param minSlider slider min value
      * @param startSlider slider start value
