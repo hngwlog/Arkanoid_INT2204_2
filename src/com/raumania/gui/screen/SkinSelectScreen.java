@@ -31,6 +31,7 @@ public class SkinSelectScreen extends Screen {
     private static Config sharedConfig = DEFAULT_CONFIG;
     private final ImageView currentPaddle;
     private final Rectangle currentBall;
+
     public SkinSelectScreen(SceneManager sceneManager) {
         super(sceneManager);
 
@@ -41,7 +42,8 @@ public class SkinSelectScreen extends Screen {
         paddleText.setFill(Color.WHITE);
         Button paddleLeft = UIUtils.newButton("<", 315, 185, 2.0, 2.0);
         Button paddleRight = UIUtils.newButton(">", 815, 185, 2.0, 2.0);
-        currentPaddle = new ImageView(ResourcesLoader.loadImage("paddle" + sharedConfig.paddle +".png"));
+        currentPaddle =
+                new ImageView(ResourcesLoader.loadImage("paddle" + sharedConfig.paddle + ".png"));
         currentPaddle.setLayoutX(520);
         currentPaddle.setLayoutY(190);
         currentPaddle.setFitWidth(100);
@@ -112,6 +114,7 @@ public class SkinSelectScreen extends Screen {
 
     /**
      * get current skin of the current type.
+     *
      * @param cntType - current skin type
      * @return curren skin
      */
@@ -126,6 +129,7 @@ public class SkinSelectScreen extends Screen {
 
     /**
      * change curren config's skin.
+     *
      * @param cntType - skin type
      * @param cnt - index of the skin
      */
@@ -143,6 +147,7 @@ public class SkinSelectScreen extends Screen {
 
     /**
      * get current skin's index of current type.
+     *
      * @param cntType - curren type
      * @return current skin's index
      */
@@ -156,6 +161,7 @@ public class SkinSelectScreen extends Screen {
 
     /**
      * get max skin number of current type.
+     *
      * @param cntType - current type
      * @return max skin number
      */
@@ -169,6 +175,7 @@ public class SkinSelectScreen extends Screen {
 
     /**
      * Change the current skin of the current type.
+     *
      * @param cntType current type
      * @param changeType -1 -> decrease, 1 -> increase
      */
@@ -182,16 +189,15 @@ public class SkinSelectScreen extends Screen {
         applyChange(cntType, cnt);
         Object currentObject = cntCurrentText(cntType);
         if (currentObject instanceof ImageView) {
-            ((ImageView) currentObject).setImage(ResourcesLoader.loadImage("paddle" + cnt +".png"));
-        } else  if (currentObject instanceof Rectangle) {
+            ((ImageView) currentObject)
+                    .setImage(ResourcesLoader.loadImage("paddle" + cnt + ".png"));
+        } else if (currentObject instanceof Rectangle) {
             ((Rectangle) currentObject).setFill(Ball.BALL_COLORS.get(cnt));
         }
         saveConfig();
     }
 
-    /**
-     * save current config from game to FILE.
-     */
+    /** save current config from game to FILE. */
     private void saveConfig() {
         File file = new File(CONFIG_FILE);
         if (!file.exists()) {
@@ -210,9 +216,7 @@ public class SkinSelectScreen extends Screen {
         }
     }
 
-    /**
-     * load current config from FILE to the game.
-     */
+    /** load current config from FILE to the game. */
     private void loadConfig() {
         File file = new File(CONFIG_FILE);
         if (!file.exists() || file.length() == 0) {
@@ -234,16 +238,12 @@ public class SkinSelectScreen extends Screen {
         }
     }
 
-    /**
-     * Config.
-     */
+    /** Config. */
     public static class Config {
         private int paddle;
         private int ball;
 
-        public Config(
-                @JsonProperty("paddle") int paddle,
-                @JsonProperty("ball") int ball) {
+        public Config(@JsonProperty("paddle") int paddle, @JsonProperty("ball") int ball) {
             this.paddle = paddle;
             this.ball = ball;
         }
