@@ -9,7 +9,7 @@ import java.net.URL;
 
 public class ResourcesLoader {
     private static String load(String path) {
-        URL url =  ResourcesLoader.class.getResource(path);
+        URL url = ResourcesLoader.class.getResource(path);
         if (url == null) {
             throw new RuntimeException("Resource not found: " + path);
         } else {
@@ -19,6 +19,7 @@ public class ResourcesLoader {
 
     /**
      * Load image from resources/images folder
+     *
      * @param filename Only image file name (e.g. "paddle.png")
      * @return Image object
      */
@@ -28,6 +29,7 @@ public class ResourcesLoader {
 
     /**
      * Load music from resources/music folder
+     *
      * @param filename Only music file name (e.g. "background.mp3")
      * @return MediaPlayer object
      */

@@ -2,7 +2,6 @@ package com.raumania.gameplay.objects.visualeffect;
 
 import com.raumania.core.SpriteSheet;
 import com.raumania.utils.ResourcesLoader;
-import com.raumania.core.AudioManager;
 
 public class Explosion extends VisualEffect {
     private static final int totalFrames = 11;

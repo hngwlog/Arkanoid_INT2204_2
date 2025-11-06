@@ -9,7 +9,6 @@ public class PowerUpFactory {
      * @param width the width of the power-up
      * @param height the height of the power-up
      * @param chance the probability (0.0 to 1.0) of spawning a power-up
-     *
      * @return a new PowerUp instance or null if no power-up is
      */
     public static PowerUp createRandomPowerUp(

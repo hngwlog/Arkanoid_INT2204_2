@@ -3,9 +3,9 @@ package com.raumania.math;
 /**
  * Immutable-like 2D vector.
  *
- * <p>This utility class is mainly used for representing directions, positions, or
- * velocities in game logic. Although the fields {@link #x} and {@link #y} are public,
- * most operations return a new {@code Vec2f} for convenience.</p>
+ * <p>This utility class is mainly used for representing directions, positions, or velocities in
+ * game logic. Although the fields {@link #x} and {@link #y} are public, most operations return a
+ * new {@code Vec2f} for convenience.
  */
 public class Vec2f {
     public double x, y;
@@ -20,7 +20,6 @@ public class Vec2f {
         this.x = x;
         this.y = y;
     }
-
 
     /**
      * Sets this vector's components in place.
@@ -41,18 +40,18 @@ public class Vec2f {
      * @return vector length, always non-negative
      */
     public double length() {
-        return (double) Math.sqrt(x * x + y * y);
+        return Math.sqrt(x * x + y * y);
     }
 
     /**
      * Normalizes this vector in place (scales it to length 1).
      *
-     * <p>If the vector is zero-length, no change occurs.</p>
+     * <p>If the vector is zero-length, no change occurs.
      *
      * @return this vector after normalization
      */
     public Vec2f normalize() {
-        double len = (double) Math.sqrt(x * x + y * y);
+        double len = Math.sqrt(x * x + y * y);
         if (len != 0) {
             x /= len;
             y /= len;
@@ -81,8 +80,8 @@ public class Vec2f {
     }
 
     /**
-     * Rotates this vector by the given angle (in degrees).
-     * Positive angles rotate counter-clockwise, negative angles clockwise.
+     * Rotates this vector by the given angle (in degrees). Positive angles rotate
+     * counter-clockwise, negative angles clockwise.
      *
      * @param degree the rotation angle in degrees
      * @return a new Vec2f representing the rotated vector
@@ -97,5 +96,4 @@ public class Vec2f {
 
         return new Vec2f(newX, newY);
     }
-
 }

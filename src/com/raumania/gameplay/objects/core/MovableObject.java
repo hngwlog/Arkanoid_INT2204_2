@@ -5,18 +5,16 @@ import com.raumania.math.Vec2f;
 /**
  * Abstract base class for movable objects (e.g., Ball, Paddle).
  *
- * <p>Movement is expressed by a normalized direction vector, a speed (units/s),
- * and an acceleration (units/s²). Call {@link #applyMovement(double)} inside
- * {@link #update(double)} to advance position frame-independently.</p>
+ * <p>Movement is expressed by a normalized direction vector, a speed (units/s), and an acceleration
+ * (units/s²). Call {@link #applyMovement(double)} inside {@link #update(double)} to advance
+ * position frame-independently.
  */
 public abstract class MovableObject extends GameObject {
     protected Vec2f direction;
     protected double speed;
     protected double acceleration;
 
-    /**
-     * Creates a movable object with position and size.
-     */
+    /** Creates a movable object with position and size. */
     public MovableObject(double x, double y, double width, double height) {
         super(x, y, width, height);
         this.direction = new Vec2f(0f, 0f);
@@ -44,6 +42,10 @@ public abstract class MovableObject extends GameObject {
         translate(dx, dy);
     }
 
+    public Vec2f getDirection() {
+        return direction;
+    }
+
     /** Sets direction, will normalize if not zero. */
     public void setDirection(Vec2f dir) {
         if (dir == null) return;
@@ -54,8 +56,8 @@ public abstract class MovableObject extends GameObject {
         }
     }
 
-    public Vec2f getDirection() {
-        return direction;
+    public double getSpeed() {
+        return speed;
     }
 
     /** Sets speed (clamped to ≥ 0). */
@@ -63,24 +65,20 @@ public abstract class MovableObject extends GameObject {
         this.speed = Math.max(0f, speed);
     }
 
-    public double getSpeed() {
-        return speed;
+    public double getWidth() {
+        return this.width;
     }
 
     public void setWidth(double width) {
         this.width = width;
     }
 
-    public double getWidth() {
-        return this.width;
+    public double getAcceleration() {
+        return acceleration;
     }
 
     /** Sets acceleration (can be negative). */
     public void setAcceleration(double acceleration) {
         this.acceleration = acceleration;
-    }
-
-    public double getAcceleration() {
-        return acceleration;
     }
 }

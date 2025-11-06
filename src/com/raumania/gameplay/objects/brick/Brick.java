@@ -7,11 +7,9 @@ import javafx.scene.shape.Rectangle;
 
 /**
  * Represents a single brick in the game.
- * <p>
- * A brick has a finite number of hit points and becomes destroyed after
- * sufficient hits. Each brick also owns a JavaFX {@link Rectangle} view
- * used for rendering.
- * </p>
+ *
+ * <p>A brick has a finite number of hit points and becomes destroyed after sufficient hits. Each
+ * brick also owns a JavaFX {@link Rectangle} view used for rendering.
  */
 public abstract class Brick extends GameObject {
     public static final int BRICK_WIDTH = 40;
@@ -19,6 +17,7 @@ public abstract class Brick extends GameObject {
     private int colorIndex = 0;
     private ImageView brickTexture;
     private int hitPoints;
+
     /**
      * Constructs a new {@code Brick} with the given position and size.
      *
@@ -78,9 +77,7 @@ public abstract class Brick extends GameObject {
         this.hitPoints = hitPoints;
     }
 
-    /**
-     * Reduces the brick's hit points by one to reflect a successful hit.
-     */
+    /** Reduces the brick's hit points by one to reflect a successful hit. */
     public void takeHit() {
         hitPoints--;
     }

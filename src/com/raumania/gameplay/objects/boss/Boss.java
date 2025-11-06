@@ -2,34 +2,34 @@ package com.raumania.gameplay.objects.boss;
 
 import com.raumania.core.AStarInstructor;
 import com.raumania.core.SpriteSheet;
+import com.raumania.gameplay.objects.Paddle;
 import com.raumania.gameplay.objects.brick.Brick;
 import com.raumania.gameplay.objects.core.MovableObject;
-import com.raumania.gameplay.objects.Paddle;
 import com.raumania.gui.screen.GameScreen;
 import com.raumania.math.Vec2f;
+
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 //import javafx.scene.shape.Polyline;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import java.util.ArrayList;
 public class Boss extends MovableObject {
+    public static final double BOSS_SIZE = 35.0;
+    private static final double ARRIVAL_THRESHOLD = 8; // if the distance is less than arrival_threshold, consider that collision is happened
+    private static final double STUCK_THRESHOLD = 2.5;
+    public static double BOSS_SPEED = 95.0;
     private SpriteSheet bossTexture;
     private boolean active = true;
-    public static double BOSS_SPEED = 95.0;
-    public static final double BOSS_SIZE = 35.0;
     private double timeAccumulator = 0;
-
 //    private Polyline bossPathLine;
     private List<Vec2f> pathPoints;
     private int currentTargetIndex;
     private boolean followingPath = true;
-    private static final double ARRIVAL_THRESHOLD = 8; // if the distance is less than arrival_threshold, consider that collision is happened
-
     private Vec2f lastPosition = new Vec2f(0, 0);
     private double stuckTimer = 0;
-    private static final double STUCK_THRESHOLD = 2.5;
+    private double randomDir = Math.random() > 0.5 ? 1 : -1;
 
     public Boss(double x, double y, double width, double height) {
         super(x, y, width, height);
@@ -51,13 +51,13 @@ public class Boss extends MovableObject {
         this.bossTexture.play();
     }
 
-    public ImageView getTexture() {
-        return bossTexture.getView();
-    }
-
 //    public Polyline getBossPathLine() {
 //        return bossPathLine;
 //    }
+
+    public ImageView getTexture() {
+        return bossTexture.getView();
+    }
 
     public boolean isActive() {
         return active;
@@ -70,6 +70,7 @@ public class Boss extends MovableObject {
 
     @Override
     public void update(double dt){}
+
     public int bossUpdate(double dt, Paddle paddle, boolean[][] layout, Pane root,
                         List<Brick> bricks, int score) {
         drawBossPath(paddle, layout);
@@ -243,8 +244,6 @@ public class Boss extends MovableObject {
         );
         if (distance <= 100) this.speed = BOSS_SPEED*2.5;
     }
-
-    private double randomDir = Math.random() > 0.5 ? 1 : -1;
 
     private void randomMove(double dt, List<Brick> bricks) {
         timeAccumulator += dt;

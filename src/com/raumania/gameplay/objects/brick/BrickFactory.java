@@ -1,7 +1,5 @@
 package com.raumania.gameplay.objects.brick;
 
-
-
 public class BrickFactory {
     public static Brick createBrick(String brickName, double x, double y, int color) {
         return switch (brickName) {

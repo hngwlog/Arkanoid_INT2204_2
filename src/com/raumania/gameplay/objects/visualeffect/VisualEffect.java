@@ -1,8 +1,8 @@
 package com.raumania.gameplay.objects.visualeffect;
 
 import com.raumania.core.SpriteSheet;
-
 import com.raumania.gameplay.objects.core.GameObject;
+
 import javafx.scene.image.ImageView;
 
 public abstract class VisualEffect extends GameObject {

@@ -1,8 +1,6 @@
 package com.raumania.gameplay.objects.core;
 
-/**
- * Base class for all in-game objects (e.g., bricks, ball, paddle).
- */
+/** Base class for all in-game objects (e.g., bricks, ball, paddle). */
 public abstract class GameObject {
     protected double x, y, width, height;
 
@@ -39,22 +37,20 @@ public abstract class GameObject {
 
     /**
      * Checks whether this game object overlaps (intersects) with another one.
-     * <p>
-     * The check is based on the intersection of two axis-aligned bounding boxes (AABB),
-     * using their top-left coordinates ({@code x}, {@code y}) and dimensions
-     * ({@code width}, {@code height}). Overlap is detected if the projections
-     * of the two rectangles intersect on both the X and Y axes.
-     * </p>
+     *
+     * <p>The check is based on the intersection of two axis-aligned bounding boxes (AABB), using
+     * their top-left coordinates ({@code x}, {@code y}) and dimensions ({@code width}, {@code
+     * height}). Overlap is detected if the projections of the two rectangles intersect on both the
+     * X and Y axes.
      *
      * @param other another {@link GameObject} to check for overlap with
-     * @return {@code true} if the two objects overlap (collide),
-     *         {@code false} otherwise
+     * @return {@code true} if the two objects overlap (collide), {@code false} otherwise
      */
     public boolean checkOverlap(GameObject other) {
-        return (Math.max(this.x, other.getX()) <= Math.min(this.x + this.width,
-                other.getX() + other.getWidth()) &&
-                Math.max(this.y, other.getY()) <= Math.min(this.y + this.height,
-                        other.getY() + other.getHeight()));
+        return (Math.max(this.x, other.getX())
+                        <= Math.min(this.x + this.width, other.getX() + other.getWidth())
+                && Math.max(this.y, other.getY())
+                        <= Math.min(this.y + this.height, other.getY() + other.getHeight()));
     }
 
     public double getX() {

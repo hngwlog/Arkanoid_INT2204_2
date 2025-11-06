@@ -1,6 +1,8 @@
 package com.raumania.gameplay.manager;
 
 import com.raumania.core.AudioManager;
+import com.raumania.core.MapLoader.*;
+import com.raumania.gameplay.objects.*;
 import com.raumania.gameplay.objects.boss.Boss;
 import com.raumania.gameplay.objects.boss.Pyramid;
 import com.raumania.gameplay.objects.brick.*;
@@ -9,15 +11,17 @@ import com.raumania.gameplay.objects.visualeffect.BrickHit;
 import com.raumania.gameplay.objects.visualeffect.Explosion;
 import com.raumania.gameplay.objects.visualeffect.VisualEffect;
 import com.raumania.gui.screen.GameScreen;
+import com.raumania.math.Vec2f;
 import com.raumania.utils.ResourcesLoader;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -25,10 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import com.raumania.gameplay.objects.*;
-
-import com.raumania.math.Vec2f;
-import com.raumania.core.MapLoader.*;
 /**
  * Manages the overall game state, including all major game objects such as
  * the {@link Paddle}, {@link Ball}s, and {@link Brick}s.
@@ -38,20 +38,18 @@ import com.raumania.core.MapLoader.*;
  * </p>
  */
 public class GameManager {
-    public enum GameState { READY, RUNNING, PAUSED, GAME_OVER }
-
-    private Pane root;
+    private final Pane root;
     private Paddle paddle;
     private Ball mainBall = null;
-    private List<Ball> balls = new ArrayList<>();
-    private List<Brick> bricks = new ArrayList<>();
-    private List<PowerUp> powerUps = new ArrayList<>();
-    private ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
+    private final List<Ball> balls = new ArrayList<>();
+    private final List<Brick> bricks = new ArrayList<>();
+    private final List<PowerUp> powerUps = new ArrayList<>();
+    private final ObjectProperty<GameState> gameState = new SimpleObjectProperty<>(GameState.RUNNING);
     private int score = 0;
     private LevelData currentLvl;
-    private List<EffectCountDown> effectCountDownList = new ArrayList<>();
-    private List<Boss> bosses = new ArrayList<>();
-    private List<VisualEffect> visualEffects = new ArrayList<>();
+    private final List<EffectCountDown> effectCountDownList = new ArrayList<>();
+    private final List<Boss> bosses = new ArrayList<>();
+    private final List<VisualEffect> visualEffects = new ArrayList<>();
     private boolean[][] layout;
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
@@ -78,15 +76,6 @@ public class GameManager {
     public Pane getRoot() {
         return root;
     }
-
-
-    /**
-     * Set the current {@link GameState} of the game.
-     */
-    public void setGameState(GameState gameState) {
-        this.gameState.set(gameState);
-    }
-
 
     /**
      * Initializes all game objects and sets up the starting state of the game.
@@ -123,15 +112,15 @@ public class GameManager {
         firstBall.setSpeed(0);
         firstBall.setDirection(new Vec2f(0, 0));
 
-        List<String> colorRows = currentLvl.getColors();
-        boolean hasColors = (colorRows != null && colorRows.size() == currentLvl.getLayout().size());
+        List<String> colorRows = currentLvl.colors();
+        boolean hasColors = (colorRows != null && colorRows.size() == currentLvl.layout().size());
 
-        if (currentLvl.getBosses() != null) {
-            for (BossData bossData : currentLvl.getBosses()) {
+        if (currentLvl.bosses() != null) {
+            for (BossData bossData : currentLvl.bosses()) {
                 Boss boss = null;
-                switch (bossData.getType()) {
+                switch (bossData.type()) {
                     case "pyramid":
-                        boss = new Pyramid(bossData.getX(), bossData.getY(), Boss.BOSS_SIZE, Boss.BOSS_SIZE);
+                        boss = new Pyramid(bossData.x(), bossData.y(), Boss.BOSS_SIZE, Boss.BOSS_SIZE);
                         break;
                 }
                 if (boss != null) {
@@ -142,8 +131,8 @@ public class GameManager {
             }
         }
 
-        for (int r = 0; r < currentLvl.getLayout().size(); r++) {
-            String row = currentLvl.getLayout().get(r);
+        for (int r = 0; r < currentLvl.layout().size(); r++) {
+            String row = currentLvl.layout().get(r);
             String rowColor = hasColors ? colorRows.get(r) : null;
             for (int c = 0; c < row.length(); c++) {
                 layout[r][c] = true;
@@ -157,7 +146,7 @@ public class GameManager {
                 double x = c * Brick.BRICK_WIDTH;
                 double y = r * Brick.BRICK_HEIGHT;
 
-                String brickType = currentLvl.getLegend().get(String.valueOf(type));
+                String brickType = currentLvl.legend().get(String.valueOf(type));
                 Brick brick = BrickFactory.createBrick(brickType, x, y, color);
 
                 if (brick != null) {
@@ -256,6 +245,7 @@ public class GameManager {
                             Brick brick3 = collidedBricks.get(k);
                             if (brick1.getX() == brick2.getX() && brick1.getY() == brick3.getY()) {
                                 chosenBrick = brick1;
+                                break;
                             }
                         }
                     }
@@ -410,6 +400,13 @@ public class GameManager {
     }
 
     /**
+     * Set the current {@link GameState} of the game.
+     */
+    public void setGameState(GameState gameState) {
+        this.gameState.set(gameState);
+    }
+
+    /**
      * Returns current alive balls on the GameScreen.
      */
     public List<Ball> getBallsList() {
@@ -551,4 +548,6 @@ public class GameManager {
         balls.add(ball);
         root.getChildren().add(ball.getView());
     }
+
+    public enum GameState { READY, RUNNING, PAUSED, GAME_OVER }
 }

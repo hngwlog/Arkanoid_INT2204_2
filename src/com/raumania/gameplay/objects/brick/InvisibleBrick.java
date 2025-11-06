@@ -1,9 +1,8 @@
 package com.raumania.gameplay.objects.brick;
 
 import com.raumania.utils.ResourcesLoader;
-import javafx.scene.image.ImageView;
 
-import java.util.Random;
+import javafx.scene.image.ImageView;
 
 public class InvisibleBrick extends Brick{
     public InvisibleBrick(double x, double y, double width, double height, int color) {
