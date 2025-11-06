@@ -35,8 +35,8 @@ public class MultiplayerGameScreen extends Screen {
     private final Pane gamePlayScreen;
     private final Text rightScore;
     private final Text leftScore;
-    private final List<ImageView> leftHearts;
-    private final List<ImageView> rightHearts;
+    private final List<ImageView> leftHearts = new ArrayList<>();
+    private final List<ImageView> rightHearts = new ArrayList<>();
     private final List<Button> pauseButtons;
     private final List<Button> homeButtons;
     private final List<Double> pauseButtonYs;
@@ -140,30 +140,6 @@ public class MultiplayerGameScreen extends Screen {
         rightBorder.setFill(Color.TRANSPARENT);
         rightBorder.setStroke(Color.BLACK);
         rightBorder.setStrokeWidth(2);
-
-        // Lives
-        leftHearts = new ArrayList<>();
-        for (int i = 0; i < leftManager.getLives(); i++) {
-            ImageView heart = new ImageView(ResourcesLoader.loadImage("heart.png"));
-            heart.setFitWidth(30);
-            heart.setFitHeight(30);
-            heart.setLayoutX(90 + i * 35);
-            heart.setLayoutY(15);
-            leftHearts.add(heart);
-            gamePlayScreen.getChildren().add(heart);
-        }
-
-        rightHearts = new ArrayList<>();
-        for (int i = 0; i < rightManager.getLives(); i++) {
-            ImageView heart = new ImageView(ResourcesLoader.loadImage("heart.png"));
-            heart.setFitWidth(30);
-            heart.setFitHeight(30);
-            heart.setLayoutX(850 + i * 35);
-            heart.setLayoutY(15);
-            rightHearts.add(heart);
-            gamePlayScreen.getChildren().add(heart);
-        }
-
 
         // Score
         rightScore = UIUtils.newText("Score:", 720, 30, 2.0, 2.0);
@@ -284,6 +260,8 @@ public class MultiplayerGameScreen extends Screen {
                     if (e.getCode() == KeyCode.SPACE) {
                         if (rightManager.getGameState() == GameManager.GameState.READY) {
                             rightManager.startGame();
+                        }
+                        if (leftManager.getGameState() == GameManager.GameState.READY) {
                             leftManager.startGame();
                         }
                     } else if (e.getCode() == KeyCode.ESCAPE) {
@@ -375,6 +353,26 @@ public class MultiplayerGameScreen extends Screen {
         MapLoader.LevelData lv = generateRandomLevel();
         leftManager.setCurrentLvl(lv);
         rightManager.setCurrentLvl(lv);
+
+        // Lives
+        for (int i = 0; i < leftManager.getLives(); i++) {
+            ImageView heart = new ImageView(ResourcesLoader.loadImage("heart.png"));
+            heart.setFitWidth(30);
+            heart.setFitHeight(30);
+            heart.setLayoutX(90 + i * 35);
+            heart.setLayoutY(15);
+            leftHearts.add(heart);
+            gamePlayScreen.getChildren().add(heart);
+        }
+        for (int i = 0; i < rightManager.getLives(); i++) {
+            ImageView heart = new ImageView(ResourcesLoader.loadImage("heart.png"));
+            heart.setFitWidth(30);
+            heart.setFitHeight(30);
+            heart.setLayoutX(850 + i * 35);
+            heart.setLayoutY(15);
+            rightHearts.add(heart);
+            gamePlayScreen.getChildren().add(heart);
+        }
 
         // Turn on game screen
         mainPause.setVisible(false);
