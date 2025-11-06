@@ -10,5 +10,6 @@ public class NormalBrick extends Brick{
         super(x, y, width, height);
         setHitPoints(1);
         setBrickTexture(new ImageView(ResourcesLoader.loadImage("brick" + color + ".png")));
+        this.setColorIndex(color);
     }
 }

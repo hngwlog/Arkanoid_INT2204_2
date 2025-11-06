@@ -5,13 +5,13 @@ import com.raumania.gameplay.objects.boss.Boss;
 import com.raumania.gameplay.objects.boss.Pyramid;
 import com.raumania.gameplay.objects.brick.*;
 import com.raumania.gameplay.objects.powerup.*;
-import com.raumania.gameplay.objects.visioneffect.Explosion;
-import com.raumania.gameplay.objects.visioneffect.VisionEffect;
+import com.raumania.gameplay.objects.visualeffect.BrickHit;
+import com.raumania.gameplay.objects.visualeffect.Explosion;
+import com.raumania.gameplay.objects.visualeffect.VisualEffect;
 import com.raumania.gui.screen.GameScreen;
 import com.raumania.utils.ResourcesLoader;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundRepeat;
@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Random;
 
 import com.raumania.gameplay.objects.*;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Line;
 
 import com.raumania.math.Vec2f;
 import com.raumania.core.MapLoader.*;
@@ -44,8 +42,6 @@ public class GameManager {
 
     private Pane root;
     private Paddle paddle;
-    private boolean leftHeld = false;
-    private boolean rightHeld = false;
     private Ball mainBall = null;
     private List<Ball> balls = new ArrayList<>();
     private List<Brick> bricks = new ArrayList<>();
@@ -55,7 +51,7 @@ public class GameManager {
     private LevelData currentLvl;
     private List<EffectCountDown> effectCountDownList = new ArrayList<>();
     private List<Boss> bosses = new ArrayList<>();
-    private List<VisionEffect> visionEffects = new ArrayList<>();
+    private List<VisualEffect> visualEffects = new ArrayList<>();
     private boolean[][] layout;
     /**
      * Creates a new {@code GameManager} and attaches it to the given root pane.
@@ -112,7 +108,7 @@ public class GameManager {
         powerUps.clear();
         effectCountDownList.clear();
         bosses.clear();
-        visionEffects.clear();
+        visualEffects.clear();
         root.getChildren().clear();
         score = 0;
         layout = new boolean[28][13];
@@ -160,25 +156,9 @@ public class GameManager {
                 }
                 double x = c * Brick.BRICK_WIDTH;
                 double y = r * Brick.BRICK_HEIGHT;
-                Brick brick = null;
 
                 String brickType = currentLvl.getLegend().get(String.valueOf(type));
-                if (brickType == null || brickType.equals("empty")) continue;
-
-                switch (brickType) {
-                    case "normal":
-                        brick = new NormalBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT, color);
-                        break;
-                    case "strong":
-                        brick = new StrongBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT);
-                        break;
-                    case "invisible":
-                        brick = new InvisibleBrick(x, y, Brick.BRICK_WIDTH, Brick.BRICK_HEIGHT,
-                                color);
-                        break;
-                    default:
-                        continue;
-                }
+                Brick brick = BrickFactory.createBrick(brickType, x, y, color);
 
                 if (brick != null) {
                     bricks.add(brick);
@@ -252,6 +232,12 @@ public class GameManager {
                 Brick brick = it.next();
                 if (ball.checkOverlap(brick)) {
                     collidedBricks.add(brick);
+                    VisualEffect hit = new BrickHit(ball.getView().getCenterX(), ball.getView().getCenterY(),
+                            20, 20, brick.getColorIndex());
+                    visualEffects.add(hit);
+                    root.getChildren().add(hit.getTexture());
+                    AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
+                    hit.play();
                 }
             }
             if (collidedBricks.size() == 3) {
@@ -305,7 +291,7 @@ public class GameManager {
                     ball.bounceVertically();
                 }
             } else if (collidedBricks.size() == 2) {
-                ball.update(- dt);
+                ball.update(-dt);
                 Brick brick1 = collidedBricks.get(0);
                 Brick brick2 = collidedBricks.get(1);
                 allCollidedBricks.add(brick1);
@@ -324,8 +310,10 @@ public class GameManager {
                 Boss boss = it.next();
                 if (ball.checkOverlap(boss)) {
                     score += 1;
-                    VisionEffect ve = new Explosion(boss.getX(), boss.getY(), Boss.BOSS_SIZE*1.2, Boss.BOSS_SIZE*1.2);
-                    visionEffects.add(ve);
+                    VisualEffect ve = new Explosion(boss.getX(), boss.getY(), Boss.BOSS_SIZE*1.2, Boss.BOSS_SIZE*1.2);
+                    visualEffects.add(ve);
+                    ve.play();
+                    AudioManager.getInstance().playSFX(AudioManager.EXPLOSION);
                     root.getChildren().add(ve.getTexture());
                     root.getChildren().remove(boss.getTexture());
                     it.remove();
@@ -335,15 +323,18 @@ public class GameManager {
 //        allCollidedBricks = allCollidedBricks.stream().distinct().toList();
         for (Iterator<Brick> it = allCollidedBricks.iterator(); it.hasNext();) {
             Brick brick = it.next();
-            AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
             brick.takeHit();
             if (brick.isDestroyed()) {
                 score += 1;
                 root.getChildren().remove(brick.getTexture());
-                spawnRandomPowerUp(brick.getX() + ((double) Brick.BRICK_WIDTH - 16) / 2,
-                        brick.getY() + (double) Brick.BRICK_HEIGHT / 2, 0.2);
                 bricks.remove(brick);
                 layout[(int)(brick.getY()/Brick.BRICK_HEIGHT)][(int)(brick.getX()/Brick.BRICK_WIDTH)] = true;
+                // 40% to spawn powerup
+                PowerUp powerUp = PowerUpFactory.createRandomPowerUp(brick.getX(), brick.getY(), 30, 30, 0.4);
+                if (powerUp != null) {
+                    root.getChildren().add(powerUp.getTexture());
+                    powerUps.add(powerUp);
+                }
             }
         }
 
@@ -495,9 +486,9 @@ public class GameManager {
         paddle.update(dt);
         checkCollisions(dt);
 
-        for (Iterator<VisionEffect> it = visionEffects.iterator(); it.hasNext();) {
-            VisionEffect ve = it.next();
-            if (ve.isDone()) {
+        for (Iterator<VisualEffect> it = visualEffects.iterator(); it.hasNext();) {
+            VisualEffect ve = it.next();
+            if (ve.getTextureSheet().isFinalFrame()) {
                 root.getChildren().remove(ve.getTexture());
                 it.remove();
             }
@@ -509,13 +500,13 @@ public class GameManager {
             setScore(newScore);
             if (!boss.isActive()) {
                 // Tạo hiệu ứng nổ tại vị trí boss
-                 VisionEffect explosion = new Explosion(
+                 VisualEffect explosion = new Explosion(
                         boss.getX(),
                         boss.getY(),
                         Boss.BOSS_SIZE*1.2,
                         Boss.BOSS_SIZE*1.2
                 );
-                visionEffects.add(explosion);
+                visualEffects.add(explosion);
                 root.getChildren().add(explosion.getTexture());
                 // Xóa boss khỏi danh sách
                 iterator.remove();
@@ -560,30 +551,4 @@ public class GameManager {
         balls.add(ball);
         root.getChildren().add(ball.getView());
     }
-
-    /**
-     * Spawns a random power-up at the specified (x, y) position.
-     * <p>
-     * Currently, there is a 50% chance to spawn an {@link AddBallPowerUp}.
-     * The spawned power-up is added to the list of active power-ups and its
-     * visual representation is added to the scene graph.
-     * </p>
-     *
-     * @param x the x-coordinate to spawn the power-up
-     * @param y the y-coordinate to spawn the power-up
-     */
-    public void spawnRandomPowerUp(double x, double y, double randomThreshold) {
-        double rand = Math.random();
-        if (rand < randomThreshold) {
-            PowerUp powerUp;
-
-            if (rand < randomThreshold/3) powerUp = new AddBallPowerUp(x, y, 30, 30);
-            else if (rand < randomThreshold*2/3) powerUp = new ExtendPaddlePowerUp(x, y, 30, 30);
-            else powerUp = new ImmortalPowerUp(x, y, 30, 30);
-
-            powerUps.add(powerUp);
-            root.getChildren().add(powerUp.getTexture());
-        }
-    }
-
 }

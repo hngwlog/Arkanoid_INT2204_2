@@ -2,22 +2,15 @@ package com.raumania.gameplay.objects.boss;
 
 import com.raumania.core.AStarInstructor;
 import com.raumania.core.SpriteSheet;
-import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gameplay.objects.brick.Brick;
 import com.raumania.gameplay.objects.core.MovableObject;
-import com.raumania.gameplay.objects.core.GameObject;
-import com.raumania.gameplay.objects.powerup.PowerUpType;
 import com.raumania.gameplay.objects.Paddle;
-import com.raumania.gameplay.objects.Ball;
-import com.raumania.gameplay.objects.visioneffect.VisionEffect;
 import com.raumania.gui.screen.GameScreen;
 import com.raumania.math.Vec2f;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 //import javafx.scene.shape.Polyline;
 
-import java.util.Iterator;
 import java.util.List;
 
 import java.util.ArrayList;

@@ -113,4 +113,8 @@ public class SpriteSheet {
     public void stop() {
         timer.stop();
     }
+
+    public boolean isFinalFrame() {
+        return currentFrame == totalFrames - 1;
+    }
 }
