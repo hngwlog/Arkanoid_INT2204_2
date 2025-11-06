@@ -13,8 +13,10 @@ import com.raumania.utils.UIUtils;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.io.File;
@@ -27,9 +29,8 @@ public class SkinSelectScreen extends Screen {
     private static final int MAX_PADDLE_SKIN = 4;
     private static final int MAX_BALL_COLOR = 5;
     private static Config sharedConfig = DEFAULT_CONFIG;
-    private final Text currentPaddle;
-    private final Text currentBall;
-
+    private final ImageView currentPaddle;
+    private final Rectangle currentBall;
     public SkinSelectScreen(SceneManager sceneManager) {
         super(sceneManager);
 
@@ -40,8 +41,12 @@ public class SkinSelectScreen extends Screen {
         paddleText.setFill(Color.WHITE);
         Button paddleLeft = UIUtils.newButton("<", 315, 185, 2.0, 2.0);
         Button paddleRight = UIUtils.newButton(">", 815, 185, 2.0, 2.0);
-        currentPaddle = UIUtils.newText("Paddle " + (sharedConfig.paddle + 1), 550, 200, 2.0, 2.0);
-        currentPaddle.setFill(Color.WHITE);
+        currentPaddle = new ImageView(ResourcesLoader.loadImage("paddle" + sharedConfig.paddle +".png"));
+        currentPaddle.setLayoutX(520);
+        currentPaddle.setLayoutY(190);
+        currentPaddle.setFitWidth(100);
+        currentPaddle.setPreserveRatio(true);
+
         paddleLeft.setOnAction(
                 e -> {
                     changeCount("Paddle", -1);
@@ -52,12 +57,12 @@ public class SkinSelectScreen extends Screen {
                 });
 
         // ball
-        Text ballText = UIUtils.newText("Ball: ", 100, 300, 2.0, 2.0);
+        Text ballText = UIUtils.newText("Ball Color: ", 100, 300, 2.0, 2.0);
         ballText.setFill(Color.WHITE);
         Button ballLeft = UIUtils.newButton("<", 315, 285, 2.0, 2.0);
         Button ballRight = UIUtils.newButton(">", 815, 285, 2.0, 2.0);
-        currentBall = UIUtils.newText("Ball " + (sharedConfig.ball + 1), 550, 300, 2.0, 2.0);
-        currentBall.setFill(Color.WHITE);
+        currentBall = UIUtils.newRectangle(100, 50, 520, 275);
+        currentBall.setFill(Ball.BALL_COLORS.get(sharedConfig.ball));
         ballLeft.setOnAction(
                 e -> {
                     changeCount("Ball", -1);
@@ -105,7 +110,7 @@ public class SkinSelectScreen extends Screen {
         Platform.runLater(root::requestFocus);
     }
 
-    private Text cntCurrentText(String cntType) {
+    private Object cntCurrentText(String cntType) {
         if (cntType.equals("Paddle")) {
             return currentPaddle;
         } else if (cntType.equals("Ball")) {
@@ -150,7 +155,12 @@ public class SkinSelectScreen extends Screen {
         if (cnt < 0) cnt = maxCnt - 1;
         cnt %= maxCnt;
         applyChange(cntType, cnt);
-        cntCurrentText(cntType).setText(cntType + " " + (cnt + 1));
+        Object currentObject = cntCurrentText(cntType);
+        if (currentObject instanceof ImageView) {
+            ((ImageView) currentObject).setImage(ResourcesLoader.loadImage("paddle" + cnt +".png"));
+        } else  if (currentObject instanceof Rectangle) {
+            ((Rectangle) currentObject).setFill(Ball.BALL_COLORS.get(cnt));
+        }
         saveConfig();
     }
 

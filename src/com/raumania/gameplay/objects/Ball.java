@@ -20,7 +20,7 @@ import java.util.List;
 public class Ball extends MovableObject {
     public static final double BALL_RADIUS = 6.5;
     public static final int BALL_SPEED = 360;
-    private static final List<Paint> BALL_COLORS = List.of(
+    public static final List<Paint> BALL_COLORS = List.of(
             Color.WHITE,
             Color.RED,
             Color.BLUEVIOLET,
