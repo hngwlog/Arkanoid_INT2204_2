@@ -1,30 +1,44 @@
 package com.raumania.gui.screen;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raumania.gui.manager.SceneManager;
+import com.raumania.utils.UIUtils;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
-import com.raumania.utils.UIUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 public class OptionScreen extends Screen {
 
-    int paddleCnt = 0;
-    int ballCnt = 0;
-    int backgroundCnt = 0;
+    private static final String CONFIG_FILE = "skins.json";
+    private static final Config DEFAULT_CONFIG = new Config(0, 0, 0);
+    public static Config sharedConfig;
     int maxPaddleNumber = 5;
     int maxBallNumber = 5;
     int maxBackgroundNumber = 5;
     Text currentPaddle;
     Text currentBall;
     Text currentBackground;
+    private Config config;
 
     public OptionScreen(SceneManager sceneManager) {
         super(sceneManager);
+
+        this.loadConfig();
+
         //paddle
         Text paddleText = UIUtils.newText("Paddle: ", 100, 200, 2.0, 2.0);
         Button paddleLeft = UIUtils.newButton("<" , 315, 185, 2.0, 2.0);
         Button paddleRight = UIUtils.newButton(">" , 815, 185, 2.0, 2.0);
-        currentPaddle =  UIUtils.newText("Paddle 1" , 550, 200, 2.0, 2.0);
+        currentPaddle =  UIUtils.newText("Paddle " + (config.paddle + 1) ,
+                550, 200, 2.0, 2.0);
         paddleLeft.setOnAction(e -> {
             changeCnt("Paddle", -1);
         });
@@ -35,7 +49,8 @@ public class OptionScreen extends Screen {
         Text ballText =  UIUtils.newText("Ball: ", 100, 300, 2.0, 2.0);
         Button ballLeft = UIUtils.newButton("<" , 315, 285, 2.0, 2.0);
         Button ballRight =  UIUtils.newButton(">" , 815, 285, 2.0, 2.0);
-        currentBall =  UIUtils.newText("Ball 1" , 550, 300, 2.0, 2.0);
+        currentBall =  UIUtils.newText("Ball " + (config.ball + 1),
+                550, 300, 2.0, 2.0);
         ballLeft.setOnAction(e -> {
             changeCnt("Ball", -1);
         });
@@ -46,7 +61,8 @@ public class OptionScreen extends Screen {
         Text backgroundText = UIUtils.newText("Background: ", 100, 400, 2.0, 2.0);
         Button backgroundLeft = UIUtils.newButton("<" , 315, 385, 2.0, 2.0);
         Button backgroundRight = UIUtils.newButton(">" , 815, 385, 2.0, 2.0);
-        currentBackground =  UIUtils.newText("Background 1" , 550, 400, 2.0, 2.0);
+        currentBackground =  UIUtils.newText("Background " + (config.background + 1),
+                550, 400, 2.0, 2.0);
         backgroundLeft.setOnAction(e -> {
             changeCnt("Background", -1);
         });
@@ -76,22 +92,22 @@ public class OptionScreen extends Screen {
     private void applyChange(String cntType, int cnt) {
         switch (cntType) {
             case "Paddle":
-                this.paddleCnt = cnt;
+                config.paddle = cnt;
                 break;
             case "Ball":
-                this.ballCnt = cnt;
+                config.ball = cnt;
                 break;
             case "Background":
-                this.backgroundCnt = cnt;
+                config.background = cnt;
                 break;
         }
     }
 
     private int getCnt(String cntType) {
         return switch (cntType) {
-            case "Paddle" -> this.paddleCnt;
-            case "Ball" -> this.ballCnt;
-            case "Background" -> this.backgroundCnt;
+            case "Paddle" -> config.paddle;
+            case "Ball" -> config.ball;
+            case "Background" -> config.background;
             default -> 0;
         };
     }
@@ -114,6 +130,94 @@ public class OptionScreen extends Screen {
         cnt %= maxCnt;
         applyChange(cntType, cnt);
         cntCurrentText(cntType).setText(cntType + " " + (cnt + 1));
+        saveConfig();
+    }
+
+    private void saveConfig() {
+        File file = new File(CONFIG_FILE);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                System.err.println("Error creating skins file!");
+                return;
+            }
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            mapper.writeValue(file, config);
+        } catch (IOException e) {
+            System.err.println("Error saving skins file!" + e);
+        }
+        sharedConfig = config;
+    }
+
+    private void loadConfig() {
+        File file = new File(CONFIG_FILE);
+        if (!file.exists() || file.length() == 0) {
+            config = DEFAULT_CONFIG;
+            return;
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            config = mapper.readValue(file, OptionScreen.Config.class);
+        } catch (DatabindException e) {
+            System.err.println("Skins file has corrupted structure!");
+        } catch (StreamReadException e) {
+            System.err.println("Cant read skins file!");
+        } catch (IOException e) {
+            System.err.println("Error loading skins file!");
+        }
+        sharedConfig = config;
+    }
+
+    public static class Config {
+        @JsonIgnore
+        private int paddle;
+        @JsonIgnore
+        private int ball;
+        @JsonIgnore
+        private int background;
+
+        public Config(@JsonProperty("paddle") int paddle,
+                      @JsonProperty("ball") int ball,
+                      @JsonProperty("background") int background) {
+            this.paddle = paddle;
+            this.ball = ball;
+            this.background = background;
+        }
+
+        @JsonGetter
+        public int getPaddle() {
+            return paddle;
+        }
+
+        @JsonProperty("paddle")
+        public void setPaddle(int paddle) {
+            this.paddle = paddle;
+        }
+
+        @JsonGetter
+        public int getBall() {
+            return ball;
+        }
+
+        @JsonProperty("ball")
+        public void setBall(int ball) {
+            this.ball = ball;
+        }
+
+        @JsonGetter
+        public int getBackground() {
+            return background;
+        }
+
+        @JsonProperty("background")
+        public void setBackground(int background) {
+            this.background = background;
+        }
+
     }
 
 }
