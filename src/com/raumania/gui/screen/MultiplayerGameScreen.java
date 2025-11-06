@@ -8,6 +8,7 @@ import com.raumania.gui.manager.SceneManager;
 import com.raumania.main.Main;
 import com.raumania.utils.ResourcesLoader;
 import com.raumania.utils.UIUtils;
+
 import javafx.animation.AnimationTimer;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -22,17 +23,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
-import java.lang.Math;
 
 import java.util.*;
 
 public class MultiplayerGameScreen extends Screen {
-    private GameManager leftManager;
-    private InputHandler leftInputHandler;
-    private GameManager rightManager;
-    private InputHandler rightInputHandler;
-    private AnimationTimer loop;
-    private long past = - 1;
     Button pause;
     Pane gamePlayScreen;
     Pane mainPause;
@@ -41,6 +35,12 @@ public class MultiplayerGameScreen extends Screen {
     Pane winPane;
     Text rightScore;
     Text leftScore;
+    private final GameManager leftManager;
+    private InputHandler leftInputHandler;
+    private final GameManager rightManager;
+    private InputHandler rightInputHandler;
+    private AnimationTimer loop;
+    private long past = - 1;
 
     public MultiplayerGameScreen(SceneManager sceneManager) {
         super(sceneManager);

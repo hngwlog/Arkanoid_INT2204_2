@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raumania.gui.manager.SceneManager;
 import com.raumania.utils.UIUtils;
+
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;

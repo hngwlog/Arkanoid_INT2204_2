@@ -5,6 +5,7 @@ import com.raumania.core.HighScore.HighScoreEntry;
 import com.raumania.gameplay.manager.GameManager;
 import com.raumania.gui.manager.SceneManager;
 import com.raumania.utils.UIUtils;
+
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -15,14 +16,13 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class GameOverScreen extends Screen {
-    private GameManager singlePlayerGameManager;
-    private ArrayList<Text> currentTexts;
-    private Pane highScoreInputPane;
-    private Pane gameOverPane;
-    private Text level;
+    private final GameManager singlePlayerGameManager;
+    private final ArrayList<Text> currentTexts;
+    private final Pane highScoreInputPane;
+    private final Pane gameOverPane;
+    private final Text level;
 
     public GameOverScreen(SceneManager sceneManager) {
         super(sceneManager);

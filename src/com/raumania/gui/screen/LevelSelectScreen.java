@@ -1,20 +1,20 @@
 package com.raumania.gui.screen;
 
+import static com.raumania.utils.UIUtils.centerButton;
+import static com.raumania.utils.UIUtils.newButton;
+
 import com.raumania.core.MapLoader;
 import com.raumania.gui.manager.SceneManager;
 import com.raumania.utils.UIUtils;
+
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 
-import static com.raumania.utils.UIUtils.centerButton;
-import static com.raumania.utils.UIUtils.newButton;
-
-
 public class LevelSelectScreen extends Screen {
 
-    public int currentLevel = 0;
     private final int maxLevels = 15;
+    public int currentLevel = 0;
 
     public LevelSelectScreen(SceneManager sceneManager) {
         super(sceneManager);

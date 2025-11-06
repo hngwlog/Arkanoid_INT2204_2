@@ -1,8 +1,6 @@
 package com.raumania.gui.screen;
 
-/**
- * Enum of all screens in the game.
- */
+/** Enum of all screens in the game. */
 public enum ScreenType {
     HOME,
     SETTINGS,
