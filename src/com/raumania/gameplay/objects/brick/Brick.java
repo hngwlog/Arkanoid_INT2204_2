@@ -1,21 +1,20 @@
 package com.raumania.gameplay.objects.brick;
 
 import com.raumania.gameplay.objects.core.GameObject;
+
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
 
 /**
  * Represents a single brick in the game.
- * <p>
- * A brick has a finite number of hit points and becomes destroyed after
- * sufficient hits. Each brick also owns a JavaFX {@link Rectangle} view
- * used for rendering.
- * </p>
+ *
+ * <p>A brick has a finite number of hit points and becomes destroyed after sufficient hits. Each
+ * brick also owns a JavaFX {@link Rectangle} view used for rendering.
  */
 public abstract class Brick extends GameObject {
     public static final int BRICK_WIDTH = 40;
     public static final int BRICK_HEIGHT = 20;
-    public int colorIndex = 0;
+    private int colorIndex = 0;
     private ImageView brickTexture;
     private int hitPoints;
 
@@ -31,6 +30,18 @@ public abstract class Brick extends GameObject {
         super(x, y, width, height);
     }
 
+    public int getColorIndex() {
+        return colorIndex;
+    }
+
+    public void setColorIndex(int colorIndex) {
+        this.colorIndex = colorIndex;
+    }
+
+    public ImageView getBrickTexture() {
+        return this.brickTexture;
+    }
+
     /**
      * Sets the graphical representation of the brick.
      *
@@ -44,10 +55,6 @@ public abstract class Brick extends GameObject {
         this.brickTexture.setFitHeight(getHeight());
     }
 
-    public ImageView getBrickTexture() {
-        return this.brickTexture;
-    }
-
     /**
      * Returns the graphical representation of the brick.
      *
@@ -55,6 +62,10 @@ public abstract class Brick extends GameObject {
      */
     public ImageView getTexture() {
         return brickTexture;
+    }
+
+    public int getHitPoints() {
+        return this.hitPoints;
     }
 
     /**
@@ -66,13 +77,7 @@ public abstract class Brick extends GameObject {
         this.hitPoints = hitPoints;
     }
 
-    public int getHitPoints() {
-        return this.hitPoints;
-    }
-
-    /**
-     * Reduces the brick's hit points by one to reflect a successful hit.
-     */
+    /** Reduces the brick's hit points by one to reflect a successful hit. */
     public void takeHit() {
         hitPoints--;
     }

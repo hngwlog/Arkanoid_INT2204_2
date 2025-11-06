@@ -15,76 +15,7 @@ public class MapLoader {
     private static final MapLoader instance = new MapLoader();
     private static final String LEVELS_PATH = "/resources/levels/";
 
-    public static class BossData {
-        private final String type;
-        private final int x;
-        private final int y;
-
-        @JsonCreator
-        public BossData(
-                @JsonProperty("type") String type,
-                @JsonProperty("x") int x,
-                @JsonProperty("y") int y
-        ) {
-            this.type = type;
-            this.x = x;
-            this.y = y;
-        }
-
-        @JsonGetter("type")
-        public String getType() { return type; }
-
-        @JsonGetter("x")
-        public int getX() { return x; }
-
-        @JsonGetter("y")
-        public int getY() { return y; }
-    }
-
-    public static class LevelData {
-        private final int levelNumber;
-        private final String name;
-        private final Map<String, String> legend;
-        private final List<String> layout;
-        private final List<BossData> bosses;
-
-        private final List<String> colors;
-        @JsonCreator
-        public LevelData(
-                @JsonProperty("levelNumber") int levelNumber,
-                @JsonProperty("name") String name,
-                @JsonProperty("legend") Map<String, String> legend,
-                @JsonProperty("layout") List<String> layout,
-                @JsonProperty("boss") List<BossData> bosses,
-                @JsonProperty("colors") List<String> colors
-        ) {
-            this.levelNumber = levelNumber;
-            this.name = name;
-            this.legend = legend;
-            this.layout = layout;
-            this.bosses = bosses;
-            this.colors = colors;
-        }
-
-        @JsonGetter("levelNumber")
-        public int getLevelNumber() { return levelNumber; }
-
-        @JsonGetter("name")
-        public String getName() { return name; }
-
-        @JsonGetter("legend")
-        public Map<String, String> getLegend() { return legend; }
-
-        @JsonGetter("layout")
-        public List<String> getLayout() { return layout; }
-
-        @JsonGetter("boss")
-        public List<BossData> getBosses() { return bosses; }
-        @JsonGetter("colors")
-        public List<String> getColors() { return colors; }
-    }
-
-    private MapLoader() { }
+    private MapLoader() {}
 
     public static MapLoader getInstance() {
         return instance;
@@ -107,4 +38,34 @@ public class MapLoader {
             return null;
         }
     }
+
+    public record BossData(@JsonGetter("type") String type,@JsonGetter("x") int x,@JsonGetter("y") int y) {
+            @JsonCreator
+            public BossData(
+                    @JsonProperty("type") String type,
+                    @JsonProperty("x") int x,
+                    @JsonProperty("y") int y) {
+                this.type = type;
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+    public record LevelData(@JsonGetter("levelNumber") int levelNumber, @JsonGetter("name") String name, @JsonGetter("legend") Map<String, String> legend, @JsonGetter("layout") List<String> layout, @JsonGetter("boss") List<BossData> bosses, @JsonGetter("colors") List<String> colors) {
+            @JsonCreator
+            public LevelData(
+                    @JsonProperty("levelNumber") int levelNumber,
+                    @JsonProperty("name") String name,
+                    @JsonProperty("legend") Map<String, String> legend,
+                    @JsonProperty("layout") List<String> layout,
+                    @JsonProperty("boss") List<BossData> bosses,
+                    @JsonProperty("colors") List<String> colors) {
+                this.levelNumber = levelNumber;
+                this.name = name;
+                this.legend = legend;
+                this.layout = layout;
+                this.bosses = bosses;
+                this.colors = colors;
+            }
+        }
 }

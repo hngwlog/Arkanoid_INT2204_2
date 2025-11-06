@@ -2,15 +2,16 @@ package com.raumania.gameplay.manager;
 
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class InputHandler {
     // thread-safe gameState
     private final AtomicBoolean running = new AtomicBoolean(false);
     private Thread thread;
-    private GameManager gameManager;
-    private KeyCode leftKey;
-    private KeyCode rightKey;
+    private final GameManager gameManager;
+    private final KeyCode leftKey;
+    private final KeyCode rightKey;
     // keep track of key up or down
     private boolean leftPressed = false;
     private boolean rightPressed = false;
