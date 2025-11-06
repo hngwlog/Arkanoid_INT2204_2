@@ -22,7 +22,6 @@ public class LevelSelectScreen extends Screen {
         // level button
         // press to select level & back to home
         Button level = centerButton("Level " + (currentLevel + 1), 550, 2.0, 2.0);
-        System.out.println(level.getLayoutX());
         level.setOnAction(
                 e -> {
                     sceneManager.switchScreen(ScreenType.HOME);
