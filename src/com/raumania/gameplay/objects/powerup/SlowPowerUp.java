@@ -14,7 +14,7 @@ public class SlowPowerUp extends PowerUp{
     protected static int powerUpCounter = 0;
 
     /**
-     * Constructs a new ImmortalPowerUp instance with specified position and size.
+     * Constructs a new SlowPowerUp instance with specified position and size.
      *
      * @param x       the X position of the power-up
      * @param y       the Y position of the power-up
@@ -29,7 +29,7 @@ public class SlowPowerUp extends PowerUp{
     }
 
     /**
-     * Applies the "slow" effect to all active balls in the game.
+     * Applies the slow ball effect to all active balls in the game.
      * <p>
      * Sets all balls to slow mode and starts a timer to revert them
      * to their normal state after the duration expires. If multiple instances
@@ -63,9 +63,8 @@ public class SlowPowerUp extends PowerUp{
     }
 
     /**
-     * Returns the number of currently active "Immortal" power-up effects.
      *
-     * @return the number of active immortality effects
+     * @return the number of active slow ball effects
      */
     @Override
     public int getCounter() {
