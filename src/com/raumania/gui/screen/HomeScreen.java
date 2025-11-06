@@ -61,7 +61,7 @@ public class HomeScreen extends Screen {
         Button option = UIUtils.centerButton("Skins", 425, 2.0, 2.0);
         option.setOnAction(
                 e -> {
-                    sceneManager.switchScreen(ScreenType.OPTION);
+                    sceneManager.switchScreen(ScreenType.SKIN_SELECT);
                 });
 
         // Quit button
