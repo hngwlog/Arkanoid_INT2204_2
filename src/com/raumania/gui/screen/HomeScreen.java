@@ -18,15 +18,16 @@ import java.util.List;
 
 public class HomeScreen extends Screen {
     int cnt = 0;
-    private Text chooseArrowLeft;
-    private Text chooseArrowRight;
-    private List<Button> buttons;
-    private List<Double> buttonY;
+    private final Text chooseArrowLeft;
+    private final Text chooseArrowRight;
+    private final Text title;
+    private final List<Button> buttons;
+    private final List<Double> buttonY;
     public HomeScreen(SceneManager sceneManager) {
         super(sceneManager);
 
         //Game title
-        Text title = UIUtils.centerText("Welcome to Arkanoid!", 100, 3.0, 3.0);
+        title = UIUtils.centerText("Welcome to Arkanoid!", 100, 3.0, 3.0);
         // style components
         title.setFill(Color.GREEN);
 
@@ -133,6 +134,7 @@ public class HomeScreen extends Screen {
     public void onStart() {
         Platform.runLater(this::updateCnt);
         Platform.runLater(root::requestFocus);
+        UIUtils.setCenterText(title);
         AudioManager.getInstance().playBGMusic(AudioManager.HOME_MUSIC);
     }
 }

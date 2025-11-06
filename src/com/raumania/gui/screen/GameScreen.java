@@ -45,6 +45,8 @@ public class GameScreen extends Screen {
     private final Button pause;
     private final Text score;
     private final Text fps;
+    private final Text title;
+    private final Text title1;
     private final List<Button> pauseButtons;
     private final List<Button> homeButtons;
     private final List<Double> pauseButtonYs;
@@ -57,7 +59,7 @@ public class GameScreen extends Screen {
     private AnimationTimer loop;
     private long past = - 1;
     private final Pane mainPause;
-    private Pane backChoice;
+    private final Pane backChoice;
     private final Pane timeRemainings;
     private final StackPane gamePane;
     private int pauseState = 0;
@@ -74,6 +76,8 @@ public class GameScreen extends Screen {
      */
     public GameScreen(SceneManager sceneManager) {
         super(sceneManager);
+        backChoice = new Pane();
+        mainPause = new Pane();
         this.manager = new GameManager();
         this.inputHandler = new InputHandler(manager, KeyCode.A, KeyCode.D);
         // handle game over state
@@ -122,14 +126,13 @@ public class GameScreen extends Screen {
         gamePlayScreen.setVisible(true);
 
         //Pause screen
-        mainPause = new Pane();
         //mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
         mainPause.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
         mainPause.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         //Pause Title
-        Text title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
+        title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
         title.setFill(Color.GREEN);
         //Resume button
         Button resume = UIUtils.centerButton("Resume", 200, 2.0, 2.0);
@@ -169,14 +172,13 @@ public class GameScreen extends Screen {
         mainPause.setVisible(false);
 
         // Confirmation Screen
-        backChoice = new Pane();
         // backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
         backChoice.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
         backChoice.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         // Title
-        Text title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
+        title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
         title1.setFill(Color.GREEN);
         //Yes button
         //BUG : game over when play again (but still init)
@@ -310,6 +312,8 @@ public class GameScreen extends Screen {
     public void onStart() {
 
         Platform.runLater(this::updateCnt);
+        UIUtils.setCenterText(title);
+        UIUtils.setCenterText(title1);
 
         // stop any playing music
         AudioManager.getInstance().stop();

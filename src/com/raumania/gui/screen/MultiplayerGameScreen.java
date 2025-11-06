@@ -27,23 +27,27 @@ import javafx.util.Duration;
 import java.util.*;
 
 public class MultiplayerGameScreen extends Screen {
-    Button pause;
-    Pane gamePlayScreen;
-    Pane mainPause;
-    Pane backChoice;
-    StackPane gamePane;
-    Pane winPane;
-    Text rightScore;
-    Text leftScore;
+    private final Button pause;
+    private final Pane gamePlayScreen;
+    private final Pane mainPause;
+    private final Pane backChoice;
+    private final StackPane gamePane;
+    private final Pane winPane;
+    private final Text rightScore;
+    private final Text leftScore;
     private final GameManager leftManager;
     private InputHandler leftInputHandler;
     private final GameManager rightManager;
     private InputHandler rightInputHandler;
     private AnimationTimer loop;
+    private final Text title;
+    private final Text title1;
     private long past = - 1;
 
     public MultiplayerGameScreen(SceneManager sceneManager) {
         super(sceneManager);
+        backChoice = new Pane();
+        mainPause = new Pane();
 
         this.leftManager = new GameManager();
         // handle game over state
@@ -119,14 +123,13 @@ public class MultiplayerGameScreen extends Screen {
         gamePlayScreen.setVisible(true);
 
         //Pause screen
-        mainPause = new Pane();
         // mainPause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
         mainPause.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
         mainPause.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         //Pause Title
-        Text title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
+        title = UIUtils.centerText("Pause", 100, 3.0, 3.0);
         title.setFill(Color.GREEN);
         //Resume button
         Button resume = UIUtils.centerButton("Resume", 200, 2.0, 2.0);
@@ -144,14 +147,13 @@ public class MultiplayerGameScreen extends Screen {
         mainPause.setVisible(false);
 
         // Confirmation Screen
-        backChoice = new Pane();
         // backChoice.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Add translucent black background
         backChoice.setBackground(
                 new Background(new BackgroundFill(new Color(0.0, 0.0, 0.0, 0.7), CornerRadii.EMPTY, Insets.EMPTY))
         );
         backChoice.setPrefSize(Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
         // Title
-        Text title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
+        title1 = UIUtils.centerText("Are you sure", 100, 3.0, 3.0);
         title1.setFill(Color.GREEN);
         //Yes button
         //BUG : game over when play again (but still init)
@@ -226,6 +228,9 @@ public class MultiplayerGameScreen extends Screen {
     public void onStart() {
         // stop any playing music
         AudioManager.getInstance().stop();
+
+        UIUtils.setCenterText(title);
+        UIUtils.setCenterText(title1);
 
         MapLoader.LevelData lv = generateRandomLevel();
         leftManager.setCurrentLvl(lv);
