@@ -75,7 +75,6 @@ public class GameOverScreen extends Screen {
             updateHighScoreList(singlePlayerGameManager.getCurrentLvl().name());
             highScoreInputPane.setVisible(false);
             gameOverPane.setVisible(true);
-            Platform.runLater(root::requestFocus);
         });
         highScoreInputPane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER) {
