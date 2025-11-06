@@ -18,10 +18,10 @@ import java.util.List;
 
 public class HomeScreen extends Screen {
     int cnt = 0;
-    Text chooseArrowLeft;
-    Text chooseArrowRight;
-    List<Button> buttons;
-    List<Double> buttonY;
+    private Text chooseArrowLeft;
+    private Text chooseArrowRight;
+    private List<Button> buttons;
+    private List<Double> buttonY;
     public HomeScreen(SceneManager sceneManager) {
         super(sceneManager);
 

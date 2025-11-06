@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raumania.core.AudioManager;
 import com.raumania.gui.manager.SceneManager;
+import com.raumania.utils.ResourcesLoader;
 import com.raumania.utils.UIUtils;
 
 import javafx.application.Platform;
@@ -15,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.File;
@@ -44,9 +47,10 @@ public class SettingScreen extends Screen {
                 UIUtils.newText(
                         "Volume: " + AudioManager.getInstance().getVolume() + "%",
                         100,
-                        100,
+                        115,
                         2.0,
                         2.0);
+        volumeText.setFill(Color.WHITE);
         // Volume Slider
         Slider slider =
                 UIUtils.newSlider(
@@ -81,7 +85,9 @@ public class SettingScreen extends Screen {
                 });
 
         Text moveTitle = UIUtils.newText("Movement Keys", 100, 200, 2.0, 2.0);
+        moveTitle.setFill(Color.WHITE);
         Text firstLeftKeyText = UIUtils.newText("Player 1 Left Key", 115, 250, 2.0, 2.0);
+        firstLeftKeyText.setFill(Color.WHITE);
         firstLeftKeyButton =
                 UIUtils.newButton(config.getFirstLeftKey().getName(), 450, 235, 2.0, 2.0);
         firstLeftKeyButton.setOnMouseClicked(this::changeKeyHandler);
@@ -90,6 +96,7 @@ public class SettingScreen extends Screen {
         //        firstLeft.getChildren().addAll(firstLeftKeyText, firstLeftKeyButton);
 
         Text firstRightKeyText = UIUtils.newText("Player 1 Right Key", 117, 300, 2.0, 2.0);
+        firstRightKeyText.setFill(Color.WHITE);
         firstRightKeyButton =
                 UIUtils.newButton(config.getFirstRightKey().getName(), 450, 285, 2.0, 2.0);
         firstRightKeyButton.setOnMouseClicked(this::changeKeyHandler);
@@ -98,6 +105,7 @@ public class SettingScreen extends Screen {
         //        firstRight.getChildren().addAll(firstRightKeyText, firstRightKeyButton);
 
         Text secondLeftKeyText = UIUtils.newText("Player 2 Left Key", 115, 350, 2.0, 2.0);
+        secondLeftKeyText.setFill(Color.WHITE);
         secondLeftKeyButton =
                 UIUtils.newButton(config.getSecondLeftKey().getName(), 450, 335, 2.0, 2.0);
         secondLeftKeyButton.setOnMouseClicked(this::changeKeyHandler);
@@ -106,6 +114,7 @@ public class SettingScreen extends Screen {
         //        secondLeft.getChildren().addAll(secondLeftKeyText, secondLeftKeyButton);
 
         Text secondRightKeyText = UIUtils.newText("Player 2 Right Key", 117, 400, 2.0, 2.0);
+        secondRightKeyText.setFill(Color.WHITE);
         secondRightKeyButton =
                 UIUtils.newButton(config.getSecondRightKey().getName(), 450, 385, 2.0, 2.0);
         secondRightKeyButton.setOnMouseClicked(this::changeKeyHandler);
@@ -134,6 +143,15 @@ public class SettingScreen extends Screen {
                         secondLeftKeyButton,
                         secondRightKeyButton,
                         back);
+
+        Background bg = new Background(new BackgroundImage(
+                ResourcesLoader.loadImage("homescreen_bg.png"),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(1.0, 1.0, true, true, false, true)
+        ));
+        root.setBackground(bg);
     }
 
     private void changeKeyHandler(MouseEvent event) {

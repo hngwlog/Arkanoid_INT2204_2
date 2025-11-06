@@ -7,10 +7,13 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raumania.gui.manager.SceneManager;
+import com.raumania.utils.ResourcesLoader;
 import com.raumania.utils.UIUtils;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.File;
@@ -36,10 +39,12 @@ public class OptionScreen extends Screen {
 
         //paddle
         Text paddleText = UIUtils.newText("Paddle: ", 100, 200, 2.0, 2.0);
+        paddleText.setFill(Color.WHITE);
         Button paddleLeft = UIUtils.newButton("<" , 315, 185, 2.0, 2.0);
         Button paddleRight = UIUtils.newButton(">" , 815, 185, 2.0, 2.0);
         currentPaddle =  UIUtils.newText("Paddle " + (config.paddle + 1) ,
                 550, 200, 2.0, 2.0);
+        currentPaddle.setFill(Color.WHITE);
         paddleLeft.setOnAction(e -> {
             changeCnt("Paddle", -1);
         });
@@ -48,10 +53,12 @@ public class OptionScreen extends Screen {
         });
         //ball
         Text ballText =  UIUtils.newText("Ball: ", 100, 300, 2.0, 2.0);
+        ballText.setFill(Color.WHITE);
         Button ballLeft = UIUtils.newButton("<" , 315, 285, 2.0, 2.0);
         Button ballRight =  UIUtils.newButton(">" , 815, 285, 2.0, 2.0);
         currentBall =  UIUtils.newText("Ball " + (config.ball + 1),
                 550, 300, 2.0, 2.0);
+        currentBall.setFill(Color.WHITE);
         ballLeft.setOnAction(e -> {
             changeCnt("Ball", -1);
         });
@@ -60,10 +67,12 @@ public class OptionScreen extends Screen {
         });
         //background
         Text backgroundText = UIUtils.newText("Background: ", 100, 400, 2.0, 2.0);
+        backgroundText.setFill(Color.WHITE);
         Button backgroundLeft = UIUtils.newButton("<" , 315, 385, 2.0, 2.0);
         Button backgroundRight = UIUtils.newButton(">" , 815, 385, 2.0, 2.0);
         currentBackground =  UIUtils.newText("Background " + (config.background + 1),
                 550, 400, 2.0, 2.0);
+        currentBackground.setFill(Color.WHITE);
         backgroundLeft.setOnAction(e -> {
             changeCnt("Background", -1);
         });
@@ -71,9 +80,26 @@ public class OptionScreen extends Screen {
             changeCnt("Background", 1);
         });
 
+        // Back to Home button
+        Button back = UIUtils.centerButton("Back to Home", 500, 2.0, 2.0);
+        back.setOnAction(
+                e -> {
+                    sceneManager.switchScreen(ScreenType.HOME);
+                });
+
         root.getChildren().addAll(paddleText, paddleLeft, paddleRight, currentPaddle,
                 ballText, ballLeft, ballRight, currentBall,
-                backgroundText, backgroundLeft, backgroundRight, currentBackground);
+                backgroundText, backgroundLeft, backgroundRight, currentBackground,
+                back);
+
+        Background bg = new Background(new BackgroundImage(
+                ResourcesLoader.loadImage("homescreen_bg.png"),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(1.0, 1.0, true, true, false, true)
+        ));
+        root.setBackground(bg);
 
     }
 
