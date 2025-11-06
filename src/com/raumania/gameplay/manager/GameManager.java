@@ -286,7 +286,7 @@ public class GameManager {
                 if (ball.checkOverlap(brick)) {
                     collidedBricks.add(brick);
                     VisualEffect hit = new BrickHit(ball.getView().getCenterX(), ball.getView().getCenterY(),
-                            20, 20, brick.getColorIndex());
+                            35, 35, brick.getColorIndex());
                     visualEffects.add(hit);
                     root.getChildren().add(hit.getTexture());
                     AudioManager.getInstance().playSFX(AudioManager.BRICK_HIT);
