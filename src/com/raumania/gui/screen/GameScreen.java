@@ -47,7 +47,7 @@ public class GameScreen extends Screen {
     private final Text fps;
     private final Text title;
     private final Text title1;
-    private final List<ImageView> hearts;
+    private final List<ImageView> hearts = new ArrayList<>();
     private final List<Button> pauseButtons;
     private final List<Button> homeButtons;
     private final List<Double> pauseButtonYs;
@@ -123,17 +123,6 @@ public class GameScreen extends Screen {
         fps = UIUtils.newText("FPS:", 350, 30, 2.0, 2.0);
         fps.setFont(Font.font("System", FontWeight.BOLD, 14));
         fps.setFill(Color.WHITE);
-
-        hearts = new ArrayList<>();
-        for (int i = 0; i < manager.getLives(); i++) {
-            ImageView heart = new ImageView(ResourcesLoader.loadImage("heart.png"));
-            heart.setFitWidth(30);
-            heart.setFitHeight(30);
-            heart.setLayoutX(850);
-            heart.setLayoutY(90 + i * 35);
-            hearts.add(heart);
-            gamePlayScreen.getChildren().add(heart);
-        }
 
         timeRemainings = new Pane();
         timeRemainings.setLayoutX(80);
@@ -359,6 +348,16 @@ public class GameScreen extends Screen {
         backChoice.setVisible(false);
         gamePane.setVisible(true);
         pauseState = 0;
+
+        for (int i = 0; i < manager.getLives(); i++) {
+            ImageView heart = new ImageView(ResourcesLoader.loadImage("heart.png"));
+            heart.setFitWidth(30);
+            heart.setFitHeight(30);
+            heart.setLayoutX(850);
+            heart.setLayoutY(90 + i * 35);
+            hearts.add(heart);
+            gamePlayScreen.getChildren().add(heart);
+        }
 
         lastUpdate = 0;
         loop =

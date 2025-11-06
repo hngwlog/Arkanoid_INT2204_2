@@ -93,6 +93,7 @@ public class GameManager {
     public void initGame() {
 
         score = 0;
+        lives = INITIAL_LIVES;
         bricks.clear();
         balls.clear();
         powerUps.clear();
@@ -100,7 +101,6 @@ public class GameManager {
         bosses.clear();
         visualEffects.clear();
         root.getChildren().clear();
-        score = 0;
         layout = new boolean[28][13];
         gameState.set(GameState.READY);
 
