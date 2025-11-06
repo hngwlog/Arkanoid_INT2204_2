@@ -15,10 +15,23 @@ import javafx.scene.layout.Pane;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the Boss enemy in the game.
+ * <p>
+ * The Boss is a movable object that can follow a calculated path using A* pathfinding,
+ * perform random movement when no path exists, and teleport if stuck for too long.
+ * It interacts with {@link Paddle}, {@link Brick}, and can reduce the player's score
+ * upon collision. The Boss can also "dash" toward the paddle when nearby.
+ * </p>
+ */
 public class Boss extends MovableObject {
+    /** The default size (width and height) of the boss. */
     public static final double BOSS_SIZE = 35.0;
+    /** The distance threshold to consider the boss has arrived at a target point. */
     private static final double ARRIVAL_THRESHOLD = 8; // if the distance is less than arrival_threshold, consider that collision is happened
+    /** Time threshold (in seconds) to determine if the boss is stuck. */
     private static final double STUCK_THRESHOLD = 2.5;
+    /** The normal movement speed of the boss. */
     public static double BOSS_SPEED = 95.0;
     private SpriteSheet bossTexture;
     private boolean active = true;
@@ -31,6 +44,14 @@ public class Boss extends MovableObject {
     private double stuckTimer = 0;
     private double randomDir = Math.random() > 0.5 ? 1 : -1;
 
+    /**
+     * Constructs a new Boss instance.
+     *
+     * @param x      initial X position
+     * @param y      initial Y position
+     * @param width  boss width
+     * @param height boss height
+     */
     public Boss(double x, double y, double width, double height) {
         super(x, y, width, height);
         this.speed = BOSS_SPEED;
@@ -41,6 +62,11 @@ public class Boss extends MovableObject {
 //        this.bossPathLine.getStrokeDashArray().addAll(6.0, 6.0);
     }
 
+    /**
+     * Sets the sprite animation for the boss.
+     *
+     * @param bossTexture the {@link SpriteSheet} to display for the boss
+     */
     public void setBossTexture(SpriteSheet bossTexture) {
         this.bossTexture = bossTexture;
         this.bossTexture.setFps(10.0);
@@ -55,14 +81,25 @@ public class Boss extends MovableObject {
 //        return bossPathLine;
 //    }
 
+    /**
+     * Returns the {@link ImageView} representing the boss texture.
+     *
+     * @return the {@link ImageView} for rendering
+     */
     public ImageView getTexture() {
         return bossTexture.getView();
     }
 
+    /**
+     * Checks whether the boss is currently active in the game.
+     *
+     * @return {@code true} if the boss is active, {@code false} otherwise
+     */
     public boolean isActive() {
         return active;
     }
 
+    /** Updates the visual position of the boss's texture to match its logic position. */
     public void updateView() {
         bossTexture.getView().setX(getX());
         bossTexture.getView().setY(getY());
@@ -71,6 +108,17 @@ public class Boss extends MovableObject {
     @Override
     public void update(double dt){}
 
+    /**
+     * Updates the boss logic and movement for each frame.
+     *
+     * @param dt      time delta in seconds
+     * @param paddle  the player's paddle
+     * @param layout  a grid representing passable and blocked cells
+     * @param root    the game root pane
+     * @param bricks  the list of bricks in the game
+     * @param score   the current player score
+     * @return updated score after boss interactions
+     */
     public int bossUpdate(double dt, Paddle paddle, boolean[][] layout, Pane root,
                         List<Brick> bricks, int score) {
         drawBossPath(paddle, layout);
@@ -82,6 +130,11 @@ public class Boss extends MovableObject {
         }
     }
 
+    /**
+     * Deactivates the boss and removes it from the scene.
+     *
+     * @param root the root pane from which to remove the boss
+     */
     public void deactivate(Pane root) {
         active = false;
         bossTexture.stop();
@@ -90,9 +143,11 @@ public class Boss extends MovableObject {
     }
 
     /**
-     * Compute boss path on the brick grid (cells = bricks) and draw it as a polyline.
-     * Uses the AStar implementation on a grid where cells containing a brick are blocked.
-     * The path goes from the boss current cell to the bottom row near the paddle.
+     * Calculates the path from the boss to the paddle using A* pathfinding.
+     * The boss uses brick cells as a grid for navigation.
+     *
+     * @param paddle   the player's paddle
+     * @param passable a boolean grid where {@code true} means the cell is passable
      */
     private void drawBossPath(Paddle paddle, boolean[][] passable) {
         int rows = 28;
@@ -142,8 +197,18 @@ public class Boss extends MovableObject {
         currentTargetIndex = 0;
     }
 
+    /**
+     * Moves the boss along the computed path toward the paddle, handling collisions
+     * with bricks and the paddle.
+     *
+     * @param dt      delta time
+     * @param paddle  the paddle instance
+     * @param root    game scene root
+     * @param bricks  list of bricks
+     * @param score   current score
+     * @return updated score
+     */
     private int followPath(double dt, Paddle paddle, Pane root, List<Brick> bricks, int score) {
-        // Boss rơi ra khỏi màn hình hoặc chạm paddle → hủy
         boolean iscollidedWithPaddle = checkOverlap(paddle);
         if (getY() > GameScreen.GAME_HEIGHT || iscollidedWithPaddle) {
             deactivate(root);
@@ -153,19 +218,16 @@ public class Boss extends MovableObject {
             return score;
         }
 
-        // Nếu chưa có đường đi hoặc không đang theo path thì thôi
         if (pathPoints == null || pathPoints.isEmpty()) {
             return score;
         }
 
-        // Lấy điểm mục tiêu hiện tại (điểm đầu của path)
         Vec2f target = pathPoints.get(0);
         Vec2f pos = new Vec2f(getX() + BOSS_SIZE / 2, getY() + BOSS_SIZE / 2);
 
         Vec2f toTarget = new Vec2f(target.x - pos.x, target.y - pos.y);
         double distance = toTarget.length();
 
-        // Khi boss đến gần điểm này → remove khỏi path
         if (distance < ARRIVAL_THRESHOLD) {
             pathPoints.remove(0);
             currentTargetIndex++;
@@ -175,7 +237,6 @@ public class Boss extends MovableObject {
                 return score;
             }
 
-            // Cập nhật target mới
             target = pathPoints.get(0);
             toTarget = new Vec2f(target.x - pos.x, target.y - pos.y);
         }
@@ -183,7 +244,6 @@ public class Boss extends MovableObject {
         boolean collidedX = false;
         boolean collidedY = false;
 
-        // Kiểm tra va chạm với bricks
         for (Brick brick : bricks) {
             if (checkOverlap(brick)) {
 
@@ -201,25 +261,23 @@ public class Boss extends MovableObject {
                     double newX = getX();
                     double newY = getY();
 
-                    // Đẩy boss ra khỏi brick theo hướng va chạm
                     if (overlapX < overlapY) {
                         newX += (dx > 0 ? overlapX : -overlapX);
-                        collidedX = true; // va chạm theo chiều X
+                        collidedX = true;
                     } else {
                         newY += (dy > 0 ? overlapY : -overlapY);
-                        collidedY = true; // va chạm theo chiều Y
+                        collidedY = true;
                     }
                     setPosition(newX, newY);
                 }
 
-                // Nếu boss va chạm tường → khóa hướng theo chiều đó
                 if (collidedX || collidedY) {
                     if (collidedX) toTarget = new Vec2f(0, toTarget.y);
                     if (collidedY) toTarget = new Vec2f(toTarget.x, 0);
                 }
             }
         }
-        // neu gan paddle, dash
+
         dash(paddle);
 
         toTarget.normalize();
@@ -227,11 +285,15 @@ public class Boss extends MovableObject {
         applyMovement(dt);
         updateView();
 
-        // teleport
         teleport(dt);
         return score;
     }
 
+    /**
+     * Causes the boss to dash (increase speed) when close to the paddle.
+     *
+     * @param paddle the paddle instance
+     */
     private void dash(Paddle paddle) {
         double bossCenterX = getX() + BOSS_SIZE/2;
         double bossCenterY = getY() + BOSS_SIZE/2;
@@ -245,6 +307,12 @@ public class Boss extends MovableObject {
         if (distance <= 100) this.speed = BOSS_SPEED*2.5;
     }
 
+    /**
+     * Handles random horizontal movement when no valid path exists.
+     *
+     * @param dt     delta time
+     * @param bricks list of bricks for collision detection
+     */
     private void randomMove(double dt, List<Brick> bricks) {
         timeAccumulator += dt;
 
@@ -286,7 +354,9 @@ public class Boss extends MovableObject {
     }
 
     /**
-     * Returns the center position of the Boss as a Vec2f.
+     * Returns the center position of the boss.
+     *
+     * @return a {@link Vec2f} representing the boss's center
      */
     public Vec2f getCenterBoss() {
         double centerX = getX() + getWidth() * 0.5;
@@ -294,6 +364,12 @@ public class Boss extends MovableObject {
         return new Vec2f(centerX, centerY);
     }
 
+    /**
+     * Teleports the boss ahead along its path if it remains stuck for too long.
+     * Also adds a blinking red visual effect before teleportation.
+     *
+     * @param dt delta time
+     */
     private void teleport(double dt) {
         double dx = getX() - lastPosition.x;
         double dy = getY() - lastPosition.y;
