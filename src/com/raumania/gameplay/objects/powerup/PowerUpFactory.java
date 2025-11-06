@@ -26,6 +26,7 @@ public class PowerUpFactory {
             case ADD_BALL -> new AddBallPowerUp(x, y, width, height);
             case EXTEND_PADDLE -> new ExtendPaddlePowerUp(x, y, width, height);
             case IMMORTAL -> new ImmortalPowerUp(x, y, width, height);
+            case SLOW -> new SlowPowerUp(x, y, width, height);
             default -> throw new IllegalArgumentException("Unknown PowerUpType: " + randomType);
         };
     }
