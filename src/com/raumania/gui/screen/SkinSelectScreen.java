@@ -110,6 +110,11 @@ public class SkinSelectScreen extends Screen {
         Platform.runLater(root::requestFocus);
     }
 
+    /**
+     * get current skin of the current type.
+     * @param cntType - current skin type
+     * @return curren skin
+     */
     private Object cntCurrentText(String cntType) {
         if (cntType.equals("Paddle")) {
             return currentPaddle;
@@ -119,6 +124,11 @@ public class SkinSelectScreen extends Screen {
         return null;
     }
 
+    /**
+     * change curren config's skin.
+     * @param cntType - skin type
+     * @param cnt - index of the skin
+     */
     private void applyChange(String cntType, int cnt) {
         switch (cntType) {
             case "Paddle":
@@ -131,6 +141,11 @@ public class SkinSelectScreen extends Screen {
         }
     }
 
+    /**
+     * get current skin's index of current type.
+     * @param cntType - curren type
+     * @return current skin's index
+     */
     private int getCount(String cntType) {
         return switch (cntType) {
             case "Paddle" -> sharedConfig.paddle;
@@ -139,6 +154,11 @@ public class SkinSelectScreen extends Screen {
         };
     }
 
+    /**
+     * get max skin number of current type.
+     * @param cntType - current type
+     * @return max skin number
+     */
     private int getMaxNumber(String cntType) {
         return switch (cntType) {
             case "Paddle" -> MAX_PADDLE_SKIN;
@@ -147,6 +167,11 @@ public class SkinSelectScreen extends Screen {
         };
     }
 
+    /**
+     * Change the current skin of the current type.
+     * @param cntType current type
+     * @param changeType -1 -> decrease, 1 -> increase
+     */
     private void changeCount(String cntType, int changeType) {
         Platform.runLater(root::requestFocus);
         int cnt = getCount(cntType);
@@ -164,6 +189,9 @@ public class SkinSelectScreen extends Screen {
         saveConfig();
     }
 
+    /**
+     * save current config from game to FILE.
+     */
     private void saveConfig() {
         File file = new File(CONFIG_FILE);
         if (!file.exists()) {
@@ -182,6 +210,9 @@ public class SkinSelectScreen extends Screen {
         }
     }
 
+    /**
+     * load current config from FILE to the game.
+     */
     private void loadConfig() {
         File file = new File(CONFIG_FILE);
         if (!file.exists() || file.length() == 0) {
@@ -203,6 +234,9 @@ public class SkinSelectScreen extends Screen {
         }
     }
 
+    /**
+     * Config.
+     */
     public static class Config {
         private int paddle;
         private int ball;
