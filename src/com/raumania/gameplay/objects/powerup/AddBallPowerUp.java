@@ -1,18 +1,15 @@
 package com.raumania.gameplay.objects.powerup;
 
-import com.raumania.gameplay.objects.Ball;
 import com.raumania.core.SpriteSheet;
 import com.raumania.gameplay.manager.GameManager;
+import com.raumania.gameplay.objects.Ball;
 import com.raumania.utils.ResourcesLoader;
-import javafx.animation.PauseTransition;
-import javafx.scene.paint.Color;
-import javafx.util.Duration;
-import java.util.List;
 
 import java.awt.*;
+import java.util.List;
 
 public class AddBallPowerUp extends PowerUp {
-    private static int powerUpCounter = 0;
+    private static final int powerUpCounter = 0;
 
     public AddBallPowerUp(double x, double y, double width, double height) {
         super(x, y, width, height, PowerUpType.ADD_BALL);

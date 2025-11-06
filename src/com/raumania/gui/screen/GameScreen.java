@@ -1,32 +1,32 @@
 package com.raumania.gui.screen;
 
 import com.raumania.core.AudioManager;
-import com.raumania.core.HighScore;
+import com.raumania.gameplay.manager.*;
+import com.raumania.gui.manager.SceneManager;
 import com.raumania.main.Main;
 import com.raumania.utils.ResourcesLoader;
 import com.raumania.utils.UIUtils;
-import javafx.animation.AnimationTimer;
 
-import com.raumania.gameplay.manager.*;
-import com.raumania.gui.manager.SceneManager;
+import javafx.animation.AnimationTimer;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import javafx.geometry.Insets;
 import java.util.Iterator;
+import java.util.List;
+
 /**
  * The game play screen that hosts the main game loop.
  * <p>
@@ -42,19 +42,9 @@ public class GameScreen extends Screen {
     public static final int GAME_START_Y = (Main.WINDOW_HEIGHT - GAME_HEIGHT) / 2 + 10;
 
     private final GameManager manager;
-    private InputHandler inputHandler;
-    private AnimationTimer loop;
-    private long past = - 1;
     private final Button pause;
-    private Pane mainPause;
-    private Pane backChoice;
-    private Pane timeRemainings;
-    private StackPane gamePane;
     private final Text score;
     private final Text fps;
-    private int pauseState = 0;
-    private int pauseCnt = 0;
-    private int homeCnt = 0;
     private final List<Button> pauseButtons;
     private final List<Button> homeButtons;
     private final List<Double> pauseButtonYs;
@@ -63,6 +53,16 @@ public class GameScreen extends Screen {
     private final Text pauseChooseArrowRight;
     private final Text homeChooseArrowLeft;
     private final Text homeChooseArrowRight;
+    private InputHandler inputHandler;
+    private AnimationTimer loop;
+    private long lastUpdate = 0;
+    private final Pane mainPause;
+    private Pane backChoice;
+    private final Pane timeRemainings;
+    private final StackPane gamePane;
+    private int pauseState = 0;
+    private int pauseCnt = 0;
+    private int homeCnt = 0;
 
     /**
      * Creates a new {@code GameScreen} and binds it to the given {@link SceneManager}.
@@ -299,10 +299,10 @@ public class GameScreen extends Screen {
      * <ol>
      *   <li>Captures the current monotonic time in nanoseconds.</li>
      *   <li>Computes the frame delta time in seconds as
-     *   {@code dt = (now - past) / 1_000_000_000.0}.</li>
+     *   {@code dt = (now - lastUpdate) / 1_000_000_000.0}.</li>
      *   <li>Calls {@link GameManager#update(double)} with that {@code dt}.</li>
      * </ol>
-     * On the very first tick, the loop only initializes {@link #past} and skips update
+     * On the very first tick, the loop only initializes {@link #lastUpdate} and skips update
      * to avoid a large or undefined delta time.
      * </p>
      */
@@ -322,11 +322,10 @@ public class GameScreen extends Screen {
         gamePane.setVisible(true);
         pauseState = 0;
 
-        past = -1;
+        lastUpdate = 0;
         loop = new AnimationTimer() {
             private static final double FPS = 60.0;
             private static final double FRAME_TIME = 1_000_000_000.0 / FPS;
-            private double lastUpdate = 0;
             @Override
             public void handle(long now) {
                 if (lastUpdate == 0) {
@@ -375,7 +374,7 @@ public class GameScreen extends Screen {
      * set gameState, unfocus, start loop,set visible
      */
     public void resume() {
-        past = -1;
+        lastUpdate = 0;
         Platform.runLater(root::requestFocus);
         loop.start();
         manager.setGameState(GameManager.GameState.RUNNING);

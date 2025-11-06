@@ -14,43 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HighScore {
-    /**
-     * A single high score entry.
-     */
-    public static class HighScoreEntry {
-        String level;
-        String name;
-        int score;
-
-        @JsonCreator
-        HighScoreEntry(@JsonProperty("level") String level, @JsonProperty("name") String name, @JsonProperty("score") int score) {
-            this.level = level;
-            this.name = name;
-            this.score = score;
-        }
-
-        @JsonGetter("name")
-        public String getName() {
-            return name;
-        }
-
-        @JsonGetter("score")
-        public int getScore() {
-            return score;
-        }
-
-        @JsonGetter("level")
-        public String getLevel() {
-            return level;
-        }
-    }
-    private final String HIGHSCORE_FILE = "./highscores.json";
     public static final int MAX_ENTRIES = 10;
     private static final HighScore hiScore = new HighScore();
-    private boolean haveUnsavedScore = false;
-    private int unsavedScore = 0;
+    private final String HIGHSCORE_FILE = "./highscores.json";
+    private final boolean haveUnsavedScore = false;
+    private final int unsavedScore = 0;
     private List<HighScoreEntry> entries;
-
     private HighScore() {
         loadHighScores();
     }
@@ -116,6 +85,37 @@ public class HighScore {
             mapper.writeValue(file, entries);
         } catch (IOException e) {
             System.err.println("Error saving high scores file!" + e);
+        }
+    }
+
+    /**
+     * A single high score entry.
+     */
+    public static class HighScoreEntry {
+        String level;
+        String name;
+        int score;
+
+        @JsonCreator
+        HighScoreEntry(@JsonProperty("level") String level, @JsonProperty("name") String name, @JsonProperty("score") int score) {
+            this.level = level;
+            this.name = name;
+            this.score = score;
+        }
+
+        @JsonGetter("name")
+        public String getName() {
+            return name;
+        }
+
+        @JsonGetter("score")
+        public int getScore() {
+            return score;
+        }
+
+        @JsonGetter("level")
+        public String getLevel() {
+            return level;
         }
     }
 }

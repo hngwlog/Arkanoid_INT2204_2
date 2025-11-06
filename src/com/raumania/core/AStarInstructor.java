@@ -8,9 +8,9 @@ import java.util.PriorityQueue;
 /**
  * Simple A* pathfinding implementation for rectangular boolean grids.
  *
- * Usage: provide a 2D boolean grid where true = walkable, false = blocked.
- * The algorithm returns a list of int[2] coordinates {row, col} from start to goal
- * (inclusive). If no path exists, an empty list is returned.
+ * <p>Usage: provide a 2D boolean grid where true = walkable, false = blocked. The algorithm returns
+ * a list of int[2] coordinates {row, col} from start to goal (inclusive). If no path exists, an
+ * empty list is returned.
  */
 public class AStarInstructor {
 
@@ -18,21 +18,6 @@ public class AStarInstructor {
     private static final int[] DIR4_C = {0, 0, -1, 1};
     private static final int[] DIR8_R = {-1, -1, -1, 0, 0, 1, 1, 1};
     private static final int[] DIR8_C = {-1, 0, 1, -1, 1, -1, 0, 1};
-
-    private static class Node implements Comparable<Node> {
-        final int idx;
-        final double f;
-
-        Node(int idx, double f) {
-            this.idx = idx;
-            this.f = f;
-        }
-
-        @Override
-        public int compareTo(Node o) {
-            return Double.compare(this.f, o.f);
-        }
-    }
 
     /**
      * Finds a path on a grid using A*.
@@ -45,15 +30,17 @@ public class AStarInstructor {
      * @param allowDiagonals whether 8-neighbour moves are allowed
      * @return list of {row,col} from start to goal inclusive, or empty list if none
      */
-    public static List<int[]> findPath(boolean[][] passable, int sr, int sc, int gr, int gc, boolean allowDiagonals) {
+    public static List<int[]> findPath(
+            boolean[][] passable, int sr, int sc, int gr, int gc, boolean allowDiagonals) {
         if (passable == null || passable.length == 0) return Collections.emptyList();
         int rows = passable.length;
         int cols = passable[0].length;
-        if (!inBounds(sr, sc, rows, cols) || !inBounds(gr, gc, rows, cols)) return Collections.emptyList();
+        if (!inBounds(sr, sc, rows, cols) || !inBounds(gr, gc, rows, cols))
+            return Collections.emptyList();
         if (!passable[sr][sc] || !passable[gr][gc]) return Collections.emptyList();
         if (sr == gr && sc == gc) {
             List<int[]> single = new ArrayList<>();
-            single.add(new int[]{sr, sc});
+            single.add(new int[] {sr, sc});
             return single;
         }
 
@@ -88,13 +75,39 @@ public class AStarInstructor {
                 for (int k = 0; k < DIR8_R.length; k++) {
                     int nr = cr + DIR8_R[k];
                     int nc = cc + DIR8_C[k];
-                    considerNeighbor(passable, rows, cols, cr, cc, nr, nc, g, parent, closed, goalIdx, open, allowDiagonals);
+                    considerNeighbor(
+                            passable,
+                            rows,
+                            cols,
+                            cr,
+                            cc,
+                            nr,
+                            nc,
+                            g,
+                            parent,
+                            closed,
+                            goalIdx,
+                            open,
+                            allowDiagonals);
                 }
             } else {
                 for (int k = 0; k < DIR4_R.length; k++) {
                     int nr = cr + DIR4_R[k];
                     int nc = cc + DIR4_C[k];
-                    considerNeighbor(passable, rows, cols, cr, cc, nr, nc, g, parent, closed, goalIdx, open, allowDiagonals);
+                    considerNeighbor(
+                            passable,
+                            rows,
+                            cols,
+                            cr,
+                            cc,
+                            nr,
+                            nc,
+                            g,
+                            parent,
+                            closed,
+                            goalIdx,
+                            open,
+                            allowDiagonals);
                 }
             }
         }
@@ -109,7 +122,7 @@ public class AStarInstructor {
         while (cur != -1) {
             int r = cur / cols;
             int c = cur % cols;
-            path.add(new int[]{r, c});
+            path.add(new int[] {r, c});
             if (cur == startIdx) break;
             cur = parent[cur];
         }
@@ -117,8 +130,20 @@ public class AStarInstructor {
         return path;
     }
 
-    private static void considerNeighbor(boolean[][] passable, int rows, int cols, int cr, int cc, int nr, int nc,
-                                          double[] g, int[] parent, boolean[] closed, int goalIdx, PriorityQueue<Node> open, boolean diag) {
+    private static void considerNeighbor(
+            boolean[][] passable,
+            int rows,
+            int cols,
+            int cr,
+            int cc,
+            int nr,
+            int nc,
+            double[] g,
+            int[] parent,
+            boolean[] closed,
+            int goalIdx,
+            PriorityQueue<Node> open,
+            boolean diag) {
         if (!inBounds(nr, nc, rows, cols)) return;
         int nidx = idx(nr, nc, cols);
         if (closed[nidx]) return;
@@ -135,6 +160,14 @@ public class AStarInstructor {
             open.add(new Node(nidx, f));
         }
     }
+
+    private record Node(int idx,double f) implements Comparable<Node> {
+
+        @Override
+            public int compareTo(Node o) {
+                return Double.compare(this.f, o.f);
+            }
+        }
 
     private static double heuristic(int r1, int c1, int r2, int c2, boolean diag) {
         int dx = Math.abs(r1 - r2);

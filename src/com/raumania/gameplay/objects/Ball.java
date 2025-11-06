@@ -2,10 +2,10 @@ package com.raumania.gameplay.objects;
 
 import com.raumania.gameplay.objects.core.MovableObject;
 import com.raumania.gui.screen.GameScreen;
+import com.raumania.math.Vec2f;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-
-import com.raumania.math.Vec2f;
 
 /**
  * Represents the ball in the game.
@@ -19,7 +19,7 @@ public class Ball extends MovableObject {
     public static final int BALL_SPEED = 360;
 
     private double radius;
-    private Circle view;
+    private final Circle view;
     private boolean activeStatus;
     private boolean isImmortal;
 
