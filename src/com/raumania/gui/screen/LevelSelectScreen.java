@@ -13,7 +13,7 @@ import javafx.scene.input.KeyEvent;
 
 public class LevelSelectScreen extends Screen {
 
-    private final int maxLevels = 15;
+    private final int maxLevels = 10;
     public int currentLevel = 0;
 
     public LevelSelectScreen(SceneManager sceneManager) {
