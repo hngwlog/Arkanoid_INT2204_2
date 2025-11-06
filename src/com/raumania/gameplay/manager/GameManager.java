@@ -73,23 +73,21 @@ public class GameManager {
     }
 
     /**
-     * Return the render root that game is rendered on
+     * Returns the root {@link Pane} where the game objects are rendered.
      *
-     * @return the root of the game
+     * @return the root pane of the game
      */
     public Pane getRoot() {
         return root;
     }
 
     /**
-     * Initializes all game objects and sets up the starting state of the game.
+     * Initializes all game objects and sets up the initial state of the level.
      * <p>
-     * This method creates a new {@link Ball} at the
-     * screen center and a {@link Paddle} near the bottom, populates a grid of bricks, and
-     * sets {@link #gameState} to {@link GameState#RUNNING}.
+     * This method creates a new {@link Paddle}, spawns an initial {@link Ball},
+     * and loads {@link Brick}s from the current level data.
      * </p>
      */
-
     public void initGame() {
 
         score = 0;
@@ -227,35 +225,19 @@ public class GameManager {
     }
 
     /**
-     * Detects and resolves collisions between game objects such as the ball and the paddle.
+     * Detects and resolves collisions between all active game objects.
      * <p>
-     * When the ball collides with the paddle from above (i.e., the ball is moving downward),
-     * it is pushed back upward and its new reflection angle is computed based on the
-     * horizontal contact point on the paddle:
-     * </p>
+     * Handles collisions between:
      * <ul>
-     *   <li>The ball’s position is corrected to rest just above the paddle to prevent overlap.</li>
-     *   <li>The contact ratio {@code t} in range [-1, 1] is calculated, where:
-     *     <ul>
-     *       <li>{@code t = -1} → left edge of paddle</li>
-     *       <li>{@code t = 0}  → center of paddle</li>
-     *       <li>{@code t = +1} → right edge of paddle</li>
-     *     </ul>
-     *   </li>
-     *   <li>The reflection angle is limited to a maximum of 60° from the vertical axis
-     *       to prevent near-horizontal trajectories.</li>
-     *   <li>A new normalized direction vector {@link Vec2f} is computed from that angle
-     *       using sine and cosine, then applied to the ball.</li>
+     *   <li>{@link Ball} and {@link Paddle}</li>
+     *   <li>{@link Ball} and {@link Brick}</li>
+     *   <li>{@link Ball} and {@link Boss}</li>
+     *   <li>{@link Paddle} and {@link PowerUp}</li>
      * </ul>
-     * <p>
-     * For ball–brick collisions, overlap depth on X/Y is compared across all
-     * bricks touched in the frame. If any collision is more horizontal than
-     * vertical, the ball reflects horizontally; otherwise it reflects vertically.
-     * Destroyed bricks are removed from the scene.
+     * Updates score, spawns power-ups, triggers explosions, and removes destroyed entities.
      * </p>
-     * <p>
-     * For paddle-power-up collisions, the power-up is activated and removed from the scene.
-     * </p>
+     *
+     * @param dt delta time in seconds since the last frame
      */
     public void checkCollisions(double dt) {
         List<Brick> allCollidedBricks = new ArrayList<>();
@@ -444,10 +426,20 @@ public class GameManager {
         }
     }
 
+    /**
+     * Returns the current level data.
+     *
+     * @return the currently loaded {@link LevelData}
+     */
     public LevelData getCurrentLvl() {
         return currentLvl;
     }
 
+    /**
+     * Sets the current level and reinitializes the game state.
+     *
+     * @param lvl the level data to load
+     */
     public void setCurrentLvl(LevelData lvl) {
         currentLvl = lvl;
         initGame();
@@ -455,54 +447,55 @@ public class GameManager {
 
     /**
      * Returns the current player score.
-     * <p>
-     * The score increases by 1 for each brick destroyed.
-     * </p>
      *
-     * @return the current player score
+     * @return the score value
      */
     public int getScore() {
         return score;
     }
 
+    /** Sets the current player score. */
     public void setScore(int score) {
         this.score = score;
     }
 
     /**
      * Returns the current {@link GameState} of the game.
-     * <p>
-     * This value indicates whether the game is currently running,
-     * paused, or has ended (game over).
-     * </p>
      *
-     * @return the current {@link GameState} of the game
+     * @return the current game state
      */
     public GameState getGameState() {
         return gameState.get();
     }
 
-    /**
-     * Set the current {@link GameState} of the game.
-     */
+    /** Sets the current {@link GameState}. */
     public void setGameState(GameState gameState) {
         this.gameState.set(gameState);
     }
 
     /**
-     * Returns current alive balls on the GameScreen.
+     * Returns all currently active {@link Ball}s.
+     *
+     * @return list of active balls
      */
     public List<Ball> getBallsList() {
         return balls;
     }
 
     /**
-     * Returns the player paddle.
+     * Returns the player’s {@link Paddle}.
+     *
+     * @return the paddle object
      */
     public Paddle getPaddle() {
         return this.paddle;
     }
 
+    /**
+     * Returns the list of currently active effect countdowns.
+     *
+     * @return the list of {@link EffectCountDown} objects
+     */
     public List<EffectCountDown> getEffectCountDownList() {
         return effectCountDownList;
     }
@@ -510,24 +503,29 @@ public class GameManager {
     /**
      * Returns the observable property representing the current {@link GameState}.
      * <p>
-     * This property can be observed to react to changes in the game state,
-     * such as transitioning to a game over screen when the state changes.
+     * This property can be observed by the UI to react to state changes,
+     * such as transitioning to a game-over screen.
      * </p>
      *
-     * @return the {@link ObjectProperty} representing the current {@link GameState}
+     * @return the {@link ObjectProperty} for the game state
      */
     public ObjectProperty<GameState> gameStateProperty() {
         return gameState;
     }
 
     /**
-     * Sets the game state to {@link GameState#GAME_OVER}, typically called
-     * when the ball becomes inactive (falls below the screen).
+     * Sets the game state to {@link GameState#GAME_OVER},
+     * typically called when all balls are lost or all bricks are cleared.
      */
     public void gameOver() {
         gameState.set(GameState.GAME_OVER);
     }
 
+    /**
+     * Checks if the player has won the game.
+     *
+     * @return {@code true} if all destructible bricks are cleared
+     */
     public boolean isWinner() {
         return gameState.get() == GameState.GAME_OVER
                 && bricks.stream().allMatch(brick -> brick instanceof StrongBrick)
@@ -535,12 +533,11 @@ public class GameManager {
     }
 
     /**
-     * Updates the logic of all active game objects according to the current {@link GameState}.
+     * Updates the logic of all active game objects based on the current {@link GameState}.
      * <p>
-     * - In {@code READY}: the paddle can move and the main ball stays centered above it.<br>
-     * - In {@code RUNNING}: updates balls, power-ups, and paddle, then checks collisions.<br>
-     * - In other states: no update is performed.<br>
-     * Ends the game if the main ball is lost or all destructible bricks are cleared.
+     * - In {@code READY}: aligns the ball above the paddle.<br>
+     * - In {@code RUNNING}: updates all entities and checks collisions.<br>
+     * - Ends the game if all balls are lost or all destructible bricks are gone.
      * </p>
      *
      * @param dt delta time in seconds since the last frame
@@ -625,11 +622,11 @@ public class GameManager {
     }
 
     /**
-     * Spawns a new ball at the center of the paddle.
-     * <p>
-     * The new ball is added to the list of active balls and its visual
-     * representation is added to the scene graph.
-     * </p>
+     * Spawns an additional {@link Ball} at the given position and direction.
+     *
+     * @param x   x-coordinate of spawn position
+     * @param y   y-coordinate of spawn position
+     * @param dir initial direction of the ball
      */
     public void spawnAdditionalBall(double x, double y, Vec2f dir) {
         Ball ball = new Ball(x, y);
@@ -666,5 +663,8 @@ public class GameManager {
         gameState.set(GameState.READY);
     }
 
+    /**
+     * Enumeration of all possible game states.
+     */
     public enum GameState { READY, RUNNING, PAUSED, GAME_OVER }
 }
