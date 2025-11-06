@@ -21,7 +21,7 @@ public class AudioManager {
 //    public static final AudioClip BUTTON_CLICK = ResourcesLoader.loadSFX("button_click.wav");
     public static final AudioClip BRICK_HIT = ResourcesLoader.loadSFX("brick_hit.wav");
     public static final AudioClip PADDLE_HIT = ResourcesLoader.loadSFX("paddle_hit.wav");
-
+    public static final AudioClip EXPLOSION = ResourcesLoader.loadSFX("explosion.mp3");
     private AudioManager() {
         this.volume = new SimpleDoubleProperty(100); // Default volume level
     }

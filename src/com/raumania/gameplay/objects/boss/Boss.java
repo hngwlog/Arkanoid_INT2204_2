@@ -15,7 +15,7 @@ import com.raumania.math.Vec2f;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polyline;
+//import javafx.scene.shape.Polyline;
 
 import java.util.Iterator;
 import java.util.List;
@@ -25,14 +25,18 @@ public class Boss extends MovableObject {
     private SpriteSheet bossTexture;
     private boolean active = true;
     public static double BOSS_SPEED = 95.0;
-    public static final double BOSS_SIZE = 32.0;
+    public static final double BOSS_SIZE = 35.0;
     private double timeAccumulator = 0;
 
 //    private Polyline bossPathLine;
     private List<Vec2f> pathPoints;
     private int currentTargetIndex;
     private boolean followingPath = true;
-    private static final double ARRIVAL_THRESHOLD = 10; // if the distance is less than arrival_threshold, consider that collision is happened
+    private static final double ARRIVAL_THRESHOLD = 8; // if the distance is less than arrival_threshold, consider that collision is happened
+
+    private Vec2f lastPosition = new Vec2f(0, 0);
+    private double stuckTimer = 0;
+    private static final double STUCK_THRESHOLD = 2.5;
 
     public Boss(double x, double y, double width, double height) {
         super(x, y, width, height);
@@ -228,6 +232,9 @@ public class Boss extends MovableObject {
         setDirection(toTarget);
         applyMovement(dt);
         updateView();
+
+        // teleport
+        teleport(dt);
         return score;
     }
 
@@ -244,7 +251,7 @@ public class Boss extends MovableObject {
         if (distance <= 100) this.speed = BOSS_SPEED*2.5;
     }
 
-    private double randomDir = 1; // 1 = sang phải, -1 = sang trái
+    private double randomDir = Math.random() > 0.5 ? 1 : -1;
 
     private void randomMove(double dt, List<Brick> bricks) {
         timeAccumulator += dt;
@@ -286,4 +293,53 @@ public class Boss extends MovableObject {
         updateView();
     }
 
+    /**
+     * Returns the center position of the Boss as a Vec2f.
+     */
+    public Vec2f getCenterBoss() {
+        double centerX = getX() + getWidth() * 0.5;
+        double centerY = getY() + getHeight() * 0.5;
+        return new Vec2f(centerX, centerY);
+    }
+
+    private void teleport(double dt) {
+        double dx = getX() - lastPosition.x;
+        double dy = getY() - lastPosition.y;
+        double distMoved = Math.sqrt(dx * dx + dy * dy);
+
+        if (pathPoints != null && !pathPoints.isEmpty()) {
+            if (distMoved < ARRIVAL_THRESHOLD) {
+                stuckTimer += dt;
+            } else {
+                stuckTimer = 0;
+                bossTexture.getView().setEffect(null); // remove tint if moving again
+            }
+
+            //  Flash red when nearly stuck
+            if (stuckTimer >= STUCK_THRESHOLD * 0.6 && stuckTimer < STUCK_THRESHOLD) {
+                double blink = Math.sin(stuckTimer * 20); // fast blink
+                if (blink > 0) {
+                    bossTexture.getView().setStyle("-fx-effect: innershadow(gaussian, red, 25, 0.5, 0, 0);");
+                } else {
+                    bossTexture.getView().setStyle(null);
+                }
+            }
+
+            //  Teleport when stuck for too long
+            if (stuckTimer >= STUCK_THRESHOLD && pathPoints.size() > 2) {
+                bossTexture.getView().setStyle(null); // clear effect before teleport
+
+                // Skip two points
+                pathPoints.remove(0);
+                pathPoints.remove(0);
+
+                Vec2f jumpTarget = pathPoints.get(0);
+                setPosition(jumpTarget.x - getWidth() / 2, jumpTarget.y - getHeight() / 2);
+                updateView();
+
+                stuckTimer = 0;
+            }
+        }
+        lastPosition = new Vec2f(getX(), getY());
+    }
 }
