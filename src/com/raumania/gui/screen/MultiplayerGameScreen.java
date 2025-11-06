@@ -14,6 +14,7 @@ import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -31,8 +32,11 @@ public class MultiplayerGameScreen extends Screen {
     private final Pane mainPause;
     private final Pane backChoice;
     private final Pane winPane;
+    private final Pane gamePlayScreen;
     private final Text rightScore;
     private final Text leftScore;
+    private final List<ImageView> leftHearts;
+    private final List<ImageView> rightHearts;
     private final List<Button> pauseButtons;
     private final List<Button> homeButtons;
     private final List<Double> pauseButtonYs;
@@ -111,7 +115,7 @@ public class MultiplayerGameScreen extends Screen {
         winPane.setVisible(false);
 
         // Game play screen
-        Pane gamePlayScreen = new Pane();
+        gamePlayScreen = new Pane();
         // Pause button
         pause = UIUtils.newButton("||", 1060, 20, 2.0, 2.0);
         pause.setOnAction(
@@ -136,6 +140,31 @@ public class MultiplayerGameScreen extends Screen {
         rightBorder.setFill(Color.TRANSPARENT);
         rightBorder.setStroke(Color.BLACK);
         rightBorder.setStrokeWidth(2);
+
+        // Lives
+        leftHearts = new ArrayList<>();
+        for (int i = 0; i < leftManager.getLives(); i++) {
+            ImageView heart = new ImageView(ResourcesLoader.loadImage("heart.png"));
+            heart.setFitWidth(30);
+            heart.setFitHeight(30);
+            heart.setLayoutX(90 + i * 35);
+            heart.setLayoutY(15);
+            leftHearts.add(heart);
+            gamePlayScreen.getChildren().add(heart);
+        }
+
+        rightHearts = new ArrayList<>();
+        for (int i = 0; i < rightManager.getLives(); i++) {
+            ImageView heart = new ImageView(ResourcesLoader.loadImage("heart.png"));
+            heart.setFitWidth(30);
+            heart.setFitHeight(30);
+            heart.setLayoutX(850 + i * 35);
+            heart.setLayoutY(15);
+            rightHearts.add(heart);
+            gamePlayScreen.getChildren().add(heart);
+        }
+
+
         // Score
         rightScore = UIUtils.newText("Score:", 720, 30, 2.0, 2.0);
         rightScore.setFont(Font.font("System", FontWeight.BOLD, 14));
@@ -364,9 +393,25 @@ public class MultiplayerGameScreen extends Screen {
                         double dt = (now - past) / 1_000_000_000.0;
                         past = now;
                         leftManager.update(dt);
-                        rightManager.update(dt);
                         leftScore.setText("Score: " + leftManager.getScore());
+                        if (leftHearts.size() > leftManager.getLives()) {
+                            for (int i = leftHearts.size() - 1; i >= leftManager.getLives(); i--) {
+                                gamePlayScreen.getChildren().remove(leftHearts.get(i));
+                                leftHearts.remove(i);
+                            }
+                        }
+
+                        rightManager.update(dt);
                         rightScore.setText("Score: " + rightManager.getScore());
+                        if (rightHearts.size() > rightManager.getLives()) {
+                            for (int i = rightHearts.size() - 1; i >= rightManager.getLives(); i--) {
+                                gamePlayScreen.getChildren().remove(rightHearts.get(i));
+                                rightHearts.remove(i);
+                            }
+                        }
+
+
+
                     }
                 };
 
