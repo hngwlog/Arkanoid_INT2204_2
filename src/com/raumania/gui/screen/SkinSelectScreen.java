@@ -13,8 +13,10 @@ import com.raumania.utils.UIUtils;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.io.File;
@@ -27,8 +29,8 @@ public class SkinSelectScreen extends Screen {
     private static final int MAX_PADDLE_SKIN = 4;
     private static final int MAX_BALL_COLOR = 5;
     private static Config sharedConfig = DEFAULT_CONFIG;
-    private final Text currentPaddle;
-    private final Text currentBall;
+    private final ImageView currentPaddle;
+    private final Rectangle currentBall;
 
     public SkinSelectScreen(SceneManager sceneManager) {
         super(sceneManager);
@@ -40,8 +42,13 @@ public class SkinSelectScreen extends Screen {
         paddleText.setFill(Color.WHITE);
         Button paddleLeft = UIUtils.newButton("<", 315, 185, 2.0, 2.0);
         Button paddleRight = UIUtils.newButton(">", 815, 185, 2.0, 2.0);
-        currentPaddle = UIUtils.newText("Paddle " + (sharedConfig.paddle + 1), 550, 200, 2.0, 2.0);
-        currentPaddle.setFill(Color.WHITE);
+        currentPaddle =
+                new ImageView(ResourcesLoader.loadImage("paddle" + sharedConfig.paddle + ".png"));
+        currentPaddle.setLayoutX(520);
+        currentPaddle.setLayoutY(190);
+        currentPaddle.setFitWidth(100);
+        currentPaddle.setPreserveRatio(true);
+
         paddleLeft.setOnAction(
                 e -> {
                     changeCount("Paddle", -1);
@@ -52,12 +59,12 @@ public class SkinSelectScreen extends Screen {
                 });
 
         // ball
-        Text ballText = UIUtils.newText("Ball: ", 100, 300, 2.0, 2.0);
+        Text ballText = UIUtils.newText("Ball Color: ", 100, 300, 2.0, 2.0);
         ballText.setFill(Color.WHITE);
         Button ballLeft = UIUtils.newButton("<", 315, 285, 2.0, 2.0);
         Button ballRight = UIUtils.newButton(">", 815, 285, 2.0, 2.0);
-        currentBall = UIUtils.newText("Ball " + (sharedConfig.ball + 1), 550, 300, 2.0, 2.0);
-        currentBall.setFill(Color.WHITE);
+        currentBall = UIUtils.newRectangle(100, 50, 520, 275);
+        currentBall.setFill(Ball.BALL_COLORS.get(sharedConfig.ball));
         ballLeft.setOnAction(
                 e -> {
                     changeCount("Ball", -1);
@@ -105,7 +112,13 @@ public class SkinSelectScreen extends Screen {
         Platform.runLater(root::requestFocus);
     }
 
-    private Text cntCurrentText(String cntType) {
+    /**
+     * get current skin of the current type.
+     *
+     * @param cntType - current skin type
+     * @return curren skin
+     */
+    private Object cntCurrentText(String cntType) {
         if (cntType.equals("Paddle")) {
             return currentPaddle;
         } else if (cntType.equals("Ball")) {
@@ -114,6 +127,12 @@ public class SkinSelectScreen extends Screen {
         return null;
     }
 
+    /**
+     * change curren config's skin.
+     *
+     * @param cntType - skin type
+     * @param cnt - index of the skin
+     */
     private void applyChange(String cntType, int cnt) {
         switch (cntType) {
             case "Paddle":
@@ -126,6 +145,12 @@ public class SkinSelectScreen extends Screen {
         }
     }
 
+    /**
+     * get current skin's index of current type.
+     *
+     * @param cntType - curren type
+     * @return current skin's index
+     */
     private int getCount(String cntType) {
         return switch (cntType) {
             case "Paddle" -> sharedConfig.paddle;
@@ -134,6 +159,12 @@ public class SkinSelectScreen extends Screen {
         };
     }
 
+    /**
+     * get max skin number of current type.
+     *
+     * @param cntType - current type
+     * @return max skin number
+     */
     private int getMaxNumber(String cntType) {
         return switch (cntType) {
             case "Paddle" -> MAX_PADDLE_SKIN;
@@ -142,6 +173,12 @@ public class SkinSelectScreen extends Screen {
         };
     }
 
+    /**
+     * Change the current skin of the current type.
+     *
+     * @param cntType current type
+     * @param changeType -1 -> decrease, 1 -> increase
+     */
     private void changeCount(String cntType, int changeType) {
         Platform.runLater(root::requestFocus);
         int cnt = getCount(cntType);
@@ -150,10 +187,17 @@ public class SkinSelectScreen extends Screen {
         if (cnt < 0) cnt = maxCnt - 1;
         cnt %= maxCnt;
         applyChange(cntType, cnt);
-        cntCurrentText(cntType).setText(cntType + " " + (cnt + 1));
+        Object currentObject = cntCurrentText(cntType);
+        if (currentObject instanceof ImageView) {
+            ((ImageView) currentObject)
+                    .setImage(ResourcesLoader.loadImage("paddle" + cnt + ".png"));
+        } else if (currentObject instanceof Rectangle) {
+            ((Rectangle) currentObject).setFill(Ball.BALL_COLORS.get(cnt));
+        }
         saveConfig();
     }
 
+    /** save current config from game to FILE. */
     private void saveConfig() {
         File file = new File(CONFIG_FILE);
         if (!file.exists()) {
@@ -172,6 +216,7 @@ public class SkinSelectScreen extends Screen {
         }
     }
 
+    /** load current config from FILE to the game. */
     private void loadConfig() {
         File file = new File(CONFIG_FILE);
         if (!file.exists() || file.length() == 0) {
@@ -193,13 +238,12 @@ public class SkinSelectScreen extends Screen {
         }
     }
 
+    /** Config. */
     public static class Config {
         private int paddle;
         private int ball;
 
-        public Config(
-                @JsonProperty("paddle") int paddle,
-                @JsonProperty("ball") int ball) {
+        public Config(@JsonProperty("paddle") int paddle, @JsonProperty("ball") int ball) {
             this.paddle = paddle;
             this.ball = ball;
         }
