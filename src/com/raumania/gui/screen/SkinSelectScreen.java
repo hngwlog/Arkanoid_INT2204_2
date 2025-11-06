@@ -19,7 +19,7 @@ import javafx.scene.text.Text;
 import java.io.File;
 import java.io.IOException;
 
-public class OptionScreen extends Screen {
+public class SkinSelectScreen extends Screen {
 
     private static final String CONFIG_FILE = "skins.json";
     private static final Config DEFAULT_CONFIG = new Config(0, 0, 0);
@@ -32,7 +32,7 @@ public class OptionScreen extends Screen {
     Text currentBackground;
     private Config config;
 
-    public OptionScreen(SceneManager sceneManager) {
+    public SkinSelectScreen(SceneManager sceneManager) {
         super(sceneManager);
 
         this.loadConfig();
@@ -203,7 +203,7 @@ public class OptionScreen extends Screen {
 
         ObjectMapper mapper = new ObjectMapper();
         try {
-            config = mapper.readValue(file, OptionScreen.Config.class);
+            config = mapper.readValue(file, SkinSelectScreen.Config.class);
         } catch (DatabindException e) {
             System.err.println("Skins file has corrupted structure!");
         } catch (StreamReadException e) {
