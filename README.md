@@ -150,9 +150,8 @@ This will compile and run the application directly.
 - **Launch Ball**: SPACE
 
 ### Gameplay Video
-
-<!-- Space for gameplay video/GIF -->
-*[Gameplay video will be added here]*
+![single](https://github.com/user-attachments/assets/72399495-c20d-42e1-b501-758e16f6331c)
+![multi](https://github.com/user-attachments/assets/099f31c4-842e-4f6f-a042-e8a4b7c9f954)
 
 ---
 
@@ -197,9 +196,7 @@ src/com/raumania/
 - **Strategy**: Different brick behaviors through inheritance
 
 ### Entity Relationship Diagram (ERD)
-
-<!-- Space for ERD diagram -->
-*[ERD diagram will be added here]*
+![l5fHRziu4dxlhp2s3wUWJP7TlUxXYbvmZgqaGct7i9oalQ8866bYyqAH0aavyHRzxoTIiZmsgIWDS9k7sE9y70vdXZF3aV-jD96wo5YlB-y95pJjdP4CogTaIJKakf3mwjNVUWCXeJSboJrPmAky-kpzaeZidIH5HZWbxv8Iyall-wjU-PSmebIl7vVC8wwqB18jfALLVs--AqqqJNxqxY](https://github.com/user-attachments/assets/32e92f26-3572-421d-a05d-16b965b6331e)
 
 ---
 
